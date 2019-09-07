@@ -1,0 +1,25 @@
+{
+    "map": {},
+    "file": {},
+    "font": {
+        "dialogFont": "data/font/A-OTF-FolkPro-Medium.otf",
+        "applicationFont": "data/font/msyh.ttc",
+        "simplifyChineseCharactersSupport": "data/font/msyhl.ttc"
+    },
+    "image": {
+        "skin": "data/images/skin/blackAlpha.png"
+    },
+    "music": {
+        "moonLight": "data/music/月光（オルゴール）.mp3"
+    },
+    "lyric": {
+        
+    },
+    "se": {
+        
+    },
+    "avatar": {
+        "002": "data/images/avatar/002.png",
+        "002_head": "data/images/avatar/002_head.png"
+    }
+}

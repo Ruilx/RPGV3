@@ -1,0 +1,1 @@
+#include "RpgDialog.h"
