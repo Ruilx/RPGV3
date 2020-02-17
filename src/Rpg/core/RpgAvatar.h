@@ -13,6 +13,7 @@
 /**
  * @brief The RpgAvatar class
  * RpgAvatar维护着全局头像的内容, 使用名字来进行提取
+ * 自动会在FileManager中进行缓存
  */
 class RpgAvatar
 {

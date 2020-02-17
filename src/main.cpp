@@ -4,11 +4,26 @@
 #include <QDebug>
 #include <QApplication>
 
+#include <QLocale>
+#include <QDateTime>
+
+QDateTime parseBuildDatetime(){
+	QStringList dateSplit = QString(__DATE__).split(" ", QString::SkipEmptyParts);
+	if(dateSplit.length() < 3){
+		return QDateTime(); // Invalid
+	}
+	if(dateSplit.at(1).length() <= 1){
+		dateSplit[1] = "0" + dateSplit[1];
+	}
+	QString date = dateSplit.join(" ");
+	return QLocale::c().toDateTime(date % " " __TIME__, "MMM dd yyyy HH:mm:ss");
+}
+
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
-	qDebug() << CodePath << "Build time:" <<  __DATE__ << " " << __TIME__;
+	qDebug() << CodePath << "Build time:" << parseBuildDatetime().toString("yyyy-MM-dd HH:mm:ss");
 
 	a.setApplicationDisplayName("RPGV3");
 	a.setApplicationVersion("0.0.1");
@@ -17,7 +32,7 @@ int main(int argc, char *argv[])
 
 	qDebug() << CodePath << "Library paths:" << a.libraryPaths();
 
-	a.setFont(QApplication::font());
+	a.setFont(qApp->font());
 
 	try{
 		MainWindow w;

@@ -15,6 +15,9 @@
 
 #include <Rpg/core/RpgSpecLocationChopingDialog.h>
 
+#include <Rpg/com/RpgMusic.h>
+#include <Rpg/com/RpgLyric.h>
+
 class RpgWidget : public QWidget
 {
 	Q_OBJECT
@@ -66,6 +69,7 @@ public:
 		mainLay->setMargin(0);
 
 		//RpgView::instance()->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
+		RpgView::instance()->setRenderHint(QPainter::TextAntialiasing);
 
 		QTimer::singleShot(1000, this, &RpgWidget::ready);
 	}
@@ -88,9 +92,12 @@ private slots:
 		RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, "blueSkin", "data/images/skin/blueAlpha.png");
 		RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, "whiteSkin", "data/images/skin/whiteAlpha.png");
 		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "fallback", "data/font/msyhl.ttc");
-		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "dialog", "data/font/A-OTF-FolkPro-Medium.otf");
+		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "dialog", "data/font/unifont-12.1.03.ttf");
+		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "lyric", "data/font/unifont-12.1.03.ttf");
 		RpgFileManager::instance()->addFile(RpgFileManager::AvatarFile, "002", "data/images/avatar/002.png");
 		RpgFileManager::instance()->addFile(RpgFileManager::AvatarFile, "002_head", "data/images/avatar/002_head.png");
+		RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, "Turnin", "data/music/Turnin.mp3");
+		RpgFileManager::instance()->addFile(RpgFileManager::LyricFile, "Turnin", "data/lyrics/Turnin.lrc");
 
 		RpgFont::setFallbackFont("dialog", "fallback");
 
@@ -117,61 +124,75 @@ private slots:
 			}
 		}
 
-		RpgSpecLocationChopingDialog *base = new RpgSpecLocationChopingDialog("blueSkin");
+//		RpgSpecLocationChopingDialog *base = new RpgSpecLocationChopingDialog("blueSkin");
 
-		RpgDialog *rpgDialog = new RpgDialog(base);
-		rpgDialog->appendMessage(RpgDialogMessage("普通文字 <x>黑色文字</x> <r>红色文字</r> <g>绿色文字</g> <b>蓝色文字</b> <y>黄色文字</y> <m>品红文字</m> <c>青色文字</c> <w>白色文字</w> <xl>亮黑色文字</xl> <rl>亮红色文字</rl> <gl>亮绿色文字</gl> <bl>亮蓝色文字</bl> <yl>亮黄色文字</yl> <ml>亮品红色文字</ml> <cl>亮青色文字</cl> <wl>亮白色文字</wl>"));
-		rpgDialog->appendMessage(RpgDialogMessage("<big>测试Big文本</big>"));
-		rpgDialog->appendMessage(RpgDialogMessage("测试一段没有立绘的文字"));
-		RpgDialogMessage aa("头像在左侧, 使用<r>Rpg::AvatarFrame</r>和<r>Rpg::AvatarAroundLeft</r>");
-		aa.setName("Rpg制作者");
-		aa.setCharacterName("002_head");
-		aa.setAvatarAround(Rpg::AvatarAroundLeft);
-		aa.setAvatarMode(Rpg::AvatarFrame);
-		rpgDialog->appendMessage(aa);
-		RpgDialogMessage bb("头像在右侧, 使用<r>Rpg::AvatarFrame</r>和<r>Rpg::AvatarAroundRight</r>");
-		bb.setName("Rpg制作者");
-		bb.setCharacterName("002_head");
-		bb.setAvatarAround(Rpg::AvatarAroundRight);
-		bb.setAvatarMode(Rpg::AvatarFrame);
-		rpgDialog->appendMessage(bb);
-		RpgDialogMessage cc("立绘在左侧, 位于对话框之后, 使用<r>Rpg::AvatarHalfBodyBehind</r>和<r>Rpg::AvatarAroundLeft</r>");
-		cc.setName("Rpg制作者");
-		cc.setCharacterName("002");
-		cc.setAvatarAround(Rpg::AvatarAroundLeft);
-		cc.setAvatarMode(Rpg::AvatarHalfBodyBehind);
-		rpgDialog->appendMessage(cc);
-		RpgDialogMessage dd("立绘在右侧, 位于对话框之后, 使用<r>Rpg::AvatarHalfBodyBehind</r>和<r>Rpg::AvatarAroundRight</r>");
-		dd.setName("Rpg制作者");
-		dd.setCharacterName("002");
-		dd.setAvatarAround(Rpg::AvatarAroundRight);
-		dd.setAvatarMode(Rpg::AvatarHalfBodyBehind);
-		rpgDialog->appendMessage(dd);
-		RpgDialogMessage ee("立绘在左侧, 位于对话框之前, 使用<r>Rpg::AvatarHalfBodyFront</r>和<r>Rpg::AvatarAroundLeft</r>");
-		ee.setName("Rpg制作者");
-		ee.setCharacterName("002");
-		ee.setAvatarAround(Rpg::AvatarAroundLeft);
-		ee.setAvatarMode(Rpg::AvatarHalfBodyFront);
-		ee.setPointSize(12);
-		ee.setLineHeight(20);
-		rpgDialog->appendMessage(ee);
-		RpgDialogMessage ff("立绘在右侧, 位于对话框之前, 使用<r>Rpg::AvatarHalfBodyFront</r>和<r>Rpg::AvatarAroundRight</r>");
-		ff.setName("Rpg制作者");
-		ff.setCharacterName("002");
-		ff.setAvatarAround(Rpg::AvatarAroundRight);
-		ff.setAvatarMode(Rpg::AvatarHalfBodyFront);
-		ff.setPointSize(12);
-		ff.setLineHeight(20);
-		rpgDialog->appendMessage(ff);
-		rpgDialog->appendMessage(aa);
-		rpgDialog->appendMessage(cc);
-		rpgDialog->appendMessage(ee);
-		rpgDialog->appendMessage(bb);
-		rpgDialog->appendMessage(dd);
-		rpgDialog->appendMessage(ff);
-		rpgDialog->appendMessage(RpgDialogMessage("测试一段没有立绘的文字", "一个没有立绘的Rpg制作者"));
-		rpgDialog->appendMessage(RpgDialogMessage("<r>あいうえお</r> <g>かきくけこ</g> <b>さしすせそ</b> <y>たちつてと</y> <m>なにぬねの</m> <c>はひふへほ</c> <x>まみむめも</x> やゆよ <w>らりるれろ</w> わを ん"));
-		rpgDialog->run();
+//		RpgDialog *rpgDialog = new RpgDialog(base);
+//		rpgDialog->setDialogAlign(Rpg::AlignLeft);
+//		rpgDialog->setDialogSize(QSize(500, rpgDialog->getDialogSize().height()));
+//		rpgDialog->appendMessage(RpgDialogMessage("普通文字 <x>黑色文字</x> <r>红色文字</r> <g>绿色文字</g> <b>蓝色文字</b> <y>黄色文字</y> <m>品红文字</m> <c>青色文字</c> <w>白色文字</w> <xl>亮黑色文字</xl> <rl>亮红色文字</rl> <gl>亮绿色文字</gl> <bl>亮蓝色文字</bl> <yl>亮黄色文字</yl> <ml>亮品红色文字</ml> <cl>亮青色文字</cl> <wl>亮白色文字</wl>"));
+//		rpgDialog->appendMessage(RpgDialogMessage("<big>测试Big文本</big>"));
+//		rpgDialog->appendMessage(RpgDialogMessage("测试一段没有立绘的文字"));
+//		RpgDialogMessage aa("头像在左侧, 使用<r>Rpg::AvatarFrame</r>和<r>Rpg::AvatarAroundLeft</r>");
+//		aa.setName("Rpg制作者");
+//		aa.setCharacterName("002_head");
+//		aa.setAvatarAround(Rpg::AvatarAroundLeft);
+//		aa.setAvatarMode(Rpg::AvatarFrame);
+//		rpgDialog->appendMessage(aa);
+//		RpgDialogMessage bb("头像在右侧, 使用<r>Rpg::AvatarFrame</r>和<r>Rpg::AvatarAroundRight</r>");
+//		bb.setName("Rpg制作者");
+//		bb.setCharacterName("002_head");
+//		bb.setAvatarAround(Rpg::AvatarAroundRight);
+//		bb.setAvatarMode(Rpg::AvatarFrame);
+//		rpgDialog->appendMessage(bb);
+//		RpgDialogMessage cc("立绘在左侧, 位于对话框之后, 使用<r>Rpg::AvatarHalfBodyBehind</r>和<r>Rpg::AvatarAroundLeft</r>");
+//		cc.setName("Rpg制作者");
+//		cc.setCharacterName("002");
+//		cc.setAvatarAround(Rpg::AvatarAroundLeft);
+//		cc.setAvatarMode(Rpg::AvatarHalfBodyBehind);
+//		rpgDialog->appendMessage(cc);
+//		RpgDialogMessage dd("立绘在右侧, 位于对话框之后, 使用<r>Rpg::AvatarHalfBodyBehind</r>和<r>Rpg::AvatarAroundRight</r>");
+//		dd.setName("Rpg制作者");
+//		dd.setCharacterName("002");
+//		dd.setAvatarAround(Rpg::AvatarAroundRight);
+//		dd.setAvatarMode(Rpg::AvatarHalfBodyBehind);
+//		rpgDialog->appendMessage(dd);
+//		RpgDialogMessage ee("立绘在左侧, 位于对话框之前, 使用<r>Rpg::AvatarHalfBodyFront</r>和<r>Rpg::AvatarAroundLeft</r>");
+//		ee.setName("Rpg制作者");
+//		ee.setCharacterName("002");
+//		ee.setAvatarAround(Rpg::AvatarAroundLeft);
+//		ee.setAvatarMode(Rpg::AvatarHalfBodyFront);
+//		ee.setPointSize(12);
+//		ee.setLineHeight(20);
+//		rpgDialog->appendMessage(ee);
+//		RpgDialogMessage ff("立绘在右侧, 位于对话框之前, 使用<r>Rpg::AvatarHalfBodyFront</r>和<r>Rpg::AvatarAroundRight</r>");
+//		ff.setName("Rpg制作者");
+//		ff.setCharacterName("002");
+//		ff.setAvatarAround(Rpg::AvatarAroundRight);
+//		ff.setAvatarMode(Rpg::AvatarHalfBodyFront);
+//		ff.setPointSize(12);
+//		ff.setLineHeight(20);
+//		rpgDialog->appendMessage(ff);
+//		rpgDialog->appendMessage(aa);
+//		rpgDialog->appendMessage(cc);
+//		rpgDialog->appendMessage(ee);
+//		rpgDialog->appendMessage(bb);
+//		rpgDialog->appendMessage(dd);
+//		rpgDialog->appendMessage(ff);
+//		rpgDialog->appendMessage(RpgDialogMessage("测试一段没有立绘的文字", "一个没有立绘的Rpg制作者"));
+//		rpgDialog->appendMessage(RpgDialogMessage("<r>あいうえお</r> <g>かきくけこ</g> <b>さしすせそ</b> <y>たちつてと</y> <m>なにぬねの</m> <c>はひふへほ</c> <x>まみむめも</x> やゆよ <w>らりるれろ</w> わを ん"));
+//		rpgDialog->run();
+//		rpgDialog->waitForComplete();
+
+		RpgLyric *lrc = new RpgLyric();
+		lrc->loadLyric("Turnin");
+		lrc->_dumpLyric();
+		RpgMusic::instance()->setLoop(1);
+		RpgMusic::instance()->playMusic("Turnin");
+		lrc->run();
+
+
+
+		qDebug() << "Finished";
 	}
 public slots:
 	void doReadyToClose(){

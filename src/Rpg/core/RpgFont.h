@@ -55,7 +55,7 @@ public:
 			}
 		}
 		QStringList fontList = QFontDatabase::applicationFontFamilies(this->fontMap.value(name));
-		qDebug() << "Detected font:" << name << "with:" << fontList;
+		//qDebug() << "Detected font:" << name << "with:" << fontList;
 		if(fontList.length() >= 1){
 			return fontList.at(0);
 		}else{

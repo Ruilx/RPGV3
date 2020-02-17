@@ -137,11 +137,29 @@ public:
 
 	inline void setLoop(int loop = -1){
 		//this->loop = loop == 0 ? 1 : loop;
-		this->music->setRepeat(loop);
+		//这个loop和music的repeat是有区别的
+		// loop的值 | repeat的值 | 歌会重复几遍
+		//       -1 |         -1 | 无数次
+		//        0 |         -1 | 无数次
+		//        1 |          0 | 不重复
+		//        2 |          1 | 重复一次
+		// 等等
+		switch(loop){
+			case -1: case 0: this->music->setRepeat(-1); break;
+			default: this->music->setRepeat(loop -1); break;
+		}
+		return;
 	}
 
 	inline int getLoop() const{
-		return this->music->repeat();
+		int repeat = this->music->repeat();
+		if(repeat < 0){
+			repeat = -1;
+		}
+		switch(repeat){
+			case -1: return -1;
+			default: return repeat + 1;
+		}
 	}
 
 	inline void setNotifyInterval(int ms){

@@ -13,7 +13,7 @@ class RpgDialogMessage
 	QString characterName; // 主角立绘或头像, 留空不显示
 	Rpg::AvatarMode mode = Rpg::AvatarModeUnknown; // 主角立绘显示模式
 	Rpg::AvatarAround around = Rpg::AvatarAroundUnknown; // 主角立绘显示方向
-	int pointSize = 18; // 字体大小
+	int pointSize = 16; //18; // 字体大小
 	int speed = (int)Rpg::SingleWordSpeedFast; // 消息出字速度, 0表示立即出字
 	int waitTime = -1; // 出字之后自动等待时间, 0表示立即返回, -1表示永久等待用户输入并显示继续符号
 	qreal lineHeight = 35;
