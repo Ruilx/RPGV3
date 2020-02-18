@@ -71,7 +71,9 @@ SOURCES += \
     src/Rpg/core/RpgDialogMessage.cpp \
     src/Rpg/core/RpgHtmlSplit.cpp \
     src/Rpg/core/RpgDialogAnimation.cpp \
-    src/Rpg/core/RpgItemProperties.cpp
+    src/Rpg/core/RpgItemProperties.cpp \
+    src/Rpg/core/RpgAutoTileBase.cpp \
+    src/Rpg/core/RpgAutoTileBlock.cpp
 
 
 HEADERS += \
@@ -109,7 +111,9 @@ HEADERS += \
     src/Rpg/core/RpgDialogMessage.h \
     src/Rpg/core/RpgHtmlSplit.h \
     src/Rpg/core/RpgDialogAnimation.h \
-    src/Rpg/core/RpgItemProperties.h
+    src/Rpg/core/RpgItemProperties.h \
+    src/Rpg/core/RpgAutoTileBase.h \
+    src/Rpg/core/RpgAutoTileBlock.h
 
 
 DISTFILES += \

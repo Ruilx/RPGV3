@@ -10,7 +10,7 @@
 
 #include <Rpg/com/RpgView.h>
 
-
+#include <QtConcurrent>
 /**
  * @brief The RpgLyric class
  * RpgLyric类
@@ -256,6 +256,9 @@ public:
 	 */
 	inline void setFont(const QFont &font){ this->lyric->setFont(font); }
 
+	inline void setPos(const QPointF &pos){ this->lyric->setPos(pos); }
+	inline void setPos(qreal x, qreal y){ this->setPos(QPointF(x, y)); }
+
 	/**
 	 * @brief _dumpLyric
 	 * 在debug显示全部歌词
@@ -282,11 +285,17 @@ protected:
 				this->lyricI++;
 			}
 			if(int(this->lyricI.key()) <= ms + 300){
+//				QtConcurrent::run([this, ms](){
+				// bug: 这里如果执行等待的话, 有多个lyric的时候, 会按照顺序执行导致后面lyric执行延迟
+				// 但加上Concurrent之后, setHtml会发出信号, 但这不是Qt信号线程传递的方式, 报错
+				// Cannot send events to objects owned by a different thread.
+				// 想办法将setHtml发送到lyric线程进行执行
 				this->lyricAnimationHide();
 				RpgUtils::msleep(int(this->lyricI.key()) - ms);
 				this->lyric->setHtml(this->lyricI.value());
 				this->lyricAnimationShow();
 				this->lyricI++;
+//				});
 			}
 		});
 
