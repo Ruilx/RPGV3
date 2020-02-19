@@ -1,21 +1,26 @@
 #ifndef RPGAUTOTILEBLOCK_H
 #define RPGAUTOTILEBLOCK_H
 
+#include <Rpg/Rpg.h>
+#include <QMap>
+#include <QPixmap>
+#include <QDebug>
+
 class RpgAutoTileBlock{
 	/**
 	 * @brief imageMap
 	 * QMap Image from unsigned int8 to QPixmap
 	 * Key: quint8 Note:
 	 *
-	 * 0b x x x x x x x x               LEFT TOP ---> TOP ---> RIGHT TOP
-	 *    | | | | | | | +- LEFT                  ┌───────────┐    |
-	 *    | | | | | | +--- LEFT BOTTOM           │           │    V
-	 *    | | | | | +----- BOTTOM           LEFT │           │ RIGHT
-	 *    | | | | +------- RIGHT BOTTOM     ^    │           │    |
-	 *    | | | +--------- RIGHT            |    │           │    V
-	 *    | | +----------- RIGHT TOP             └───────────┘
-	 *    | +------------- TOP       LEFT BOTTOM <- BOTTOM <- RIGHT BOTTOM
-	 *    +--------------- LEFT TOP
+	 * 0b x x x x x x x x
+	 *    | | | | | | | +- LEFT         LEFT TOP ---> TOP ---> RIGHT TOP
+	 *    | | | | | | +--- LEFT BOTTOM           ┌───────────┐    |
+	 *    | | | | | +----- BOTTOM                │           │    V
+	 *    | | | | +------- RIGHT BOTTOM     LEFT │           │ RIGHT
+	 *    | | | +--------- RIGHT            ^    │           │    |
+	 *    | | +----------- RIGHT TOP        |    │           │    V
+	 *    | +------------- TOP                   └───────────┘
+	 *    +--------------- LEFT TOP  LEFT BOTTOM <- BOTTOM <- RIGHT BOTTOM
 	 *
 	 * Note that if 'top' 'left' 'right' 'bottom' blocked (set to 1), the rest
 	 * area will force to set with table below:
@@ -110,11 +115,11 @@ public:
 	void insertImage(BlockType type, const QImage &image){
 		QPixmap i = QPixmap::fromImage(image);
 		if(i.isNull()){
-			qDebug() << CodePath() << "Image is null.";
+			qDebug() << CodePath << "Image is null.";
 			return;
 		}
 		this->imageMap.insert(type, i);
-		qDebug() << CodePath() << "Image information:" << image;
+		qDebug() << CodePath << "Image information:" << image;
 	}
 
 	void insertImage(BlockType type, const QPixmap &pixmap){
@@ -145,7 +150,7 @@ public:
 				count ++;
 			}
 		}
-		qDebug() << CodePath() << "Successfully dumped" << count << "/ 47 block image(s) at:" << dir.path();
+		qDebug() << CodePath << "Successfully dumped" << count << "/ 47 block image(s) at:" << dir.path();
 	}
 };
 

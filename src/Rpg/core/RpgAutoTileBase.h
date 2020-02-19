@@ -2,6 +2,7 @@
 #define RPGAUTOTILEBASE_H
 
 #include <QtCore>
+#include <QDebug>
 #include <Rpg/Global.h>
 #include <Rpg/core/RpgAutoTileBlock.h>
 
@@ -86,7 +87,7 @@ public:
 		this->name = name;
 		if(!autoTileName.isEmpty()){
 			this->renderBlock(autoTileName);
-			qDebug << CodePath << "Loaded" << this->blockImageList.at(0).getCount() << "Tiles";
+			qDebug() << CodePath << "Name" << autoTileName << "Loaded" << this->blockImageList.at(0).getCount() << "Tiles";
 		}
 	}
 
@@ -107,7 +108,7 @@ public:
 		if((this->blockImageList.length() > index)){
 			this->blockImageList.at(index)._dumpAllImages("temp");
 		}else{
-			qDebug() << CodePath() << "Index is out of range.";
+			qDebug() << CodePath << "Index is out of range.";
 		}
 
 	}

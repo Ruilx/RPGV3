@@ -18,6 +18,8 @@
 #include <Rpg/com/RpgMusic.h>
 #include <Rpg/com/RpgLyric.h>
 
+#include <Rpg/core/RpgAutoTileBase.h>
+
 class RpgWidget : public QWidget
 {
 	Q_OBJECT
@@ -100,6 +102,11 @@ private slots:
 		RpgFileManager::instance()->addFile(RpgFileManager::LyricFile, "Turnin", "data/lyrics/Turnin.lrc");
 		RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, "TOKYO BON", "data/music/TOKYO BON.mp3");
 		RpgFileManager::instance()->addFile(RpgFileManager::LyricFile, "TOKYO BON", "data/lyrics/TOKYO BON.lrc");
+
+		RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, "autoTile", "data/images/autotiles/test.png");
+
+		RpgAutoTileBase autoTile("name", "autoTile");
+		autoTile._dumpImage();
 
 		RpgFont::setFallbackFont("dialog", "fallback");
 
