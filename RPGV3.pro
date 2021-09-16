@@ -125,6 +125,7 @@ HEADERS += \
 
 
 DISTFILES += \
+	README.md \
 	data/font/A-OTF-FolkPro-Bold.otf \
 	data/font/A-OTF-FolkPro-Medium.otf \
 	data/font/JF-Dot-MPlus12.ttf \
@@ -164,7 +165,8 @@ DISTFILES += \
 	data/music/月光（オルゴール）.mp3 \
 	data/music/月光（オルゴール）.ogg \
 	data/se/banned.wav \
-	data/se/select.wav
+	data/se/select.wav \
+	initialize.json
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libs/ -lQtAV1
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libs/ -lQtAVd1
