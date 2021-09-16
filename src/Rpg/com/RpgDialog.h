@@ -283,7 +283,7 @@ public:
 	RpgDialog(RpgDialogBase *dialogBase, QGraphicsObject *parentItem = nullptr): RpgObject(parentItem){
 		this->setTextColor(Qt::white);
 		this->messageBox->setFont(RpgFont::instance()->getFont("dialog"));
-		qDebug() << this->messageBox->font().family();
+		qDebug() << CodePath << this->messageBox->font().family();
 
 		if(dialogBase == nullptr){
 			throw RpgNullPointerException("RpgDialogBase not set");
@@ -302,30 +302,33 @@ public:
 		// 继续三角形动画
 		this->continueSymbolTimeLine->setFrameRange(0, this->skin->getContinueSymbolImageLength());
 		this->continueSymbolTimeLine->setLoopCount(Rpg::Infinity);
+
 		this->connect(this->continueSymbolTimeLine, &QTimeLine::frameChanged, [this](int frameIndex){
 			if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageLength()){
-				QPixmap framePixmap = this->skin->getContinueSymbolImage(frameIndex);
-				this->continueSymbol->setPos((this->dialogSize.width() - framePixmap.width()) / 2.0f, this->dialogSize.height() - (framePixmap.height() / 2.0f));
+				const QPixmap framePixmap = this->skin->getContinueSymbolImage(frameIndex);
+				//this->continueSymbol->setPos((this->dialogSize.width() - framePixmap.width()) / 2.0, this->dialogSize.height() - (framePixmap.height() / 2.0));
+				//this->continueSymbol->setPos((this->dialogSize.width() - framePixmap.width()) / 2.0, this->dialogSize.height() - (framePixmap.height() * 0.75f));
+				this->continueSymbol->setPos((this->dialogSize.width() - framePixmap.width()) / 2.0, this->dialogSize.height() - framePixmap.height());
 				this->continueSymbol->setPixmap(framePixmap);
 			}
 		});
 
 		// Z-Value
 		this->setZValue(Rpg::ZValueDialog);
-		this->box->setZValue(0.0f);
-		this->messageBox->setZValue(0.2f);
-		this->continueSymbol->setZValue(0.3f);
-		this->avatarBoxRight->setZValue(-0.1f); // 默认先置后
-		this->avatarBoxLeft->setZValue(-0.1f); // 默认先置后
+		this->box->setZValue(0);
+		this->messageBox->setZValue(0.2);
+		this->continueSymbol->setZValue(0.3);
+		this->avatarBoxRight->setZValue(-0.1); // 默认先置后
+		this->avatarBoxLeft->setZValue(-0.1); // 默认先置后
 
 		// 默认消息位置和大小
-		this->setMessageTextWidth(this->dialogSize.width() - (2.0f * MessageMarginH));
+		this->setMessageTextWidth(this->dialogSize.width() - (2.0 * MessageMarginH));
 		this->messageBox->setPos(MessageMarginH, MessageMarginV);
 
 		// 字符下的阴影
 		this->messageShadowEffect->setColor(QColor(Qt::black));
-		this->messageShadowEffect->setBlurRadius(5.0f);
-		this->messageShadowEffect->setOffset(2.0f, 2.0f);
+		this->messageShadowEffect->setBlurRadius(5.0);
+		this->messageShadowEffect->setOffset(2.0, 2.0);
 		this->messageBox->setGraphicsEffect(this->messageShadowEffect);
 
 		// 立绘初始位置
@@ -394,6 +397,11 @@ public:
 		this->messageBox->setFont(font);
 	}
 
+	/**
+	 * @brief getFont
+	 * @return
+	 * 获取当前字体
+	 */
 	QFont getFont() const{
 		return this->messageBox->font();
 	}
@@ -444,11 +452,11 @@ public:
 		int width = size.width();
 		int height = size.height();
 		if(width < RpgDialog::MinDialogWidth || width > RpgDialogBase::maxDialogSize().width()){
-			qDebug() << CodePath << "Given width: " << width << "is out of range: (" << RpgDialog::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ")";
+			qDebug() << CodePath << "Given width:" << width << "is out of range: (" << RpgDialog::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ")";
 			return;
 		}
 		if(height < RpgDialog::MinDialogHeight || height > RpgDialogBase::maxDialogSize().height()){
-			qDebug() << CodePath << "Given height: " << height << "is out of range: (" << RpgDialog::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ")";
+			qDebug() << CodePath << "Given height:" << height << "is out of range: (" << RpgDialog::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ")";
 			return;
 		}
 		this->dialogSize.setWidth(width);
@@ -518,36 +526,37 @@ public:
 		}
 
 		// 设置对话框背景, 支持每次对话框形状不同
-		QPointF dialogPos;
-		switch(this->dialogaAlign){
-			case Rpg::AlignTopLeft:
-				dialogPos = QPointF(RpgDialogBase::MarginH, RpgDialogBase::MarginV);
-				break;
-			case Rpg::AlignTop:
-				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, RpgDialogBase::MarginV);
-				break;
-			case Rpg::AlignTopRight:
-				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, RpgDialogBase::MarginV);
-				break;
-			case Rpg::AlignLeft:
-				dialogPos = QPointF(RpgDialogBase::MarginH, (ScreenHeight - this->dialogSize.height()) / 2.0f);
-				break;
-			case Rpg::AlignCenter:
-				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, (ScreenHeight - this->dialogSize.height()) / 2.0f);
-				break;
-			case Rpg::AlignRight:
-				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, (ScreenHeight - this->dialogSize.height()) / 2.0f);
-				break;
-			case Rpg::AlignBottomLeft:
-				dialogPos = QPointF(RpgDialogBase::MarginH, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
-				break;
-			case Rpg::AlignBottom:
-				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
-				break;
-			case Rpg::AlignBottomRight:
-				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
-				break;
-		}
+//		QPointF dialogPos;
+//		switch(this->dialogaAlign){
+//			case Rpg::AlignTopLeft:
+//				dialogPos = QPointF(RpgDialogBase::MarginH, RpgDialogBase::MarginV);
+//				break;
+//			case Rpg::AlignTop:
+//				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, RpgDialogBase::MarginV);
+//				break;
+//			case Rpg::AlignTopRight:
+//				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, RpgDialogBase::MarginV);
+//				break;
+//			case Rpg::AlignLeft:
+//				dialogPos = QPointF(RpgDialogBase::MarginH, (ScreenHeight - this->dialogSize.height()) / 2.0f);
+//				break;
+//			case Rpg::AlignCenter:
+//				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, (ScreenHeight - this->dialogSize.height()) / 2.0f);
+//				break;
+//			case Rpg::AlignRight:
+//				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, (ScreenHeight - this->dialogSize.height()) / 2.0f);
+//				break;
+//			case Rpg::AlignBottomLeft:
+//				dialogPos = QPointF(RpgDialogBase::MarginH, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
+//				break;
+//			case Rpg::AlignBottom:
+//				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
+//				break;
+//			case Rpg::AlignBottomRight:
+//				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
+//				break;
+//		}
+		QPointF dialogPos = RpgUtils::getDialogPos(this->dialogaAlign, this->dialogSize, RpgDialogBase::MarginH, RpgDialogBase::MarginV);
 
 		this->box->setPixmap(this->skin->getDialogImage(this->dialogSize));
 		this->box->setPos(dialogPos);

@@ -37,7 +37,7 @@ class RpgMusic : public QObject
 	static RpgMusic *_instance;
 
 	QtAV::AVPlayer *music = new QtAV::AVPlayer(this);
-	int volume = 1.0f;
+	qreal volume = 1.0f;
 
 	QPropertyAnimation *volumeAnimation = new QPropertyAnimation(this->music->audio(), "volume", this);
 

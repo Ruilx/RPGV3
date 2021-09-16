@@ -20,6 +20,12 @@
 
 #include <Rpg/core/RpgAutoTileBase.h>
 
+/**
+ * @brief The RpgWidget class
+ * RpgWidget组件
+ * 是RpgScene展示和输入输出的一个窗口, 用来解决映画展示和交互的组件
+ */
+
 class RpgWidget : public QWidget
 {
 	Q_OBJECT
@@ -93,8 +99,8 @@ private slots:
 		RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, "blackSkin", "data/images/skin/blackAlpha.png");
 		RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, "blueSkin", "data/images/skin/blueAlpha.png");
 		RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, "whiteSkin", "data/images/skin/whiteAlpha.png");
-		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "fallback", "data/font/msyhl.ttc");
-		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "dialog", "data/font/TsangerYunHei-W05.ttf");
+//		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "fallback", "data/font/msyhl.ttc");
+//		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "dialog", "data/font/JF-Dot-MPlus12.ttf");
 		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "lyric", "data/font/TsangerYunHei-W05.ttf");
 		RpgFileManager::instance()->addFile(RpgFileManager::AvatarFile, "002", "data/images/avatar/002.png");
 		RpgFileManager::instance()->addFile(RpgFileManager::AvatarFile, "002_head", "data/images/avatar/002_head.png");
@@ -105,8 +111,11 @@ private slots:
 
 		RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, "autoTile", "data/images/autotiles/test.png");
 
-		RpgAutoTileBase autoTile("name", "autoTile");
-		autoTile._dumpImage();
+		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "fallback", "data/font/msyhl.ttc");
+		RpgFileManager::instance()->addFile(RpgFileManager::FontFile, "dialog", "data/font/HarmonyOS_Sans_SC_Medium.ttf");
+
+//		RpgAutoTileBase autoTile("name", "autoTile");
+//		autoTile._dumpImage();
 
 		RpgFont::setFallbackFont("dialog", "fallback");
 
@@ -116,7 +125,7 @@ private slots:
 
 		scene->addRect(0, 0, ScreenWidth, ScreenHeight, QPen(Qt::white));
 
-		for(int i = -1000; i <= 1000; i += 50){
+		for(int i = -1024; i <= 1023; i += 32){
 			scene->addEllipse(QRectF(i-2, -2, 4, 4), QPen(Qt::white));
 			QGraphicsTextItem *label = new QGraphicsTextItem(QString::number(i));
 			label->setFont(QFont("RuilxFixedSys2", 6));
@@ -136,8 +145,8 @@ private slots:
 		RpgSpecLocationChopingDialog *base = new RpgSpecLocationChopingDialog("blueSkin");
 
 		RpgDialog *rpgDialog = new RpgDialog(base);
-		rpgDialog->setDialogAlign(Rpg::AlignLeft);
-		rpgDialog->setDialogSize(QSize(500, rpgDialog->getDialogSize().height()));
+		rpgDialog->setDialogAlign(Rpg::AlignBottom);
+		//rpgDialog->setDialogSize(QSize(500, rpgDialog->getDialogSize().height()));
 		rpgDialog->appendMessage(RpgDialogMessage("普通文字 <x>黑色文字</x> <r>红色文字</r> <g>绿色文字</g> <b>蓝色文字</b> <y>黄色文字</y> <m>品红文字</m> <c>青色文字</c> <w>白色文字</w> <xl>亮黑色文字</xl> <rl>亮红色文字</rl> <gl>亮绿色文字</gl> <bl>亮蓝色文字</bl> <yl>亮黄色文字</yl> <ml>亮品红色文字</ml> <cl>亮青色文字</cl> <wl>亮白色文字</wl>"));
 		rpgDialog->appendMessage(RpgDialogMessage("<big>测试Big文本</big>"));
 		rpgDialog->appendMessage(RpgDialogMessage("测试一段没有立绘的文字"));
@@ -192,12 +201,15 @@ private slots:
 		rpgDialog->run();
 		rpgDialog->waitForComplete();
 
-//		RpgLyric *lrc = new RpgLyric();
-//		lrc->loadLyric("TOKYO BON");
+		RpgLyric *lrc = new RpgLyric();
+		lrc->loadLyric("TOKYO BON");
+		lrc->setFont(RpgFont::instance()->getFont("dialog"));
 
-//		RpgMusic::instance()->setLoop(1);
-//		RpgMusic::instance()->playMusic("TOKYO BON");
-//		lrc->run();
+		RpgMusic::instance()->setLoop(1);
+		RpgMusic::instance()->playMusic("TOKYO BON");
+		lrc->run();
+
+
 
 
 

@@ -71,7 +71,7 @@ private:
 		this->lyricOpacityAnimation->setDirection(QPropertyAnimation::Backward);
 		this->lyricOpacityAnimation->setCurrentTime(this->lyricOpacityAnimation->totalDuration());
 		this->lyricOpacityAnimation->start();
-		RpgUtils::msleep(150);
+		RpgUtils::msleep(100);
 	}
 
 public:
@@ -92,7 +92,7 @@ public:
 		this->lyricOpacityAnimation->setEasingCurve(QEasingCurve::OutCubic);
 		this->lyricOpacityAnimation->setStartValue(0.0);
 		this->lyricOpacityAnimation->setEndValue(1.0);
-		this->lyricOpacityAnimation->setDuration(300);
+		this->lyricOpacityAnimation->setDuration(200);
 		this->lyricOpacityAnimation->setLoopCount(1);
 
 		this->lyric->setOpacity(0);
@@ -284,7 +284,7 @@ protected:
 			while(this->lyricI != this->lyricMap.constEnd() && int(this->lyricI.key()) < ms){
 				this->lyricI++;
 			}
-			if(int(this->lyricI.key()) <= ms + 300){
+			if(int(this->lyricI.key()) <= ms + 200){
 //				QtConcurrent::run([this, ms](){
 				// bug: 这里如果执行等待的话, 有多个lyric的时候, 会按照顺序执行导致后面lyric执行延迟
 				// 但加上Concurrent之后, setHtml会发出信号, 但这不是Qt信号线程传递的方式, 报错

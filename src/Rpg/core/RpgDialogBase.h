@@ -84,6 +84,9 @@ protected:
 		return QPair<int, int>(size.width(), size.height());
 	}
 
+private:
+	QPixmap invalidPixmap;
+
 public:
 
 	/**
@@ -120,10 +123,10 @@ public:
 	 * @return
 	 * 获得继续图标
 	 */
-	QPixmap getContinueSymbolImage(int index){
+	const QPixmap &getContinueSymbolImage(int index){
 		if(index < 0 || index >= this->continueSymbolList.length()){
 			qDebug() << CodePath << "Index out of range:" << index;
-			return QPixmap();
+			return this->invalidPixmap;
 		}
 		return this->continueSymbolList.at(index);
 	}

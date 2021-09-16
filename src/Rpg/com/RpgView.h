@@ -27,9 +27,16 @@ class RpgView : public QGraphicsView
 			return;
 		}
 		if(event->buttons() & Qt::LeftButton){
-			QPointF pos = event->pos() - this->lastPos;
+			QPointF pos = (event->pos() - this->lastPos) * this->currentScale;
 			this->lastPos = event->pos();
-			this->setSceneRect((this->sceneRect().x() - pos.x()), (this->sceneRect().y() - pos.y()), this->sceneRect().width(), this->sceneRect().height());
+//			qDebug() << CodePath << QString("ScreenRect(%1, %2, %3, %4)")
+//						.arg(this->sceneRect().x() - pos.x())
+//						.arg(this->sceneRect().y() - pos.y())
+//						.arg(this->sceneRect().width())
+//						.arg(this->sceneRect().height());
+//			this->setSceneRect((this->sceneRect().x() - pos.x()), (this->sceneRect().y() - pos.y()), this->sceneRect().width(), this->sceneRect().height());
+//			qDebug() << CodePath << "NOW ScreneRect" << this->sceneRect();
+			this->centerOn(this->sceneRect().x() - pos.x() + (this->sceneRect().width() / 2), this->sceneRect().y() - pos.y() + (this->sceneRect().height() / 2));
 		}
 	}
 

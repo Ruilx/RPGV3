@@ -1,9 +1,6 @@
 #ifndef RPGDIALOGMESSAGE_H
 #define RPGDIALOGMESSAGE_H
 
-#include <QtCore>
-
-#include <Rpg/Global.h>
 #include <Rpg/Rpg.h>
 
 class RpgDialogMessage

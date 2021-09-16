@@ -37,6 +37,7 @@ unix{
 }
 
 SOURCES += \
+    src/Rpg/core/RpgVar.cpp \
     src/main.cpp \
     src/MainWindow.cpp \
     src/Rpg/exception/RpgException.cpp \
@@ -73,11 +74,15 @@ SOURCES += \
     src/Rpg/core/RpgDialogAnimation.cpp \
     src/Rpg/core/RpgItemProperties.cpp \
     src/Rpg/core/RpgAutoTileBase.cpp \
-    src/Rpg/core/RpgAutoTileBlock.cpp
+    src/Rpg/core/RpgAutoTileBlock.cpp \
+    src/Rpg/com/RpgChoice.cpp \
+    src/Rpg/core/RpgChoiceMessage.cpp \
+    src/Rpg/core/RpgChoiceAnimation.cpp
 
 
 HEADERS += \
     src/MainWindow.h \
+    src/Rpg/core/RpgVar.h \
     src/Rpg/exception/RpgException.h \
     src/Rpg/exception/RpgFileCannotOpenException.h \
     src/Rpg/exception/RpgResourceNotFoundException.h \
@@ -113,10 +118,53 @@ HEADERS += \
     src/Rpg/core/RpgDialogAnimation.h \
     src/Rpg/core/RpgItemProperties.h \
     src/Rpg/core/RpgAutoTileBase.h \
-    src/Rpg/core/RpgAutoTileBlock.h
+    src/Rpg/core/RpgAutoTileBlock.h \
+    src/Rpg/com/RpgChoice.h \
+    src/Rpg/core/RpgChoiceMessage.h \
+    src/Rpg/core/RpgChoiceAnimation.h
 
 
 DISTFILES += \
+	data/font/A-OTF-FolkPro-Bold.otf \
+	data/font/A-OTF-FolkPro-Medium.otf \
+	data/font/JF-Dot-MPlus12.ttf \
+	data/font/TsangerYunHei-W05.ttf \
+	data/font/cinecaption227.ttf \
+	data/font/msyh.ttc \
+	data/font/msyhbd.ttc \
+	data/font/msyhl.ttc \
+	data/font/simsun.ttc \
+	data/font/unifont-12.1.03.ttf \
+	data/font/unifont_jp-12.1.03.ttf \
+	data/font/wuxin.ttf \
+	data/git/rpgv3_logo.png \
+	data/git/rpgv3_logo_x1.png \
+	data/images/autotiles/autotileDemo.png \
+	data/images/autotiles/test.png \
+	data/images/avatar/002.png \
+	data/images/avatar/002_head.png \
+	data/images/skin/blackAlpha.png \
+	data/images/skin/blue.png \
+	data/images/skin/blueAlpha.png \
+	data/images/skin/redAlpha.png \
+	data/images/skin/whiteAlpha.png \
+	data/lyrics/TOKYO BON.lrc \
+	data/lyrics/TOKYO BON.lrc.bak \
+	data/lyrics/Turnin.lrc \
+	data/lyrics/Turnin.lrc.bak \
+	data/lyrics/p1.lrc \
+	data/lyrics/p2.lrc \
+	data/lyrics/カンタレラ~grace edition~.lrc \
+	data/lyrics/カンタレラ~grace edition~.lrc.bak \
+	data/music/TOKYO BON.mp3 \
+	data/music/Turnin.mp3 \
+	data/music/title.mp3 \
+	data/music/title.ogg \
+	data/music/ネコ登場.ogg \
+	data/music/月光（オルゴール）.mp3 \
+	data/music/月光（オルゴール）.ogg \
+	data/se/banned.wav \
+	data/se/select.wav
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libs/ -lQtAV1
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libs/ -lQtAVd1

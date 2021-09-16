@@ -1,10 +1,10 @@
 #ifndef RPGDIALOGANIMATION_H
 #define RPGDIALOGANIMATION_H
 
-#include <QtCore>
+#include <Rpg/Rpg.h>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
-#include <Rpg/Rpg.h>
+
 #include <Rpg/core/RpgItemProperties.h>
 
 #include <QPropertyAnimation>
@@ -266,6 +266,16 @@ public:
 //		});
 	}
 
+	RpgDialogAnimation(QGraphicsItem *dialog, int duration, QEasingCurve::Type easingCurveType, QObject *parent): group(new QParallelAnimationGroup(parent)){
+		this->dialog = dialog;
+		this->avatarItemLeft = nullptr;
+		this->avatarItemRight = nullptr;
+		this->duration = duration;
+		this->easingCurveType = easingCurveType;
+
+		this->dialogProperties = new RpgItemProperties(this->dialog);
+	}
+
 	~RpgDialogAnimation(){
 		if(this->dialogProperties != nullptr){
 			delete this->dialogProperties;
@@ -366,6 +376,12 @@ public:
 //		}
 //		this->start();
 //	}
+
+	void runDialogAnimations(Animations animations){
+		if(this->dialog == nullptr){
+
+		}
+	}
 
 	void runDialogAvatarAnimations(Rpg::AvatarMode mode, Rpg::AvatarMode lastMode, Animations animations){
 		if(this->dialog == nullptr){

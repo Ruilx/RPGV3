@@ -3,6 +3,8 @@
 
 #include <QtCore>
 
+#include <Rpg/Rpg.h>
+
 #define EnumKeyToString(key) #key
 
 class RpgUtils
@@ -15,6 +17,8 @@ public:
 	static const QString keyModifierToString(Qt::KeyboardModifiers mod);
 	static const QString keyToString(Qt::Key key);
 	static const QString keysToString(Qt::Key key, Qt::KeyboardModifiers mod);
+
+	static QPointF getDialogPos(Rpg::DialogAlign align, const QSize &dialogSize, int marginW, int marginH);
 };
 
 #endif // RPGUTILS_H
