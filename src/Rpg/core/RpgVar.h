@@ -6,9 +6,24 @@
 
 typedef QHash<QString, QVariant> RpgVarHash;
 
+// TODO: 可能需要将文件位置托管至RpgFileManager
+
 /**
  * @brief The RpgVar class
  * RpgVar类, 存储游戏中产生的的变量, 或者读取某个变量
+ *
+ * Var读取结构: RpgVar = {"Group/Profile1": {...}, "Group/Profile2": {...}}
+ * Var存储结构: INI文件:
+ * [Group/Profile1]
+ * key1 = value1
+ * key2 = value2
+ * [Group/Profile2]
+ * key1 = value1
+ * key2 = value2
+ *
+ * 当group/profile名为空字符串时, 对应的INI文件不属于任何一个[Group/Profile]
+ * Group/Profile的作用是分隔如每个进度的存储栏目, Group/Profile是空的位置可存储游戏系统跨进度的一些信息.
+ * 存储信息暂未加密保存
  *
  * 20210916 RpgVar从com目录迁移到core目录, 去掉QObject继承
  * 20210917 RpgVar增加group功能, 可以选择var的profile, 比如Rpg的20个存储框
@@ -123,7 +138,7 @@ public:
 		for(const QString &key: keys){
 			this->setValue("", key, slot.value(key));
 		}
-		qDebug() << CodePath << "Load RpgVar successful. Loaded" << count << "keys.";
+		qDebug() << CodePath << "Loading RpgVar successful. Loaded" << count << "keys.";
 		return true;
 	}
 
@@ -142,6 +157,32 @@ public:
 //		qDebug() << CodePath << "Load var values successful. Loaded:" << keys.length() << "items.";
 //		return true;
 //	}
+
+	bool saveData(const QString &file){
+		if(QFile::exists(file)){
+			qDebug() << CodePath << "Specific saving file:" << file << "not exists.";
+			return false;
+		}
+		QSettings slot(file, QSettings::IniFormat);
+		QStringList groups = this->vars.keys();
+		int count = 0;
+		for(const QString &group: groups){
+			if(group != ""){
+				slot.beginGroup(group);
+			}
+			RpgVarHash *var = this->vars.value(group);
+			QStringList keys = var->keys();
+			count += keys.length();
+			for(const QString &key: keys){
+				slot.setValue(key, var->value(key));
+			}
+			if(group != ""){
+				slot.endGroup();
+			}
+		}
+		qDebug() << CodePath << "Saving RpgVar successful. Saved" << count << "keys.";
+		return true;
+	}
 
 	bool saveData(const QString &file){
 		if(QFile::exists(file)){

@@ -6,6 +6,11 @@
 #include <QPixmap>
 #include <QDebug>
 
+/**
+ * @brief The RpgAutoTileBlock class
+ * RpgAutoTileBlock存储着切割后的每组自动平铺图片的结果, 存储47种平铺可能需要的图片
+ * 可以按照摆放的location选择合适的平铺边框图像
+ */
 class RpgAutoTileBlock{
 	/**
 	 * @brief imageMap
@@ -85,6 +90,8 @@ public:
 	};
 
 	enum BlockLocation{
+		Block_None        = 0b00000000,
+		Block_Center      = Block_None,
 		Block_LeftTop     = 0b10000000,
 		Block_RightTop    = 0b00100000,
 		Block_RightBottom = 0b00001000,

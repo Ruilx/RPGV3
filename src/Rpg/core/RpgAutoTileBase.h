@@ -9,6 +9,12 @@
 #define AutoTileImageBlockWidth 96
 #define AutoTileImageBlockHeight 128
 
+/**
+ * @brief The RpgAutoTileBase class
+ *
+ * RpgAutoTileBase记录着自动边框平铺的图片切割的算法以及提供切割后拼接的各个位置的图片
+ *
+ */
 class RpgAutoTileBase{
 
 	QString name;
@@ -83,6 +89,7 @@ public:
 	RpgAutoTileBase(const QString &name, const QString &autoTileName = QString()){
 		if(name.isEmpty()){
 			// Todo: 名称不能传空, 如果传空可能需要抛出异常ValueError
+			return;
 		}
 		this->name = name;
 		if(!autoTileName.isEmpty()){
@@ -103,6 +110,8 @@ public:
 		this->blockImageList.clear();
 		this->renderBlock(filename);
 	}
+
+
 
 	void _dumpImage(int index = 0){
 		if((this->blockImageList.length() > index)){
