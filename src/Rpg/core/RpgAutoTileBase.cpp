@@ -1,54 +1,47 @@
 #include "RpgAutoTileBase.h"
 
 #include <QPainter>
+#include <Rpg/Rpg.h>
 #include <Rpg/core/RpgFileManager.h>
 
-void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
+void RpgAutoTileBase::renderBlock(const QPixmap &autoTilePixmap)
 {
-	QPixmap blockImageOrigin;
-	QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::ImageFile, autoTileFileName);
-	if(filename.isEmpty()){
-		qDebug() << CodePath << "Name" << autoTileFileName << "File not found.";
-		return;
-	}
-
-	blockImageOrigin.load(filename);
-	if(blockImageOrigin.isNull()){
+	if(autoTilePixmap.isNull()){
 		qDebug() << CodePath << "load block texture failed.";
 		return;
 	}
-	if(blockImageOrigin.height() < AutoTileImageBlockHeight || blockImageOrigin.width() < AutoTileImageBlockWidth){
+	if(autoTilePixmap.height() < AutoTileImageBlockHeight || autoTilePixmap.width() < RpgAutoTileBase::AutoTileImageBlockWidth){
 		qDebug() << CodePath << "load block texture is not fit.";
 		return;
 	}
-	int count = blockImageOrigin.width() / AutoTileImageBlockWidth;
+	int count = autoTilePixmap.width() / RpgAutoTileBase::AutoTileImageBlockWidth;
 	for(int i = 0; i < count; i++){
-		RpgAutoTileBlock block;
+		Rpg::AutoTileBlockType block;
 
-		QPixmap blockImage = blockImageOrigin.copy(adjustRect(QRect(0, 0, AutoTileImageBlockWidth, AutoTileImageBlockHeight), count));
+		QPixmap blockImage = autoTilePixmap.copy(adjustRect(QRect(0, 0, RpgAutoTileBase::AutoTileImageBlockWidth, RpgAutoTileBase::AutoTileImageBlockHeight), count));
 
 		// 背景草地
 		QPixmap backgroundBase = blockImage.copy(this->centerRect); // 32x32
-		block.insertImage(RpgAutoTileBlock::None, backgroundBase);		// 保存背景块
+		block.insertImage(Rpg::AutoTileBlockType::None, backgroundBase);		// 保存背景块
 
 		// 1x1单独的块
-		block.insertImage(RpgAutoTileBlock::ClosedFrame, blockImage.copy(this->adjustRect(this->singleBlockRect, i)));	// 保存封闭块
+		block.insertImage(Rpg::AutoTileBlockType::ClosedFrame, blockImage.copy(this->adjustRect(this->singleBlockRect, i)));	// 保存封闭块
 		QPixmap leftTopBase = blockImage.copy(this->leftTopRect);	// 32x32
-		block.insertImage(RpgAutoTileBlock::LeftTopMultiCorner, leftTopBase);		// 保存左上角内拐块E3(checked)
+		block.insertImage(Rpg::AutoTileBlockType::LeftTopMultiCorner, leftTopBase);		// 保存左上角内拐块E3(checked)
 		QPixmap rightTopBase = blockImage.copy(this->rightTopRect);	// 32x32
-		block.insertImage(RpgAutoTileBlock::RightTopMultiCorner, rightTopBase);	// 保存右上角内拐块F8(checked)
+		block.insertImage(Rpg::AutoTileBlockType::RightTopMultiCorner, rightTopBase);	// 保存右上角内拐块F8(checked)
 		QPixmap leftBottomBase = blockImage.copy(this->leftBottomRect);	// 32x32
-		block.insertImage(RpgAutoTileBlock::LeftBottomMultiCorner, leftBottomBase); // 保存左下角内拐块8F(checked)
+		block.insertImage(Rpg::AutoTileBlockType::LeftBottomMultiCorner, leftBottomBase); // 保存左下角内拐块8F(checked)
 		QPixmap rightBottomBase = blockImage.copy(this->rightBottomRect);	// 32x32
-		block.insertImage(RpgAutoTileBlock::RightBottomMultiCorner, rightBottomBase);	// 保存右下角内拐块3E(checked)
+		block.insertImage(Rpg::AutoTileBlockType::RightBottomMultiCorner, rightBottomBase);	// 保存右下角内拐块3E(checked)
 		QPixmap singleHub = blockImage.copy(this->singleHubRect);	// 32x32
-		block.insertImage(RpgAutoTileBlock::SingleHub, singleHub);						// 保存四角外拐块AA(checked)
+		block.insertImage(Rpg::AutoTileBlockType::SingleHub, singleHub);						// 保存四角外拐块AA(checked)
 		{
 			QPixmap leftTopBaseLoad = leftTopBase;
 			QPainter p(&leftTopBaseLoad); // 左上角内拐块
 			p.setCompositionMode(QPainter::CompositionMode_Source);
 			p.drawPixmap(leftBottomPos, leftBottomBase, QRect(leftBottomPos, QSize(32, 16)));
-			block.insertImage(RpgAutoTileBlock::RightPassedSingleLine, leftTopBaseLoad);	// 保存右缺口块EF(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightPassedSingleLine, leftTopBaseLoad);	// 保存右缺口块EF(checked)
 			p.end();
 		}
 		{
@@ -56,7 +49,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&leftTopBaseLoad); // 左上角内拐块
 			p.setCompositionMode(QPainter::CompositionMode_Source);
 			p.drawPixmap(rightTopPos, rightTopBase, QRect(rightTopPos, QSize(16, 32)));
-			block.insertImage(RpgAutoTileBlock::BottomPassedSingleLine, leftTopBaseLoad);	// 保存下缺口块FB(checked)
+			block.insertImage(Rpg::AutoTileBlockType::BottomPassedSingleLine, leftTopBaseLoad);	// 保存下缺口块FB(checked)
 			p.end();
 		}
 		{
@@ -64,7 +57,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&rightTopBaseLoad);
 			p.setCompositionMode(QPainter::CompositionMode_Source);
 			p.drawPixmap(leftBottomPos, rightBottomBase, QRect(leftBottomPos, QSize(32, 16)));
-			block.insertImage(RpgAutoTileBlock::LeftPassedSingleLine, rightTopBaseLoad);	// 保存左缺口块FE(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftPassedSingleLine, rightTopBaseLoad);	// 保存左缺口块FE(checked)
 			p.end();
 		}
 		{
@@ -72,7 +65,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&rightBottomBaseLoad);
 			p.setCompositionMode(QPainter::CompositionMode_Source);
 			p.drawPixmap(leftTopPos, leftBottomBase, QRect(leftTopPos, QSize(16, 32)));
-			block.insertImage(RpgAutoTileBlock::TopPassedSingleLine, rightBottomBaseLoad);	// 保存上缺口块BF(checked)
+			block.insertImage(Rpg::AutoTileBlockType::TopPassedSingleLine, rightBottomBaseLoad);	// 保存上缺口块BF(checked)
 			p.end();
 		}
 
@@ -87,28 +80,28 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&leftTopBase);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightBottomPos, leftTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::LeftTopSingleCorner, leftTopBase);	// 保存左上角单行块EB(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftTopSingleCorner, leftTopBase);	// 保存左上角单行块EB(checked)
 			p.end();
 		}
 		{
 			QPainter p(&rightTopBase);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::RightTopSingleCorner, rightTopBase);	// 保存右上角单行块FA(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightTopSingleCorner, rightTopBase);	// 保存右上角单行块FA(checked)
 			p.end();
 		}
 		{
 			QPainter p(&leftBottomBase);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightTopPos, leftBottomInnerBase);
-			block.insertImage(RpgAutoTileBlock::LeftBottomSingleCorner, leftBottomBase);	// 保存左下角单行块AF(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftBottomSingleCorner, leftBottomBase);	// 保存左下角单行块AF(checked)
 			p.end();
 		}
 		{
 			QPainter p(&rightBottomBase);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, rightBottomInnerBase);
-			block.insertImage(RpgAutoTileBlock::RightBottomSingleCorner, rightBottomBase);	// 保存右下角单行块BE(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightBottomSingleCorner, rightBottomBase);	// 保存右下角单行块BE(checked)
 			p.end();
 		}
 
@@ -127,13 +120,13 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, rightBottomInnerBase); // 左上角外拐块样式是右下样式
-			block.insertImage(RpgAutoTileBlock::LeftTopMultiInnerCorner, backgroundLoad);	// 保存左上角外拐块80(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftTopMultiInnerCorner, backgroundLoad);	// 保存左上角外拐块80(checked)
 			leftTopInnerBg = backgroundLoad;
 			p.drawPixmap(rightTopPos, leftBottomInnerBase); // 右上角外拐块的样式是左下样式
-			block.insertImage(RpgAutoTileBlock::MultiAreaTop, backgroundLoad);				// 保存左上角和右上角的外拐块A0(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiAreaTop, backgroundLoad);				// 保存左上角和右上角的外拐块A0(checked)
 			multiAreaTopBg = backgroundLoad;
 			p.drawPixmap(rightBottomPos, leftTopInnerBase); // 右下角外拐块的样式是左上样式
-			block.insertImage(RpgAutoTileBlock::MultiHubRightTop, backgroundLoad);			// 保存左上角和右上角和右下角的外拐块A8(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiHubRightTop, backgroundLoad);			// 保存左上角和右上角和右下角的外拐块A8(checked)
 			p.end();
 		}
 		{
@@ -141,9 +134,9 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightBottomPos, leftTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiAreaBackSlash, backgroundLoad);		// 保存左上角和右下角外拐块88(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiAreaBackSlash, backgroundLoad);		// 保存左上角和右下角外拐块88(checked)
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiHubLeftBottom, backgroundLoad);		// 保存左上角,左下角和右下角的外拐块8A(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiHubLeftBottom, backgroundLoad);		// 保存左上角,左下角和右下角的外拐块8A(checked)
 			p.end();
 		}
 		{
@@ -151,7 +144,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiAreaLeft, backgroundLoad);			// 保存左上角和左下角的外拐块82(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiAreaLeft, backgroundLoad);			// 保存左上角和左下角的外拐块82(checked)
 			multiAreaLeftBg = backgroundLoad;
 			p.end();
 		}
@@ -160,7 +153,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiHubLeftTop, backgroundLoad);			// 保存左上角, 右上角和左下角的外拐块A2(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiHubLeftTop, backgroundLoad);			// 保存左上角, 右上角和左下角的外拐块A2(checked)
 			p.end();
 		}
 		{
@@ -168,13 +161,13 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightTopPos, leftBottomInnerBase);
-			block.insertImage(RpgAutoTileBlock::RightTopMultiInnerCorner, backgroundLoad); // 保存右上角外拐块20(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightTopMultiInnerCorner, backgroundLoad); // 保存右上角外拐块20(checked)
 			rightTopInnerBg = backgroundLoad;
 			p.drawPixmap(rightBottomPos, leftTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiAreaRight, backgroundLoad);			// 保存右上角和右下角外拐块28(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiAreaRight, backgroundLoad);			// 保存右上角和右下角外拐块28(checked)
 			multiAreaRightBg = backgroundLoad;
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiHubRightBottom, backgroundLoad);		// 保存右上角, 右下角和左下角的外拐块2A(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiHubRightBottom, backgroundLoad);		// 保存右上角, 右下角和左下角的外拐块2A(checked)
 			p.end();
 		}
 		{
@@ -182,7 +175,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiAreaSlash, backgroundLoad);			// 保存右上角和左下角的外拐块22(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiAreaSlash, backgroundLoad);			// 保存右上角和左下角的外拐块22(checked)
 			p.end();
 		}
 		{
@@ -190,10 +183,10 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightBottomPos, leftTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::RightBottomMultiInnerCorner, backgroundLoad);	// 保存右下角外拐块08(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightBottomMultiInnerCorner, backgroundLoad);	// 保存右下角外拐块08(checked)
 			rightBottomInnerBg = backgroundLoad;
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::MultiAreaBottom, backgroundLoad);				// 保存左下角和右下角外拐块0A(checked)
+			block.insertImage(Rpg::AutoTileBlockType::MultiAreaBottom, backgroundLoad);				// 保存左下角和右下角外拐块0A(checked)
 			multiAreaBottomBg = backgroundLoad;
 			p.end();
 		}
@@ -202,7 +195,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, rightTopInnerBase);
-			block.insertImage(RpgAutoTileBlock::LeftBottomMultiInnerCorner, backgroundLoad);	// 保存左下角外拐块02(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftBottomMultiInnerCorner, backgroundLoad);	// 保存左下角外拐块02(checked)
 			leftBottomInnerBg = backgroundLoad;
 			p.end();
 		}
@@ -219,7 +212,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightTopPos, rightBase);
-			block.insertImage(RpgAutoTileBlock::RightSingleTee, backgroundLoad);				// 保存左上, 左下外拐块和右边BA(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightSingleTee, backgroundLoad);				// 保存左上, 左下外拐块和右边BA(checked)
 			p.end();
 		}
 		{
@@ -227,7 +220,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, leftBase);
-			block.insertImage(RpgAutoTileBlock::LeftSingleTee, backgroundLoad);				// 保存右上, 右下外拐块和左边AB(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftSingleTee, backgroundLoad);				// 保存右上, 右下外拐块和左边AB(checked)
 			p.end();
 		}
 		{
@@ -235,7 +228,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, topBase);
-			block.insertImage(RpgAutoTileBlock::TopSingleTee, backgroundLoad);					// 保存左下, 右下外拐块和上边EA(checked)
+			block.insertImage(Rpg::AutoTileBlockType::TopSingleTee, backgroundLoad);					// 保存左下, 右下外拐块和上边EA(checked)
 			p.end();
 		}
 		{
@@ -243,7 +236,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, bottomBase);
-			block.insertImage(RpgAutoTileBlock::BottomSingleTee, backgroundLoad);				// 保存左上, 右上外拐块和下边AE(checked)
+			block.insertImage(Rpg::AutoTileBlockType::BottomSingleTee, backgroundLoad);				// 保存左上, 右上外拐块和下边AE(checked)
 			p.end();
 		}
 
@@ -253,9 +246,9 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightTopPos, rightBase);
-			block.insertImage(RpgAutoTileBlock::RightMultiTeeTop, backgroundLoad);				// 保存左上外拐块和右边B8(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightMultiTeeTop, backgroundLoad);				// 保存左上外拐块和右边B8(checked)
 			p.drawPixmap(leftTopPos, leftBase);
-			block.insertImage(RpgAutoTileBlock::VerticalPassedSingleLine, backgroundLoad);		// 保存左边和右边BB(checked)
+			block.insertImage(Rpg::AutoTileBlockType::VerticalPassedSingleLine, backgroundLoad);		// 保存左边和右边BB(checked)
 			p.end();
 		}
 		{
@@ -263,9 +256,9 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, bottomBase);
-			block.insertImage(RpgAutoTileBlock::BottomMultiTeeLeft, backgroundLoad);			// 保存左上外拐块和下边8E(checked)
+			block.insertImage(Rpg::AutoTileBlockType::BottomMultiTeeLeft, backgroundLoad);			// 保存左上外拐块和下边8E(checked)
 			p.drawPixmap(leftTopPos, topBase);
-			block.insertImage(RpgAutoTileBlock::HorizonalPassedSingleLine, backgroundLoad);	// 保存上边和下边EE(checked)
+			block.insertImage(Rpg::AutoTileBlockType::HorizonalPassedSingleLine, backgroundLoad);	// 保存上边和下边EE(checked)
 			p.end();
 		}
 		{
@@ -273,7 +266,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, leftBase);
-			block.insertImage(RpgAutoTileBlock::LeftMultiTeeTop, backgroundLoad);				// 保存左边和右上外拐块A3(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftMultiTeeTop, backgroundLoad);				// 保存左边和右上外拐块A3(checked)
 			p.end();
 		}
 		{
@@ -281,7 +274,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, bottomBase);
-			block.insertImage(RpgAutoTileBlock::BottomMultiTeeRight, backgroundLoad);			// 保存下边和右上角外拐块2E(checked)
+			block.insertImage(Rpg::AutoTileBlockType::BottomMultiTeeRight, backgroundLoad);			// 保存下边和右上角外拐块2E(checked)
 			p.end();
 		}
 		{
@@ -289,7 +282,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, topBase);
-			block.insertImage(RpgAutoTileBlock::TopMultiTeeLeft, backgroundLoad);				// 保存上边和左下角外拐块E2(checked)
+			block.insertImage(Rpg::AutoTileBlockType::TopMultiTeeLeft, backgroundLoad);				// 保存上边和左下角外拐块E2(checked)
 			p.end();
 		}
 		{
@@ -297,7 +290,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightTopPos, rightBase);
-			block.insertImage(RpgAutoTileBlock::RightMultiTeeBottom, backgroundLoad);			// 保存左下角外拐块和右边3A(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightMultiTeeBottom, backgroundLoad);			// 保存左下角外拐块和右边3A(checked)
 			p.end();
 		}
 		{
@@ -305,7 +298,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, leftBase);
-			block.insertImage(RpgAutoTileBlock::LeftMultiTeeBottom, backgroundLoad);			// 保存左边和右下角外拐块8B(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftMultiTeeBottom, backgroundLoad);			// 保存左边和右下角外拐块8B(checked)
 			p.end();
 		}
 		{
@@ -313,7 +306,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, topBase);
-			block.insertImage(RpgAutoTileBlock::TopMultiTeeRight, backgroundLoad);				// 保存上边和右下角外拐块E8(checked)
+			block.insertImage(Rpg::AutoTileBlockType::TopMultiTeeRight, backgroundLoad);				// 保存上边和右下角外拐块E8(checked)
 			p.end();
 		}
 
@@ -323,7 +316,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, leftBase);
-			block.insertImage(RpgAutoTileBlock::LeftMulti, backgroundLoad);					// 保存左边的边83(checked)
+			block.insertImage(Rpg::AutoTileBlockType::LeftMulti, backgroundLoad);					// 保存左边的边83(checked)
 			p.end();
 		}
 		{
@@ -331,7 +324,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftTopPos, topBase);
-			block.insertImage(RpgAutoTileBlock::TopMulti, backgroundLoad);						// 保存上边的边E0(checked)
+			block.insertImage(Rpg::AutoTileBlockType::TopMulti, backgroundLoad);						// 保存上边的边E0(checked)
 			p.end();
 		}
 		{
@@ -339,7 +332,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(rightTopPos, rightBase);
-			block.insertImage(RpgAutoTileBlock::RightMulti, backgroundLoad);					// 保存右边的边38(checked)
+			block.insertImage(Rpg::AutoTileBlockType::RightMulti, backgroundLoad);					// 保存右边的边38(checked)
 			p.end();
 		}
 		{
@@ -347,7 +340,7 @@ void RpgAutoTileBase::renderBlock(const QString &autoTileFileName)
 			QPainter p(&backgroundLoad);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			p.drawPixmap(leftBottomPos, bottomBase);
-			block.insertImage(RpgAutoTileBlock::BottomMulti, backgroundLoad);					// 保存下边的边0E(checked)
+			block.insertImage(Rpg::AutoTileBlockType::BottomMulti, backgroundLoad);					// 保存下边的边0E(checked)
 			p.end();
 		}
 		this->blockImageList.append(block);

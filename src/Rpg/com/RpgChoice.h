@@ -60,7 +60,7 @@ class RpgChoice : public RpgObject
 	QSize dialogSize = RpgDialogBase::dialogSize();
 
 	// 对话框位置
-	Rpg::DialogAlign dialogAlign = Rpg::AlignBottom;
+	Rpg::BlockAlign dialogAlign = Rpg::AlignBottom;
 public:
 	const int MessageMarginH = 10;
 	const int MessageMarginV = 5;
@@ -294,7 +294,7 @@ public:
 	 * @param align
 	 * 设置对话框位置
 	 */
-	inline void setDialogAlign(Rpg::DialogAlign align){
+	inline void setDialogAlign(Rpg::BlockAlign align){
 		this->dialogAlign = align;
 	}
 
@@ -303,7 +303,7 @@ public:
 	 * @return
 	 * 获得对话框位置
 	 */
-	inline Rpg::DialogAlign getDialogAlign() const{
+	inline Rpg::BlockAlign getDialogAlign() const{
 		return this->dialogAlign;
 	}
 

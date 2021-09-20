@@ -37,6 +37,8 @@ unix{
 }
 
 SOURCES += \
+    src/Rpg/core/RpgAutoTileRendererBase.cpp \
+    src/Rpg/core/RpgAutoTileRendererSpecLocation.cpp \
     src/Rpg/core/RpgVar.cpp \
     src/main.cpp \
     src/MainWindow.cpp \
@@ -60,7 +62,6 @@ SOURCES += \
     src/Rpg/core/RpgObject.cpp \
     src/Rpg/core/RpgDialogBase.cpp \
     src/Rpg/core/RpgState.cpp \
-    src/Rpg/com/RpgVar.cpp \
     src/Rpg/core/RpgSpecLocationChopingDialog.cpp \
     src/Rpg/exception/RpgRuntimeException.cpp \
     src/Rpg/core/RpgPreload.cpp \
@@ -82,6 +83,8 @@ SOURCES += \
 
 HEADERS += \
     src/MainWindow.h \
+    src/Rpg/core/RpgAutoTileRendererBase.h \
+    src/Rpg/core/RpgAutoTileRendererSpecLocation.h \
     src/Rpg/core/RpgVar.h \
     src/Rpg/exception/RpgException.h \
     src/Rpg/exception/RpgFileCannotOpenException.h \
@@ -104,7 +107,6 @@ HEADERS += \
     src/Rpg/core/RpgObject.h \
     src/Rpg/core/RpgDialogBase.h \
     src/Rpg/core/RpgState.h \
-    src/Rpg/com/RpgVar.h \
     src/Rpg/core/RpgSpecLocationChopingDialog.h \
     src/Rpg/exception/RpgRuntimeException.h \
     src/Rpg/core/RpgPreload.h \

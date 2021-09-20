@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 	qDebug() << CodePath << "Library paths:" << a.libraryPaths();
 
 	a.setFont(qApp->font());
+	qDebug() << CodePath << "Application font:" << a.font();
 
 	try{
 		MainWindow w;

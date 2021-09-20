@@ -18,7 +18,8 @@ public:
 	static const QString keyToString(Qt::Key key);
 	static const QString keysToString(Qt::Key key, Qt::KeyboardModifiers mod);
 
-	static QPointF getDialogPos(Rpg::DialogAlign align, const QSize &dialogSize, int marginW, int marginH);
+	static QPointF getBlockPos(Rpg::BlockAlign align, const QSizeF &blockSize, const QSizeF &margin, const QSizeF &parentSize);
+	static QPointF getDialogPos(Rpg::BlockAlign align, const QSize &dialogSize, int marginW, int marginH);
 };
 
 #endif // RPGUTILS_H

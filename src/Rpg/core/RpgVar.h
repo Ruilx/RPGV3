@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <Rpg/Global.h>
+#include <Rpg/core/RpgFileManager.h>
 
 typedef QHash<QString, QVariant> RpgVarHash;
 
@@ -27,20 +28,48 @@ typedef QHash<QString, QVariant> RpgVarHash;
  *
  * 20210916 RpgVar从com目录迁移到core目录, 去掉QObject继承
  * 20210917 RpgVar增加group功能, 可以选择var的profile, 比如Rpg的20个存储框
+ * 20210919 RpgVar增加从RpgFileManager取出指定位置数据
  */
 class RpgVar
 {
 	static RpgVar *_instance;
 
+	QString group;
+
 	QHash<QString, RpgVarHash*> vars;
 
-	RpgVar();
+	RpgVar(){
+
+	}
 public:
+	~RpgVar(){
+		for(const QString &group: vars.keys()){
+			RpgVarHash *var = this->vars.value(group);
+			if(var != nullptr){
+				var->clear();
+				this->vars.remove(group);
+				qDebug() << CodePath << QString::asprintf("Deleted Var: %X", var);
+			}
+		}
+	}
+
 	static RpgVar *instance(){
 		if(RpgVar::_instance == nullptr){
 			RpgVar::_instance = new RpgVar();
 		}
 		return RpgVar::_instance;
+	}
+
+	void beginGroup(const QString &group) NoThrow{
+		this->group = group;
+	}
+
+	void endGroup() NoThrow{
+		this->group.clear();
+	}
+
+	inline const QString &getGroup() const NoThrow{
+		return this->group;
 	}
 
 	void setValue(const QString &group, const QString &key, const QVariant &value){
@@ -59,8 +88,11 @@ public:
 			RpgVarHash *var = new RpgVarHash();
 			this->vars.insert(group, var);
 			var->insert(key, value);
-
 		}
+	}
+
+	void setValue(const QString &key, const QVariant &value){
+		return this->setValue(this->group, key, value);
 	}
 
 	inline QVariant getValue(const QString &group, const QString &key) const{
@@ -80,6 +112,10 @@ public:
 		}
 	}
 
+	inline QVariant getValue(const QString &key) const{
+		return this->getValue(this->group, key);
+	}
+
 	inline int getVarCount(const QString &group) const{
 		if(this->vars.contains(group)){
 			RpgVarHash *var = this->vars.value(group);
@@ -93,6 +129,16 @@ public:
 			qDebug() << CodePath << "No such group name:" << group;
 			return 0;
 		}
+	}
+
+	inline int getVarCount() const{
+		int count = 0;
+		for(RpgVarHash *var: this->vars){
+			if(var != nullptr){
+				count += var->count();
+			}
+		}
+		return count;
 	}
 
 	bool removeValue(const QString &group, const QString &key){
@@ -116,7 +162,22 @@ public:
 		}
 	}
 
-	bool loadData(const QString &file){
+	bool removeGroup(const QString &group){
+		if(this->vars.contains(group)){
+			RpgVarHash *var = this->vars.value(group);
+			if(var != nullptr){
+				var->clear();
+				this->vars.remove(group);
+				qDebug() << CodePath << QString::asprintf("Deleted Var: %X", var);
+				return true;
+			}else{
+				return false;
+			}
+		}
+		return false;
+	}
+
+	bool loadDataFromFile(const QString &file){
 		if(!QFile::exists(file)){
 			qDebug() << CodePath << "Specific saving file:" << file << "not exists.";
 			return false;
@@ -142,23 +203,20 @@ public:
 		return true;
 	}
 
-//	bool loadData(const QString &file){
-//		if(!QFile::exists(file)){
-//			qDebug() << CodePath << "Specific file:" << file << "not exists.";
-//			return false;
-//		}
-//		QSettings slot(file, QSettings::IniFormat);
-//		slot.beginGroup("Vars");
-//		QStringList keys = slot.childKeys();
-//		for(const QString &key: keys){
-//			this->setValue(key, slot.value(key));
-//		}
-//		slot.endGroup();
-//		qDebug() << CodePath << "Load var values successful. Loaded:" << keys.length() << "items.";
-//		return true;
-//	}
+	bool loadData(const QString &name){
+		if(name.isEmpty()){
+			qDebug() << CodePath << "Given name is empty.";
+			return false;
+		}
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::DataFile, name);
+		if(filename.isEmpty()){
+			qDebug() << CodePath << "FileManager has no file named '" << name << "'.";
+			return false;
+		}
+		return this->loadDataFromFile(filename);
+	}
 
-	bool saveData(const QString &file){
+	bool saveDataToFile(const QString &file){
 		if(QFile::exists(file)){
 			qDebug() << CodePath << "Specific saving file:" << file << "not exists.";
 			return false;
@@ -184,21 +242,17 @@ public:
 		return true;
 	}
 
-	bool saveData(const QString &file){
-		if(QFile::exists(file)){
-			qDebug() << CodePath << "Specific file exists, will clear the data before save. file:" << file;
+	bool saveData(const QString &name){
+		if(name.isEmpty()){
+			qDebug() << CodePath << "Given name is empty.";
 			return false;
 		}
-		QSettings slot(file, QSettings::IniFormat);
-		slot.clear();
-		slot.beginGroup("Vars");
-		QStringList keys = this->var.keys();
-		for(const QString &key: keys){
-			slot.setValue(key, this->getValue(key));
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::DataFile, name);
+		if(filename.isEmpty()){
+			qDebug() << CodePath << "FileManager has no file named '" << name << "'.";
+			return false;
 		}
-		slot.endGroup();
-		qDebug() << CodePath << "Save var values successful. Saved:" << keys.length() << "items.";
-		return true;
+		return this->saveDataToFile(filename);
 	}
 };
 

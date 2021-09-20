@@ -104,8 +104,8 @@ public:
 	~RpgMusic(){
 		if(this->music->isPlaying()){
 			this->stopMusic();
-			this->music->audio()->close();
-			this->music->deleteLater();
+//			this->music->audio()->close();
+//			this->music->deleteLater();
 			// BUG: 这里回收之后QtAV会报"Can not copy codec properties when it's open", 只是qWarning, 之后代码会执行close()
 		}
 	}

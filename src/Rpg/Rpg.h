@@ -10,6 +10,8 @@ class Rpg
 public:
 	static const int Infinity = 0;
 
+	static const QSizeF ScreenSize = QSizeF(ScreenWidth, ScreenHeight);
+
 	enum Speed{
 		SpeedSlow = 500,
 		SpeedNormal = 250,
@@ -52,7 +54,7 @@ public:
 		AvatarFrame = 3 // 主角头像(框前面)
 	};
 
-	enum DialogAlign{
+	enum BlockAlign{
 		AlignTopLeft = 0,
 		AlignTop = 1,
 		AlignTopRight = 2,
@@ -62,6 +64,78 @@ public:
 		AlignBottomLeft = 6,
 		AlignBottom = 7,
 		AlignBottomRight = 8,
+	};
+
+	enum AutoTileBlockType{
+		None						= 0x00,
+		LeftBottomMultiInnerCorner	= 0x02,
+		RightBottomMultiInnerCorner	= 0x08,
+		MultiAreaBottom				= 0x0A,
+		BottomMulti					= 0x0E,
+		RightTopMultiInnerCorner	= 0x20,
+		MultiAreaSlash				= 0x22,
+		MultiAreaRight				= 0x28,
+		MultiHubRightBottom			= 0x2A,
+		BottomMultiTeeRight			= 0x2E,
+		RightMulti					= 0x38,
+		RightMultiTeeBottom			= 0x3A,
+		RightBottomMultiCorner		= 0x3E,
+		LeftTopMultiInnerCorner		= 0x80,
+		MultiAreaLeft				= 0x82,
+		LeftMulti					= 0x83,
+		MultiAreaBackSlash			= 0x88,
+		MultiHubLeftBottom			= 0x8A,
+		LeftMultiTeeBottom			= 0x8B,
+		BottomMultiTeeLeft			= 0x8E,
+		LeftBottomMultiCorner		= 0x8F,
+		MultiAreaTop				= 0xA0,
+		MultiHubLeftTop				= 0xA2,
+		LeftMultiTeeTop				= 0xA3,
+		MultiHubRightTop			= 0xA8,
+		SingleHub					= 0xAA,
+		LeftSingleTee				= 0xAB,
+		BottomSingleTee				= 0xAE,
+		LeftBottomSingleCorner		= 0xAF,
+		RightMultiTeeTop			= 0xB8,
+		RightSingleTee				= 0xBA,
+		VerticalPassedSingleLine	= 0xBB,
+		RightBottomSingleCorner		= 0xBE,
+		TopPassedSingleLine			= 0xBF,
+		TopMulti					= 0xE0,
+		TopMultiTeeLeft				= 0xE2,
+		LeftTopMultiCorner			= 0xE3,
+		TopMultiTeeRight			= 0xE8,
+		TopSingleTee				= 0xEA,
+		LeftTopSingleCorner			= 0xEB,
+		HorizonalPassedSingleLine	= 0xEE,
+		RightPassedSingleLine		= 0xEF,
+		RightTopMultiCorner			= 0xF8,
+		RightTopSingleCorner		= 0xFA,
+		BottomPassedSingleLine		= 0xFB,
+		LeftPassedSingleLine		= 0xFE,
+		ClosedFrame					= 0xFF
+	};
+
+	enum AutoTileBlockLocation{
+		Block_None        = 0b00000000,
+		Block_Center      = Block_None,
+		Block_LeftTop     = 0b10000000,
+		Block_RightTop    = 0b00100000,
+		Block_RightBottom = 0b00001000,
+		Block_LeftBottom  = 0b00000010,
+		Block_Top         = 0b01000000 | Block_LeftTop  | Block_RightTop,
+		Block_Right       = 0b00010000 | Block_RightTop | Block_RightBottom,
+		Block_Bottom      = 0b00000100 | Block_LeftBottom | Block_RightBottom,
+		Block_Left        = 0b00000001 | Block_LeftTop  | Block_LeftBottom,
+
+		Block_LT = Block_LeftTop,
+		Block_T  = Block_Top,
+		Block_RT = Block_RightTop,
+		Block_R  = Block_Right,
+		Block_RB = Block_RightBottom,
+		Block_B  = Block_Bottom,
+		Block_LB = Block_LeftBottom,
+		Block_L  = Block_Left,
 	};
 
 };

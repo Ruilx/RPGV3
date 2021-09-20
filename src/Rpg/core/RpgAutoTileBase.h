@@ -4,10 +4,6 @@
 #include <QtCore>
 #include <QDebug>
 #include <Rpg/Global.h>
-#include <Rpg/core/RpgAutoTileBlock.h>
-
-#define AutoTileImageBlockWidth 96
-#define AutoTileImageBlockHeight 128
 
 /**
  * @brief The RpgAutoTileBase class
@@ -17,10 +13,8 @@
  */
 class RpgAutoTileBase{
 
-	QString name;
+	QString autoTileName;
 	QImage originImage;
-
-	QList<RpgAutoTileBlock> blockImageList;
 
 	const QRect singleBlockRect = QRect(0, 0, 32, 32);				// ClosedFrame
 	const QRect backgroundRect = QRect(32, 0, 32, 32);				// Unknown
@@ -55,6 +49,10 @@ class RpgAutoTileBase{
 	const QPoint rightTopPos = QPoint(16, 0);
 	const QPoint rightBottomPos = QPoint(16, 16);
 public:
+	static const int AutoTileImageBlockWidth = 96;
+	static const int AutoTileImageBlockHeight = 128;
+
+
 	/**
 	 * @brief The SplitBlock enum
 	 * 在组合图像中九宫格图片中指定图片表示位置的顺序
@@ -83,35 +81,34 @@ private:
 		return QRect(original.left() * (offset + 1), original.top(), original.width(), original.height());
 	}
 
-	void renderBlock(const QString &autoTileFileName);
+	/**
+	 * @brief renderBlock
+	 * @param autoTileFileName
+	 * 从给定的名称中将图形读出并切割成47个标准块组件并存储至RpgAutoTileBlock
+	 */
+	void renderBlock(const QPixmap &autoTilePixmap);
 
 public:
-	RpgAutoTileBase(const QString &name, const QString &autoTileName = QString()){
-		if(name.isEmpty()){
-			// Todo: 名称不能传空, 如果传空可能需要抛出异常ValueError
-			return;
-		}
-		this->name = name;
-		if(!autoTileName.isEmpty()){
-			this->renderBlock(autoTileName);
-			qDebug() << CodePath << "Name" << autoTileName << "Loaded" << this->blockImageList.at(0).getCount() << "Tiles";
-		}
+	RpgAutoTileBase(const QString &autoTileName = QString()){
+		this->autoTileName = autoTileName;
+//		if(!autoTileName.isEmpty()){
+//			this->renderBlock(autoTileName);
+//			qDebug() << CodePath << "Name" << autoTileName << "Loaded" << this->blockImageList.at(0).getCount() << "Tiles";
+//		}
 	}
 
-	void setName(const QString &name){
-		this->name = name;
-	}
+//	void setName(const QString &name){
+//		this->name = name;
+//	}
 
-	QString getName() const{
-		return this->name;
-	}
+//	QString getName() const{
+//		return this->name;
+//	}
 
 	void setAutoTileFileName(const QString &filename){
 		this->blockImageList.clear();
 		this->renderBlock(filename);
 	}
-
-
 
 	void _dumpImage(int index = 0){
 		if((this->blockImageList.length() > index)){

@@ -34,6 +34,8 @@ public:
 		CharacterFile,	// 角色文件
 		MapBlockFile,	// 地图块文件
 		MapFile,		// 地图文件
+		DataFile,		// 数据文件(Variables)
+		AutoTileFile,   // 自动瓦片文件
 	};
 
 	static RpgFileManager *instance(){
@@ -72,6 +74,8 @@ public:
 		this->files.insert(CharacterFile, new QHash<QString, QUrl>());
 		this->files.insert(MapBlockFile, new QHash<QString, QUrl>());
 		this->files.insert(MapFile, new QHash<QString, QUrl>());
+		this->files.insert(DataFile, new QHash<QString, QUrl>());
+		this->files.insert(AutoTileFile, new QHash<QString, QUrl>());
 
 		this->fileTypeName.insert(Unknown, "Unknown");
 		this->fileTypeName.insert(SceneFile, "SceneFile");
@@ -86,6 +90,8 @@ public:
 		this->fileTypeName.insert(CharacterFile, "CharacterFile");
 		this->fileTypeName.insert(MapBlockFile, "MapBlockFile");
 		this->fileTypeName.insert(MapFile, "MapFile");
+		this->fileTypeName.insert(DataFile, "DataFile");
+		this->fileTypeName.insert(AutoTileFile, "AutoTileFile");
 	}
 
 	void addFile(FileType type, const QString &name, const QUrl &url){

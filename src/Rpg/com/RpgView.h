@@ -18,25 +18,58 @@ class RpgView : public QGraphicsView
 	QPointF lastPos;
 	qreal currentScale = 1.0f;
 
-	void mousePressEvent(QMouseEvent *event){
-		this->lastPos = event->pos();
+	void resizeEvent(QResizeEvent *event){
+		if(!event->oldSize().isValid()){
+			event->ignore();
+			return;
+		}
+		qDebug() << CodePath << "Resize:" << event->oldSize() << "==>" << event->size();
+		QSizeF size = (event->size() - event->oldSize()) / 2.0;
+		this->setDelta(-QPointF(size.width(), size.height()));
+		qDebug() << CodePath << "SceneRect:" << this->sceneRect();
+		event->accept();
 	}
+
+	void mousePressEvent(QMouseEvent *event){
+		if(event->buttons() & Qt::RightButton){
+			this->lastPos = event->pos();
+		}
+	}
+
+//	void mouseMoveEvent(QMouseEvent *event){
+//		if(this->scene() == nullptr){
+//			return;
+//		}
+//		if(event->buttons() & Qt::LeftButton){
+//			QPointF pos = (event->pos() - this->lastPos) * this->currentScale;
+//			this->lastPos = event->pos();
+////			qDebug() << CodePath << QString("ScreenRect(%1, %2, %3, %4)")
+////						.arg(this->sceneRect().x() - pos.x())
+////						.arg(this->sceneRect().y() - pos.y())
+////						.arg(this->sceneRect().width())
+////						.arg(this->sceneRect().height());
+////			this->setSceneRect((this->sceneRect().x() - pos.x()), (this->sceneRect().y() - pos.y()), this->sceneRect().width(), this->sceneRect().height());
+////			qDebug() << CodePath << "NOW ScreneRect" << this->sceneRect();
+//			this->centerOn(this->sceneRect().x() - pos.x() + (this->sceneRect().width() / 2), this->sceneRect().y() - pos.y() + (this->sceneRect().height() / 2));
+//		}
+//	}
 
 	void mouseMoveEvent(QMouseEvent *event){
 		if(this->scene() == nullptr){
+			qDebug() << CodePath << "view has no scene or no valid scene.";
+			event->ignore();
 			return;
 		}
-		if(event->buttons() & Qt::LeftButton){
-			QPointF pos = (event->pos() - this->lastPos) * this->currentScale;
+		if(event->buttons() & Qt::RightButton){
+			QPointF pos = event->pos() - this->lastPos;
+			qDebug() << CodePath << "Current mouse pos:" << pos;
 			this->lastPos = event->pos();
-//			qDebug() << CodePath << QString("ScreenRect(%1, %2, %3, %4)")
-//						.arg(this->sceneRect().x() - pos.x())
-//						.arg(this->sceneRect().y() - pos.y())
-//						.arg(this->sceneRect().width())
-//						.arg(this->sceneRect().height());
-//			this->setSceneRect((this->sceneRect().x() - pos.x()), (this->sceneRect().y() - pos.y()), this->sceneRect().width(), this->sceneRect().height());
-//			qDebug() << CodePath << "NOW ScreneRect" << this->sceneRect();
-			this->centerOn(this->sceneRect().x() - pos.x() + (this->sceneRect().width() / 2), this->sceneRect().y() - pos.y() + (this->sceneRect().height() / 2));
+			this->setDelta(-pos / this->currentScale);
+			event->accept();
+			return;
+		}else{
+			event->ignore();
+			return;
 		}
 	}
 
@@ -67,6 +100,15 @@ class RpgView : public QGraphicsView
 		QTransform transform = this->transform();
 		transform.setMatrix(scaleX, transform.m12(), transform.m13(), transform.m21(), scaleY, transform.m23(), transform.m31(), transform.m32(), transform.m33());
 		this->setTransform(transform);
+	}
+
+	void setDelta(const QPointF &delta){
+		QRectF rect = this->sceneRect();
+		this->scene()->setSceneRect(QRectF(rect.topLeft() + delta.toPoint(), this->size()));
+	}
+
+	void setDelta(qreal dx, qreal dy){
+		this->setDelta(QPointF(dx, dy));
 	}
 public:
 	static RpgView *instance(QWidget *parent = nullptr){

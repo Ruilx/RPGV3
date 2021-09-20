@@ -86,7 +86,7 @@ class RpgDialog : public RpgObject
 	// 内容大小
 	//QRectF messageRect = QRect(RpgDialog::MessageMarginH, RpgDialog::MessageMarginV, RpgDialogBase::dialogSize().width() - (RpgDialog::MessageMarginH << 1), RpgDialogBase::dialogSize().height() - (RpgDialog::MessageMarginV << 1));
 
-	Rpg::DialogAlign dialogaAlign = Rpg::AlignBottom;
+	Rpg::BlockAlign dialogaAlign = Rpg::AlignBottom;
 public:
 	const int MessageMarginH = 10;
 	const int MessageMarginV = 5;
@@ -481,7 +481,7 @@ public:
 	 * @param align
 	 * 设置对话框位置
 	 */
-	inline void setDialogAlign(Rpg::DialogAlign align){
+	inline void setDialogAlign(Rpg::BlockAlign align){
 		this->dialogaAlign = align;
 	}
 
@@ -490,7 +490,7 @@ public:
 	 * @return
 	 * 返回对话框位置
 	 */
-	inline Rpg::DialogAlign getDialogAlign() const{
+	inline Rpg::BlockAlign getDialogAlign() const{
 		return this->dialogaAlign;
 	}
 

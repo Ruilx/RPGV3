@@ -200,27 +200,77 @@ const QString RpgUtils::keysToString(Qt::Key key, Qt::KeyboardModifiers mod){
 	}
 }
 
-QPointF RpgUtils::getDialogPos(Rpg::DialogAlign align, const QSize &dialogSize, int marginH, int marginV){
+//QPointF RpgUtils::getDialogPos(Rpg::BlockAlign align, const QSize &dialogSize, int marginH, int marginV){
+//	switch(align){
+//		case Rpg::AlignTopLeft:
+//			return QPointF(marginH, marginV);
+//		case Rpg::AlignTop:
+//			return QPointF((ScreenWidth - dialogSize.width()) / 2.0f, marginV);
+//		case Rpg::AlignTopRight:
+//			return QPointF(ScreenWidth - dialogSize.width() - marginH, marginV);
+//		case Rpg::AlignLeft:
+//			return QPointF(marginH, (ScreenHeight - dialogSize.height()) / 2.0f);
+//		case Rpg::AlignCenter:
+//			return QPointF((ScreenWidth - dialogSize.width()) / 2.0f, (ScreenHeight - dialogSize.height()) / 2.0f);
+//		case Rpg::AlignRight:
+//			return QPointF(ScreenWidth - dialogSize.width() - marginH, (ScreenHeight - dialogSize.height()) / 2.0f);
+//		case Rpg::AlignBottomLeft:
+//			return QPointF(marginH, ScreenHeight - dialogSize.height() - marginV);
+//		case Rpg::AlignBottom:
+//			return QPointF((ScreenWidth - dialogSize.width()) / 2.0f, ScreenHeight - dialogSize.height() - marginV);
+//		case Rpg::AlignBottomRight:
+//			return QPointF(ScreenWidth - dialogSize.width() - marginH, ScreenHeight - dialogSize.height() - marginV);
+//		default:
+//			return QPointF(0.0f, 0.0f);
+//	}
+//}
+
+QPointF RpgUtils::getBlockPos(Rpg::BlockAlign align, const QSizeF &blockSize, const QSizeF &margin, const QSizeF &parentSize){
 	switch(align){
 		case Rpg::AlignTopLeft:
-			return QPointF(marginH, marginV);
+			return QPointF(margin.width(), margin.height());
 		case Rpg::AlignTop:
-			return QPointF((ScreenWidth - dialogSize.width()) / 2.0f, marginV);
+			return QPointF((parentSize.width() - blockSize.width()) / 2.0f, margin.height());
 		case Rpg::AlignTopRight:
-			return QPointF(ScreenWidth - dialogSize.width() - marginH, marginV);
+			return QPointF(parentSize.width() - blockSize.width() - margin.width(), margin.height());
 		case Rpg::AlignLeft:
-			return QPointF(marginH, (ScreenHeight - dialogSize.height()) / 2.0f);
+			return QPointF(margin.width(), (parentSize.height() - blockSize.height()) / 2.0f);
 		case Rpg::AlignCenter:
-			return QPointF((ScreenWidth - dialogSize.width()) / 2.0f, (ScreenHeight - dialogSize.height()) / 2.0f);
+			return QPointF((parentSize.width() - blockSize.width()) / 2.0f, (parentSize.height() - blockSize.height()) / 2.0f);
 		case Rpg::AlignRight:
-			return QPointF(ScreenWidth - dialogSize.width() - marginH, (ScreenHeight - dialogSize.height()) / 2.0f);
+			return QPointF(parentSize.width() - blockSize.width() - margin.width(), (parentSize.height() - blockSize.height()) / 2.0f);
 		case Rpg::AlignBottomLeft:
-			return QPointF(marginH, ScreenHeight - dialogSize.height() - marginV);
+			return QPointF(margin.width(), parentSize.height() - blockSize.height() - margin.height());
 		case Rpg::AlignBottom:
-			return QPointF((ScreenWidth - dialogSize.width()) / 2.0f, ScreenHeight - dialogSize.height() - marginV);
+			return QPointF((parentSize.width() - blockSize.width()) / 2.0f, parentSize.height() - blockSize.height() - margin.height());
 		case Rpg::AlignBottomRight:
-			return QPointF(ScreenWidth - dialogSize.width() - marginH, ScreenHeight - dialogSize.height() - marginV);
+			return QPointF(parentSize.width() - blockSize.width() - margin.width(), parentSize.height() - blockSize.height() - margin.height());
 		default:
 			return QPointF(0.0f, 0.0f);
 	}
 }
+
+QPointF RpgUtils::getDialogPos(Rpg::BlockAlign align, const QSize &dialogSize, int marginW, int marginH){
+	return RpgUtils::getBlockPos(align, dialogSize, QSizeF(marginW, marginH), QSizeF(ScreenWidth, ScreenHeight));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
