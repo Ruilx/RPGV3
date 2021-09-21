@@ -62,7 +62,7 @@ class RpgView : public QGraphicsView
 		}
 		if(event->buttons() & Qt::RightButton){
 			QPointF pos = event->pos() - this->lastPos;
-			qDebug() << CodePath << "Current mouse pos:" << pos;
+			//qDebug() << CodePath << "Current mouse pos:" << pos;
 			this->lastPos = event->pos();
 			this->setDelta(-pos / this->currentScale);
 			event->accept();

@@ -19,17 +19,25 @@ QDateTime parseBuildDatetime(){
 	return QLocale::c().toDateTime(date % " " __TIME__, "MMM dd yyyy HH:mm:ss");
 }
 
+void initRandomSeed(){
+	qsrand(QDateTime::currentSecsSinceEpoch() & UINT_MAX);
+}
+
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
 	qDebug() << CodePath << "Build time:" << parseBuildDatetime().toString("yyyy-MM-dd HH:mm:ss");
 
+	initRandomSeed();
+
 	a.setApplicationDisplayName("RPGV3");
 	a.setApplicationVersion("0.0.1");
-	a.setDoubleClickInterval(1000);
+	//a.setDoubleClickInterval(1000);
 	a.setKeyboardInputInterval(1000);
 
+
+	qDebug() << CodePath << "Current working dir:" << QDir::currentPath();
 	qDebug() << CodePath << "Library paths:" << a.libraryPaths();
 
 	a.setFont(qApp->font());

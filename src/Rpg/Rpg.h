@@ -10,7 +10,7 @@ class Rpg
 public:
 	static const int Infinity = 0;
 
-	static const QSizeF ScreenSize = QSizeF(ScreenWidth, ScreenHeight);
+	const QSizeF ScreenSize = QSizeF(ScreenWidth, ScreenHeight);
 
 	enum Speed{
 		SpeedSlow = 500,

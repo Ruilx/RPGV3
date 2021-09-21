@@ -74,8 +74,6 @@ SOURCES += \
     src/Rpg/core/RpgHtmlSplit.cpp \
     src/Rpg/core/RpgDialogAnimation.cpp \
     src/Rpg/core/RpgItemProperties.cpp \
-    src/Rpg/core/RpgAutoTileBase.cpp \
-    src/Rpg/core/RpgAutoTileBlock.cpp \
     src/Rpg/com/RpgChoice.cpp \
     src/Rpg/core/RpgChoiceMessage.cpp \
     src/Rpg/core/RpgChoiceAnimation.cpp
@@ -119,8 +117,6 @@ HEADERS += \
     src/Rpg/core/RpgHtmlSplit.h \
     src/Rpg/core/RpgDialogAnimation.h \
     src/Rpg/core/RpgItemProperties.h \
-    src/Rpg/core/RpgAutoTileBase.h \
-    src/Rpg/core/RpgAutoTileBlock.h \
     src/Rpg/com/RpgChoice.h \
     src/Rpg/core/RpgChoiceMessage.h \
     src/Rpg/core/RpgChoiceAnimation.h

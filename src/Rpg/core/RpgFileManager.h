@@ -155,15 +155,16 @@ public:
 	}
 
 	void dumpFiles() NoThrow{
+		qDebug() << "=================== RpgFileManager ====================";
 		for(QHash<FileType, QHash<QString, QUrl>* >::const_iterator i = this->files.constBegin(); i != this->files.constEnd(); i++){
-			qDebug() << "=========================" << this->fileTypeName.value(i.key(), "UNKNOWN") << "=========================";
+			qDebug().noquote().nospace() << "[" << this->fileTypeName.value(i.key(), "UNKNOWN") << "]";
 			QHash<QString, QUrl> *file = i.value();
 			if(file == nullptr){
-				qDebug() << "NULL POINTER OCCURRED!";
+				qDebug() << "<nullptr pointer>";
 				continue;
 			}
 			for(QHash<QString, QUrl>::const_iterator ii = file->constBegin(); ii != file->constEnd(); ii++){
-				qDebug() << ii.key() << " => " << ii.value();
+				qDebug().noquote() << ii.key() << "=" << ii.value();
 			}
 		}
 	}

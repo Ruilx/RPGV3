@@ -17,6 +17,8 @@
  */
 class RpgAutoTileRendererBase
 {
+
+protected:
 	static const int ArrayListInitCapacity = 8;
 	typedef QVarLengthArray<QPixmap, RpgAutoTileRendererBase::ArrayListInitCapacity> RpgSeqTilesArray;
 	/**
@@ -46,10 +48,11 @@ class RpgAutoTileRendererBase
 	QMap<quint8, RpgSeqTilesArray* > tilesMap;
 
 	QString name;
+
 	QPixmap originTilePixmap;
 
 	QPixmap emptyPixmap;
-protected:
+
 	/**
 	 * @brief RpgAutoTileRendererBase
 	 * @param name
@@ -58,10 +61,10 @@ protected:
 	RpgAutoTileRendererBase(const QString &name);
 
 	~RpgAutoTileRendererBase(){
-		for(const QMap<quint8, RpgSeqTilesArray*>::Iterator &i = this->tilesMap.constBegin(); i != this->tilesMap.constEnd(); i++){
+		for(QMap<quint8, RpgSeqTilesArray*>::const_iterator i = this->tilesMap.constBegin(); i != this->tilesMap.constEnd(); i++){
 			if(i.value() != nullptr){
 				i.value()->clear();
-				delete i;
+				delete i.value();
 			}
 		}
 		this->tilesMap.clear();
@@ -72,21 +75,6 @@ protected:
 	 * 虚函数, 渲染工作函数, 需要继承实现
 	 */
 	virtual void renderTiles() NoThrow Pure;
-
-	void insertPixmap(const QPixmap &pixmap, Rpg::AutoTileBlockType type){
-		if(!this->tilesMap.contains(type)){
-			RpgSeqTilesArray *tileMap = new RpgSeqTilesArray();
-			tileMap->append(pixmap);
-			this->tilesMap.insert(type, tileMap);
-		}else{
-			RpgSeqTilesArray *tileMap = this->tilesMap.value(type);
-			if(tileMap != nullptr){
-				tileMap->append(pixmap);
-			}else{
-				qDebug() << CodePath << "Given type in tilesMap array is nullptr";
-			}
-		}
-	}
 
 public:
 	/**
@@ -103,9 +91,13 @@ public:
 	 * @return
 	 * 拿取tile函数
 	 */
-	const QPixmap &getTile(Rpg::AutoTileBlockLocation location) const;
+	const QPixmap &getTile(Rpg::AutoTileBlockLocation location, int sequence) const;
 
-	const QPixmap &getTileByType(Rpg::AutoTileBlockType type) const;
+	const RpgAutoTileRendererBase::RpgSeqTilesArray *getTiles(Rpg::AutoTileBlockLocation location) const;
+
+	const QPixmap &getTileByType(Rpg::AutoTileBlockType type, int sequence) const;
+
+	const RpgAutoTileRendererBase::RpgSeqTilesArray *getTilesByType(Rpg::AutoTileBlockType type) const;
 
 	/**
 	 * @brief dumpTiles
