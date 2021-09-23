@@ -15,7 +15,7 @@ typedef QHash<QString, QVariant> RpgVarHash;
  *
  * Var读取结构: RpgVar = {"Group/Profile1": {...}, "Group/Profile2": {...}}
  * Var存储结构: INI文件:
- * [General]
+ * [General](group == ""时的存储空间)
  * globalKey1 = value1
  * globalKey2 = value2
  * [Group/Profile1]
@@ -53,27 +53,127 @@ public:
 		return RpgVar::_instance;
 	}
 
+	/**
+	 * @brief beginGroup
+	 * @param group
+	 * 选择(select)配置组, 使用不带有group参数的set/get函数的时候将会默认使用配置的group名中的内容
+	 * 因为使用Qt QSettings类, 不妨命名相同.
+	 */
 	void beginGroup(const QString &group) NoThrow;
+	/**
+	 * @brief endGroup
+	 * 取消(select)配置组, 将组目标变为全局变量组(General)
+	 */
 	void endGroup() NoThrow;
+	/**
+	 * @brief getGroup
+	 * @return
+	 * 获得当前配置的变量组, 返回空字符串相当于全局变量组
+	 */
 	inline const QString &getGroup() const NoThrow;
 
+	/**
+	 * @brief setValue
+	 * @param group
+	 * @param key
+	 * @param value
+	 * 设置变量
+	 */
 	void setValue(const QString &group, const QString &key, const QVariant &value);
+	/**
+	 * @brief setValue
+	 * @param key
+	 * @param value
+	 * 设置变量 (使用已存储的group)
+	 */
 	void setValue(const QString &key, const QVariant &value);
 
+	/**
+	 * @brief getValue
+	 * @param group
+	 * @param key
+	 * @return 对应值, 如未找到, 返回QVariant(NULL)
+	 * 获取变量
+	 */
 	inline QVariant getValue(const QString &group, const QString &key) const;
+	/**
+	 * @brief getValue
+	 * @param key
+	 * @return 对应值, 如未找到, 会在group=""寻找, 如未找到, 返回QVariant(NULL)
+	 * 获取变量 (使用已存储的group)
+	 */
 	inline QVariant getValue(const QString &key) const;
 
+	/**
+	 * @brief getVarCount
+	 * @param group
+	 * @return 指定group中存储的变量数量
+	 * 获得指定group内存储的变量数量
+	 */
 	inline int getVarCount(const QString &group) const;
+	/**
+	 * @brief getVarCount
+	 * @return 当前group中存储的变量数量
+	 * 获得当前group内存储的变量数量
+	 */
 	inline int getVarCount() const;
 
+	/**
+	 * @brief removeValue
+	 * @param group
+	 * @param key
+	 * @return 删除成功返回true, 失败返回false
+	 * 删除指定group对应指定key
+	 */
 	bool removeValue(const QString &group, const QString &key);
+	/**
+	 * @brief removeValue
+	 * @param key
+	 * @return 删除成功返回true, 失败返回false
+	 * 删除当前group指定的key
+	 */
+	bool removeValue(const QString  &key);
+	/**
+	 * @brief removeGroup
+	 * @param group
+	 * @return 删除成功返回true, 失败返回false
+	 * 删除指定group内的所有key
+	 */
 	bool removeGroup(const QString &group);
 
+	/**
+	 * @brief loadDataFromFile
+	 * @param file
+	 * @return 读取成功返回true, 失败返回false
+	 * 从指定文件中读取变量
+	 */
 	bool loadDataFromFile(const QString &file);
+	/**
+	 * @brief loadData
+	 * @param name
+	 * @return 读取成功返回true, 失败返回false
+	 * 从RpgFileManager中获得文件地址并读取设置
+	 */
 	bool loadData(const QString &name);
+	/**
+	 * @brief saveDataToFile
+	 * @param file
+	 * @return 读取成功返回true, 失败返回false
+	 * 将变量存储至指定文件
+	 */
 	bool saveDataToFile(const QString &file);
+	/**
+	 * @brief saveData
+	 * @param name
+	 * @return 读取成功返回true, 失败返回false
+	 * 将变量存储至RpgFileManager获取的文件地址对应的文件中
+	 */
 	bool saveData(const QString &name);
 
+	/**
+	 * @brief dumpRpgVars
+	 * 打印当前内部的所有变量
+	 */
 	void dumpRpgVars() NoThrow;
 };
 

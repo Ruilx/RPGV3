@@ -66,7 +66,10 @@ QVariant RpgVar::getValue(const QString &group, const QString &key) const{
 }
 
 QVariant RpgVar::getValue(const QString &key) const{
-	return this->getValue(this->group, key);
+	QVariant res = this->getValue(this->group, key);
+	if(res.isNull()){
+		return this->getValue("", key);
+	}
 }
 
 int RpgVar::getVarCount(const QString &group) const{
@@ -113,6 +116,10 @@ bool RpgVar::removeValue(const QString &group, const QString &key){
 		qDebug() << CodePath << "Try to remove a null group key:" << group;
 		return false;
 	}
+}
+
+bool RpgVar::removeValue(const QString &key){
+	return this->removeValue(this->group, key);
 }
 
 bool RpgVar::removeGroup(const QString &group){
