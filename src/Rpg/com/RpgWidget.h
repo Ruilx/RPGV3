@@ -47,7 +47,7 @@ protected:
 	void keyPressEvent(QKeyEvent *event){
 		int key = event->key();
 		Qt::KeyboardModifiers mod = event->modifiers();
-		qDebug() << CodePath << tr("Receive Key Press ↓: ") + RpgUtils::keysToString((Qt::Key)key, mod);
+		qDebug() << CodePath << tr("Receive Key Press ▼: ") + RpgUtils::keysToString((Qt::Key)key, mod);
 		emit this->receiveKeyPressSignal(key, mod);
 		if(RpgView::instance()->scene() != nullptr){
 			RpgState::instance()->receiveKeyPress(key, mod, RpgView::instance()->scene());
@@ -58,7 +58,7 @@ protected:
 	void keyReleaseEvent(QKeyEvent *event){
 		int key = event->key();
 		Qt::KeyboardModifiers mod = event->modifiers();
-		qDebug() << CodePath << tr("Receive Key Release ↑: ") + RpgUtils::keysToString((Qt::Key)key, mod);
+		qDebug() << CodePath << tr("Receive Key Release ▲: ") + RpgUtils::keysToString((Qt::Key)key, mod);
 		emit this->receiveKeyReleaseSignal(key, mod);
 		if(RpgView::instance()->scene() != nullptr){
 			RpgState::instance()->receiveKeyRelease(key, mod, RpgView::instance()->scene());

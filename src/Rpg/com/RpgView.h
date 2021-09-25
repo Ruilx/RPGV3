@@ -7,6 +7,8 @@
 #include <QPropertyAnimation>
 
 #include <Rpg/Global.h>
+#include <Rpg/core/RpgUtils.h>
+#include <Rpg/core/RpgState.h>
 #include <Rpg/exception/RpgRuntimeException.h>
 
 #include <QMouseEvent>
@@ -109,6 +111,15 @@ class RpgView : public QGraphicsView
 
 	void setDelta(qreal dx, qreal dy){
 		this->setDelta(QPointF(dx, dy));
+	}
+
+	void keyPressEvent(QKeyEvent *event){
+		int key = event->key();
+		Qt::KeyboardModifiers mod = event->modifiers();
+		qDebug() << CodePath << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+		if(this->scene() != nullptr){
+			RpgState::instance()->receiveKeyPress(key, mod);
+		}
 	}
 public:
 	static RpgView *instance(QWidget *parent = nullptr){
