@@ -114,11 +114,22 @@ class RpgView : public QGraphicsView
 	}
 
 	void keyPressEvent(QKeyEvent *event){
-		int key = event->key();
-		Qt::KeyboardModifiers mod = event->modifiers();
-		qDebug() << CodePath << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+//		int key = event->key();
+//		Qt::KeyboardModifiers mod = event->modifiers();
+		//qDebug() << CodePath << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 		if(this->scene() != nullptr){
-			RpgState::instance()->receiveKeyPress(key, mod);
+			RpgState::instance()->keyPressEvent(event, this->scene());
+			event->accept();
+		}
+	}
+
+	void keyReleaseEvent(QKeyEvent *event){
+//		int key = event->key();
+//		Qt::KeyboardModifiers mod = event->modifiers();
+		//qDebug() << CodePath << "Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+		if(this->scene() != nullptr){
+			RpgState::instance()->keyReleaseEvent(event, this->scene());
+			event->accept();
 		}
 	}
 public:

@@ -2,6 +2,7 @@
 #define RPGSTATE_H
 
 #include <QtCore>
+#include <QKeyEvent>
 #include <Rpg/Global.h>
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgUtils.h>
@@ -109,15 +110,82 @@ public:
 signals:
 
 public slots:
-	void receiveKeyPress(int key, Qt::KeyboardModifiers mod, const QGraphicsScene *scene){
-//		qDebug() << CodePath << QString("[%1] Receive key Press: %2 + %3").arg(this->modeStrHash.value(this->modeStack.top(), "UNKNOWN")).arg(RpgUtils::keyModifierToString(mod)).arg(RpgUtils::keyToString((Qt::Key)key));
+//	void receiveKeyPress(int key, Qt::KeyboardModifiers mod, const QGraphicsScene *scene){
+//		qDebug() << CodePath << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+//		if(this->modeStack.isEmpty()){
+//			qDebug() << CodePath << "Mode stack is empty, cannot getting Mode.";
+//			return;
+//		}
+//		if(scene == nullptr){
+//			qDebug() << CodePath << "Must specified a valid scene to pass the key.";
+//			throw RpgNullPointerException("RpgState::receiveKeyPress=>scene", scene);
+//		}
+//		Mode topMode = this->modeStack.top();
+//		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
+//		for(RpgObject *obj: objects){
+//			if(obj == nullptr){
+//				qDebug() << "RpgObject is null, cannot pass key to the object";
+//				continue;
+//			}
+//			if(obj->scene() == scene){
+//				if(obj->getProcessing()){
+//					//obj->receiveKeyPress(key, mod);
+//					/* The event must be allocated on the heap since the post event queue will take ownership of the event
+//					 * and delete it once it has been posted.
+//					 */
+//					QKeyEvent *keyPressEvent = new QKeyEvent(QEvent::KeyPress, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
+//					qApp->postEvent(obj, keyPressEvent);
+//				}
+//			}
+//		}
+//	}
+
+//	void receiveKeyRelease(int key, Qt::KeyboardModifiers mod, const QGraphicsScene *scene){
+////		qDebug() << CodePath << QString("[%1]Receive key Release: %2 + %3").arg(this->modeStrHash.value(this->modeStack.top(), "UNKNOWN")).arg(RpgUtils::keyModifierToString(mod)).arg(RpgUtils::keyToString((Qt::Key)key));
+//		qDebug() << CodePath << "Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+//		if(this->modeStack.isEmpty()){
+//			qDebug() << CodePath << "Mode stack is empty, cannot getting Mode.";
+//			return;
+//		}
+//		if(scene == nullptr){
+//			qDebug() << CodePath << "Must specified a valid scene to pass the key.";
+//			throw RpgNullPointerException("RpgState::receiveKeyRelease=>scene", scene);
+//		}
+//		Mode topMode = this->modeStack.top();
+//		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
+//		for(RpgObject *obj: objects){
+//			if(obj == nullptr){
+//				qDebug() << "RpgObject is null, cannot pass key to the object";
+//				continue;
+//			}
+//			if(obj->scene() == scene){
+//				if(obj->getProcessing()){
+//					//obj->receiveKeyRelease(key, mod);
+//					/* The event must be allocated on the heap since the post event queue will take ownership of the event
+//					 * and delete it once it has been posted.
+//					 */
+//					QKeyEvent *keyReleaseEvent = new QKeyEvent(QEvent::KeyRelease, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
+//					qApp->postEvent(obj, keyReleaseEvent);
+//				}
+//			}
+//		}
+//	}
+
+	void keyPressEvent(QKeyEvent *event, const QGraphicsScene *scene){
+		if(event == nullptr){
+			qDebug() << CodePath << "Receive key event is nullptr.";
+			return;
+		}
+		int key = event->key();
+		Qt::KeyboardModifiers mod = event->modifiers();
+		qDebug() << CodePath << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 		if(this->modeStack.isEmpty()){
 			qDebug() << CodePath << "Mode stack is empty, cannot getting Mode.";
-			return;
+			throw RpgNullPointerException("RpgState::keyPressEvent => event", event);
 		}
 		if(scene == nullptr){
 			qDebug() << CodePath << "Must specified a valid scene to pass the key.";
-			throw RpgNullPointerException("RpgState::receiveKeyPress=>scene", scene);
+			throw RpgNullPointerException("RpgState::keyPressEvent => scene", scene);
 		}
 		Mode topMode = this->modeStack.top();
 		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
@@ -128,21 +196,32 @@ public slots:
 			}
 			if(obj->scene() == scene){
 				if(obj->getProcessing()){
-					obj->receiveKeyPress(key, mod);
+					/* The event must be allocated on the heap since the post event queue will take ownership of the event
+					 * and delete it once it has been posted.
+					 */
+					QKeyEvent *keyPressEvent = new QKeyEvent(QEvent::KeyPress, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
+					qDebug() << CodePath << "Send Event to obj:" << obj;
+					qApp->postEvent(obj, keyPressEvent);
 				}
 			}
 		}
 	}
 
-	void receiveKeyRelease(int key, Qt::KeyboardModifiers mod, const QGraphicsScene *scene){
-//		qDebug() << CodePath << QString("[%1]Receive key Release: %2 + %3").arg(this->modeStrHash.value(this->modeStack.top(), "UNKNOWN")).arg(RpgUtils::keyModifierToString(mod)).arg(RpgUtils::keyToString((Qt::Key)key));
+	void keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
+		if(event == nullptr){
+			qDebug() << CodePath << "Receive key event is nullptr.";
+			throw RpgNullPointerException("RpgState::keyReleaseEvent => event", event);
+		}
+		int key = event->key();
+		Qt::KeyboardModifiers mod = event->modifiers();
+		qDebug() << CodePath << "Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 		if(this->modeStack.isEmpty()){
 			qDebug() << CodePath << "Mode stack is empty, cannot getting Mode.";
 			return;
 		}
 		if(scene == nullptr){
 			qDebug() << CodePath << "Must specified a valid scene to pass the key.";
-			throw RpgNullPointerException("RpgState::receiveKeyRelease=>scene", scene);
+			throw RpgNullPointerException("RpgState::keyReleaseEvent => scene", scene);
 		}
 		Mode topMode = this->modeStack.top();
 		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
@@ -153,7 +232,12 @@ public slots:
 			}
 			if(obj->scene() == scene){
 				if(obj->getProcessing()){
-					obj->receiveKeyRelease(key, mod);
+					/* The event must be allocated on the heap since the post event queue will take ownership of the event
+					 * and delete it once it has been posted.
+					 */
+					QKeyEvent *keyReleaseEvent = new QKeyEvent(QEvent::KeyRelease, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
+					qDebug() << CodePath << "Send Event to obj:" << obj;
+					qApp->postEvent(obj, keyReleaseEvent);
 				}
 			}
 		}

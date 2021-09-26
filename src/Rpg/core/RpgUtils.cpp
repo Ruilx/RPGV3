@@ -55,6 +55,16 @@ const QString RpgUtils::detectJsonValue(const QJsonDocument &value){
 	}
 }
 
+bool RpgUtils::iskeyModifierSameToKey(Qt::KeyboardModifiers mod, Qt::Key key){
+	switch(key){
+		case Qt::Key_Control: return bool(mod & Qt::ControlModifier);
+		case Qt::Key_Shift: return bool(mod & Qt::ShiftModifier);
+		case Qt::Key_Meta: return bool(mod & Qt::MetaModifier);
+		case Qt::Key_Alt: return bool(mod & Qt::AltModifier);
+		default: return false;
+	}
+}
+
 const QString RpgUtils::keyModifierToString(Qt::KeyboardModifiers mod){
 	QStringList modList;
 	if(mod & Qt::ControlModifier){
@@ -103,7 +113,7 @@ const QString RpgUtils::keyToString(Qt::Key key){
 		case Qt::Key_PageUp: return "Page Up";
 		case Qt::Key_PageDown: return "Page Down";
 		case Qt::Key_Shift: return "Shift";
-		case Qt::Key_Control: return "Control";
+		case Qt::Key_Control: return "Ctrl";
 		case Qt::Key_Meta: return "Meta";
 		case Qt::Key_Alt: return "Alt";
 		case Qt::Key_AltGr: return "AltGr";
@@ -188,13 +198,34 @@ const QString RpgUtils::keyToString(Qt::Key key){
 		case Qt::Key_OpenUrl: return "Open Url";
 		case Qt::Key_LaunchMail: return "Launch Mail";
 		case Qt::Key_LaunchMedia: return "Launch Media";
+		case Qt::Key_Launch0: return "Launch0";
+		case Qt::Key_Launch1: return "Launch1";
+		case Qt::Key_Launch2: return "Launch2";
+		case Qt::Key_Launch3: return "Launch3";
+		case Qt::Key_Launch4: return "Launch4";
+		case Qt::Key_Launch5: return "Launch5";
+		case Qt::Key_Launch6: return "Launch6";
+		case Qt::Key_Launch7: return "Launch7";
+		case Qt::Key_Launch8: return "Launch8";
+		case Qt::Key_Launch9: return "Launch9";
+		case Qt::Key_LaunchA: return "LaunchA";
+		case Qt::Key_LaunchB: return "LaunchB";
+		case Qt::Key_LaunchC: return "LaunchC";
+		case Qt::Key_LaunchD: return "LaunchD";
+		case Qt::Key_LaunchE: return "LaunchE";
+		case Qt::Key_LaunchF: return "LaunchF";
+		case Qt::Key_LaunchG: return "LaunchG";
+		case Qt::Key_LaunchH: return "LaunchH";
 		default: return EnumKeyToString(key);
 	}
 }
 
 const QString RpgUtils::keysToString(Qt::Key key, Qt::KeyboardModifiers mod){
 	if(mod != Qt::NoModifier){
-		return RpgUtils::keyModifierToString(mod) + "+" + RpgUtils::keyToString(key);
+		if(RpgUtils::iskeyModifierSameToKey(mod, key)){
+			return RpgUtils::keyModifierToString(mod);
+		}
+		return RpgUtils::keyModifierToString(mod) + " + " + RpgUtils::keyToString(key);
 	}else{
 		return RpgUtils::keyToString(key);
 	}

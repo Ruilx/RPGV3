@@ -250,34 +250,71 @@ private:
 		}
 	}
 
-	void receiveKeyPress(int key, Qt::KeyboardModifiers mod){
-		if(!this->isRunning()){
-			return;
-		}
-		if(mod != Qt::NoModifier){
-			return;
-		}
-		qDebug() << CodePath << QString("Receive key Release: %1 + %2").arg(RpgUtils::keyModifierToString(mod)).arg(RpgUtils::keyToString((Qt::Key)key));
-		if(key == Qt::Key_Return || key == Qt::Key_Space){
-			if(this->showTextInProgressFlag == true){
-				this->quickShowFlag = true;
-			}else{
-				this->messageIndex++;
-				if(this->messageIndex >= this->messagesReady.length()){
-					// 会话全部完成
-					this->hideDialog();
-					this->messageIndex = 0;
-					this->lastDialogMessage = RpgDialogMessage("");
-					this->end();
-					return;
+	bool event(QEvent *ev){
+		qDebug() << CodePath << "EventHere!" << ev;
+		return true;
+	}
+
+	void keyReleaseEvent(QKeyEvent *event){
+		if(!event->isAutoRepeat()){
+			if(!this->isRunning()){
+				return;
+			}
+			if(event->modifiers() != Qt::NoModifier){
+				return;
+			}
+			int key = event->key();
+			qDebug() << CodePath << "Release!" << RpgUtils::keysToString((Qt::Key)key, Qt::NoModifier);
+			if(key == Qt::Key_Return || key == Qt::Key_Space){
+				if(this->showTextInProgressFlag == true){
+					this->quickShowFlag = true;
 				}else{
-					// 如果还没有, 则显示接下来的对话
-					this->showMessage(this->messageIndex);
-					// TODO: 设置超时时间
+					this->messageIndex++;
+					if(this->messageIndex >= this->messagesReady.length()){
+						// 会话全部完成
+						this->hideDialog();
+						this->messageIndex = 0;
+						this->lastDialogMessage = RpgDialogMessage("");
+						this->end();
+						return;
+					}else{
+						// 如果还没有, 则显示接下来的对话
+						this->showMessage(this->messageIndex);
+						// TODO: 设置超时时间
+					}
 				}
 			}
 		}
 	}
+
+//	void receiveKeyPress(int key, Qt::KeyboardModifiers mod){
+//		if(!this->isRunning()){
+//			return;
+//		}
+//		if(mod != Qt::NoModifier){
+//			return;
+//		}
+//		qDebug() << CodePath << QString("Receive key Release: %1 + %2").arg(RpgUtils::keyModifierToString(mod)).arg(RpgUtils::keyToString((Qt::Key)key));
+//		if(key == Qt::Key_Return || key == Qt::Key_Space){
+//			if(this->showTextInProgressFlag == true){
+//				this->quickShowFlag = true;
+//			}else{
+//				this->messageIndex++;
+//				if(this->messageIndex >= this->messagesReady.length()){
+//					// 会话全部完成
+//					this->hideDialog();
+//					this->messageIndex = 0;
+//					this->lastDialogMessage = RpgDialogMessage("");
+//					this->end();
+//					return;
+//				}else{
+//					// 如果还没有, 则显示接下来的对话
+//					this->showMessage(this->messageIndex);
+//					// TODO: 设置超时时间
+//				}
+//			}
+//		}
+//	}
 
 public:
 	RpgDialog(RpgDialogBase *dialogBase, QGraphicsObject *parentItem = nullptr): RpgObject(parentItem){
@@ -526,36 +563,6 @@ public:
 		}
 
 		// 设置对话框背景, 支持每次对话框形状不同
-//		QPointF dialogPos;
-//		switch(this->dialogaAlign){
-//			case Rpg::AlignTopLeft:
-//				dialogPos = QPointF(RpgDialogBase::MarginH, RpgDialogBase::MarginV);
-//				break;
-//			case Rpg::AlignTop:
-//				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, RpgDialogBase::MarginV);
-//				break;
-//			case Rpg::AlignTopRight:
-//				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, RpgDialogBase::MarginV);
-//				break;
-//			case Rpg::AlignLeft:
-//				dialogPos = QPointF(RpgDialogBase::MarginH, (ScreenHeight - this->dialogSize.height()) / 2.0f);
-//				break;
-//			case Rpg::AlignCenter:
-//				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, (ScreenHeight - this->dialogSize.height()) / 2.0f);
-//				break;
-//			case Rpg::AlignRight:
-//				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, (ScreenHeight - this->dialogSize.height()) / 2.0f);
-//				break;
-//			case Rpg::AlignBottomLeft:
-//				dialogPos = QPointF(RpgDialogBase::MarginH, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
-//				break;
-//			case Rpg::AlignBottom:
-//				dialogPos = QPointF((ScreenWidth - this->dialogSize.width()) / 2.0f, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
-//				break;
-//			case Rpg::AlignBottomRight:
-//				dialogPos = QPointF(ScreenWidth - this->dialogSize.width() - RpgDialogBase::MarginH, ScreenHeight - this->dialogSize.height() - RpgDialogBase::MarginV);
-//				break;
-//		}
 		QPointF dialogPos = RpgUtils::getDialogPos(this->dialogaAlign, this->dialogSize, RpgDialogBase::MarginH, RpgDialogBase::MarginV);
 
 		this->box->setPixmap(this->skin->getDialogImage(this->dialogSize));

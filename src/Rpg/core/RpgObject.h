@@ -64,19 +64,20 @@ public:
 		this->setProcessing(true);
 	}
 
-	virtual void receiveKeyPress(int key, Qt::KeyboardModifiers mod){
-		if(!this->running){
-			return;
-		}
-		qDebug() << CodePath << tr("Receive Key Press ↓: ") << RpgUtils::keysToString((Qt::Key)key, mod);
-	}
+	// 这两个函数已被Qt的KeyEvent代替, 请使用keyPressEvent和keyReleaseEvent代替(QObject已继承)
+//	virtual void receiveKeyPress(int key, Qt::KeyboardModifiers mod){
+//		if(!this->running){
+//			return;
+//		}
+//		qDebug() << CodePath << tr("Receive Key Press ↓: ") << RpgUtils::keysToString((Qt::Key)key, mod);
+//	}
 
-	virtual void receiveKeyRelease(int key, Qt::KeyboardModifiers mod){
-		if(!this->running){
-			return;
-		}
-		qDebug() << CodePath << tr("Receive Key Release ↑: ") << RpgUtils::keysToString((Qt::Key)key, mod);
-	}
+//	virtual void receiveKeyRelease(int key, Qt::KeyboardModifiers mod){
+//		if(!this->running){
+//			return;
+//		}
+//		qDebug() << CodePath << tr("Receive Key Release ↑: ") << RpgUtils::keysToString((Qt::Key)key, mod);
+//	}
 };
 
 #endif // RPGOBJECT_H

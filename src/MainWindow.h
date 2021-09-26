@@ -41,6 +41,8 @@ public:
 		RpgPreload preload(initJsonFile);
 		RpgFileManager::instance()->dumpFiles();
 
+
+
 	}
 	~MainWindow();
 };
