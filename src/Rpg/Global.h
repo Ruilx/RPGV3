@@ -31,6 +31,30 @@
 #	define CodePath ""
 #endif
 
+#ifndef rDebug
+#	define rDebug() qDebug().noquote() << CodePath
+#endif
+
+#ifndef rInfo
+#	define rInfo() qInfo().noquote() << CodePath
+#endif
+
+#ifndef rWarning
+#	define rWarning() qWarning().noquote() << CodePath
+#endif
+
+#ifndef rCritical
+#	define rCritical() qCritical().noquote() << CodePath
+#endif
+
+#ifndef rError
+#	define rError() rCritical()
+#endif
+
+#ifndef rFatal
+#	define rFatal(...) qFatal(...)
+#endif
+
 #ifndef Pure
 #	define Pure =0
 #endif
@@ -74,5 +98,19 @@
 #		define Unused(x) ((void)x);
 #	endif
 #endif
+
+//#ifndef DebugMessageFormat
+//#define DebugMessageFormat
+//void debugMessageFormat(QtMsgType type, const QMessageLogContext &context, const QString &msg){
+
+//}
+//#endif
+
+//#ifndef RpgInit
+//#define RpgInit
+//void rpgInit() NoThrow{
+
+//}
+//#endif
 
 #endif // GLOBAL_H

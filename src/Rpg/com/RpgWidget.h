@@ -78,7 +78,6 @@ public:
 		mainLay->setMargin(0);
 
 		//RpgView::instance()->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
-		RpgView::instance()->setRenderHint(QPainter::TextAntialiasing);
 
 		QTimer::singleShot(1000, this, &RpgWidget::ready);
 	}

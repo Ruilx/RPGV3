@@ -34,6 +34,15 @@ public:
 //			this->setWindowFlag(Qt::MSWindowsFixedSizeDialogHint, true);
 		this->setMinimumSize(ScreenWidth + 2, ScreenHeight + 2);
 
+		//this->setWindowOpacity(0.5);
+		//setMouseTracking(false); // 设置是否响应鼠标移动时未按下按钮的事件发生
+		QSizePolicy policy = this->sizePolicy();{
+			policy.setHorizontalPolicy(QSizePolicy::Preferred);
+			policy.setVerticalPolicy(QSizePolicy::Preferred);
+			policy.setHeightForWidth(true);
+		};
+		this->setSizePolicy(policy);
+
 		//RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, "title", QUrl::fromLocalFile("data/music/title.ogg"));
 		//RpgMusic::instance()->playMusic("title");
 

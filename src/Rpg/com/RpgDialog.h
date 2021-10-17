@@ -250,11 +250,6 @@ private:
 		}
 	}
 
-	bool event(QEvent *ev){
-		qDebug() << CodePath << "EventHere!" << ev;
-		return true;
-	}
-
 	void keyReleaseEvent(QKeyEvent *event){
 		if(!event->isAutoRepeat()){
 			if(!this->isRunning()){
@@ -264,7 +259,6 @@ private:
 				return;
 			}
 			int key = event->key();
-			qDebug() << CodePath << "Release!" << RpgUtils::keysToString((Qt::Key)key, Qt::NoModifier);
 			if(key == Qt::Key_Return || key == Qt::Key_Space){
 				if(this->showTextInProgressFlag == true){
 					this->quickShowFlag = true;

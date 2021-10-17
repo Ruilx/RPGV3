@@ -30,6 +30,20 @@ protected:
 		return;
 	}
 
+	virtual bool event(QEvent *event) override{
+		switch(event->type()){
+			case QEvent::KeyPress:
+				this->keyPressEvent(reinterpret_cast<QKeyEvent*>(event));
+				break;
+			case QEvent::KeyRelease:
+				this->keyReleaseEvent(reinterpret_cast<QKeyEvent*>(event));
+				break;
+			default:
+				return QGraphicsObject::event(event);
+		}
+		return event->isAccepted();
+	}
+
 public:
 	RpgObject(QGraphicsObject *parentItem): QGraphicsObject(parentItem){
 
