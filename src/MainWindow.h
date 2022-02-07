@@ -7,14 +7,18 @@
 #include <Rpg/core/RpgFileManager.h>
 #include <Rpg/core/RpgPreload.h>
 
+/**
+ * @brief The MainWindow class
+ * 主界面窗口的建立, 布置页面样式以及启动scene脚本等工作
+ */
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
-	RpgWidget *widget = nullptr;
+	bool canClose = false;
 
 	void closeEvent(QCloseEvent *event){
-		if(!widget->canClose()){
+		if(!this->canClose){
 			int result = QMessageBox::question(this, qApp->applicationDisplayName(), tr("Do you really want to quit the game?\nThe progress not saved will be lost."), QMessageBox::Yes | QMessageBox::Cancel);
 			if(result != QMessageBox::Yes){
 				event->ignore();
@@ -26,10 +30,14 @@ class MainWindow : public QMainWindow
 		return;
 	}
 
+	void testModel();
+
 public:
 	MainWindow(QWidget *parent = nullptr): QMainWindow(parent){
-		this->widget = new RpgWidget(this);
-		this->setCentralWidget(this->widget);
+		//this->widget = new RpgWidget(this);
+		//this->setCentralWidget(this->widget);
+		RpgView *view = RpgView::instance(this);
+		this->setCentralWidget(view);
 
 //			this->setWindowFlag(Qt::MSWindowsFixedSizeDialogHint, true);
 		this->setMinimumSize(ScreenWidth + 2, ScreenHeight + 2);
@@ -51,7 +59,7 @@ public:
 		RpgFileManager::instance()->dumpFiles();
 
 
-
+		QTimer::singleShot(1000, this, &MainWindow::testModel);
 	}
 	~MainWindow();
 };

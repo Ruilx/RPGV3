@@ -43,7 +43,7 @@ signals:
 	void started(const QString &soundName);
 	void stopped(const QString &soundName);
 public slots:
-	void play(const QString &soundName, qreal volume = 0.7f, int times = 1);
+	void play(const QString &soundName, qreal volume = 1.0, int times = 1);
 	void stop(const QString &soundName);
 };
 

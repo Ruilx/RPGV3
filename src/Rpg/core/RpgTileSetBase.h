@@ -24,18 +24,18 @@ protected:
 		}
 		int width = fileImage.width();
 		int height = fileImage.height();
-		if(width % int(MapBlockWidth) != 0){
-			qDebug() << "[WARNI]" << CodePath << "Source image's width not grid by " << MapBlockWidth << "px, may cause mapblocks dislocated.";
+		if(width % int(MapTileWidth) != 0){
+			qDebug() << "[WARNI]" << CodePath << "Source image's width not grid by " << MapTileWidth << "px, may cause mapblocks dislocated.";
 		}
-		if(height % int(MapBlockHeight) != 0){
-			qDebug() << "[WARNI]" << CodePath << "Source image's height not grid by " << MapBlockHeight << "px, may cause mapblocks dislocated.";
+		if(height % int(MapTileHeight) != 0){
+			qDebug() << "[WARNI]" << CodePath << "Source image's height not grid by " << MapTileHeight << "px, may cause mapblocks dislocated.";
 		}
-		this->rows = width / MapBlockWidth;
-		this->cols = width / MapBlockHeight;
+		this->rows = width / MapTileWidth;
+		this->cols = width / MapTileHeight;
 
 		for(int i = 0; i < this->rows; i++){
 			for(int j = 0; j < this->cols; j++){
-				QImage *p = new QImage(fileImage.copy(j * MapBlockHeight, i * MapBlockWidth, MapBlockWidth, MapBlockHeight));
+				QImage *p = new QImage(fileImage.copy(j * MapTileHeight, i * MapTileWidth, MapTileWidth, MapTileHeight));
 				this->imageList.insert((quint64)(j) << 32 | (quint64)(i), p);
 			}
 		}

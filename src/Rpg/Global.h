@@ -6,8 +6,8 @@
 #define ScreenWidth 640.0
 #define ScreenHeight 480.0
 
-#define MapBlockWidth 32.0
-#define MapBlockHeight 32.0
+#define MapTileWidth 32.0
+#define MapTileHeight 32.0
 
 #ifndef QT_DEBUG
 #	define QT_DEBUG 1

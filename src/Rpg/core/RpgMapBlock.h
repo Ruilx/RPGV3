@@ -78,9 +78,9 @@ private:
 	 */
 	void setPixmapPrivate(const QPixmap &content, int index = -1, bool append = false){
 		if(!content.isNull()){
-			if(content.width() != MapBlockWidth || content.height() != MapBlockHeight){
+			if(content.width() != MapTileWidth || content.height() != MapTileHeight){
 				qDebug() << "[WARNI]" << CodePath << QString("Content is not fit at (%1, %2), source (%1, %2)")
-							.arg(MapBlockWidth).arg(MapBlockHeight).arg(content.width()).arg(content.height());
+							.arg(MapTileWidth).arg(MapTileHeight).arg(content.width()).arg(content.height());
 			}
 			if(append == false){
 				this->clearPixmap();

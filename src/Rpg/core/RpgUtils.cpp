@@ -3,6 +3,8 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QFile>
+#include <QGraphicsItem>
+
 #include <Rpg/exception/RpgFileCannotOpenException.h>
 
 void RpgUtils::msleep(int msec){
@@ -284,6 +286,11 @@ QPointF RpgUtils::getBlockPos(Rpg::BlockAlign align, const QSizeF &blockSize, co
 QPointF RpgUtils::getDialogPos(Rpg::BlockAlign align, const QSize &dialogSize, int marginW, int marginH){
 	return RpgUtils::getBlockPos(align, dialogSize, QSizeF(marginW, marginH), QSizeF(ScreenWidth, ScreenHeight));
 }
+
+//QGraphicsItem RpgUtils::genViewGrids(qreal paddingWidth, qreal paddingHeight, qreal radiusWidth, qreal radiusHeight){
+
+//	return QGraphicsItem();
+//}
 
 
 

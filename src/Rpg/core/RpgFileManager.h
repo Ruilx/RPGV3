@@ -155,7 +155,7 @@ public:
 	}
 
 	void dumpFiles() NoThrow{
-		qDebug() << "=================== RpgFileManager ====================";
+		qDebug() << CodePath << "=================== RpgFileManager ====================";
 		for(QHash<FileType, QHash<QString, QUrl>* >::const_iterator i = this->files.constBegin(); i != this->files.constEnd(); i++){
 			qDebug().noquote().nospace() << "[" << this->fileTypeName.value(i.key(), "UNKNOWN") << "]";
 			QHash<QString, QUrl> *file = i.value();
@@ -164,9 +164,10 @@ public:
 				continue;
 			}
 			for(QHash<QString, QUrl>::const_iterator ii = file->constBegin(); ii != file->constEnd(); ii++){
-				qDebug().noquote() << ii.key() << "=" << ii.value();
+				qDebug().noquote() << "    " << ii.key() << "=" << ii.value();
 			}
 		}
+		qDebug() << CodePath << "=======================================================";
 	}
 
 };

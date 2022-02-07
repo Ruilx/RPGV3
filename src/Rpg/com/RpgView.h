@@ -1,3 +1,4 @@
+
 #ifndef RPGVIEW_H
 #define RPGVIEW_H
 
@@ -34,28 +35,28 @@ class RpgView : public QGraphicsView
 //		event->accept();
 //	}
 
-	void resizeEvent(QResizeEvent *event){
-		if(!event->oldSize().isValid()){
-			event->ignore();
-			return;
-		}
-		int edgeOld = qMin(event->oldSize().width(), event->oldSize().height());
-		int edge = qMin(event->size().width(), event->size().height());
-		QRectF fitInViewSenceRect;
-		if(edge < edgeOld){
-			qDebug().nospace().noquote() << "Calling mapToScene(0, 0, " << event->oldSize().width() << ", " << event->oldSize().height() << ") when edge < edgeOld";
-			fitInViewSenceRect = this->mapToScene(0, 0, event->oldSize().width(), event->oldSize().height()).boundingRect();
-			qDebug() << "MaptoScene when edge < edgeOld:" << fitInViewSenceRect;
-			this->fitInView(fitInViewSenceRect, Qt::KeepAspectRatioByExpanding);
-		}else{
-			qDebug().nospace().noquote() << "Calling mapToScene(0, 0, " << event->oldSize().width() << ", " << event->oldSize().height() << ") when else";
-			fitInViewSenceRect = this->mapToScene(0, 0, event->oldSize().width(), event->oldSize().height()).boundingRect();
-			qDebug() << "MaptoScene when else:" << fitInViewSenceRect;
-			this->fitInView(fitInViewSenceRect, Qt::KeepAspectRatio);
-		}
+//	void resizeEvent(QResizeEvent *event){
+//		if(!event->oldSize().isValid()){
+//			event->ignore();
+//			return;
+//		}
+//		int edgeOld = qMin(event->oldSize().width(), event->oldSize().height());
+//		int edge = qMin(event->size().width(), event->size().height());
+//		QRectF fitInViewSenceRect;
+//		if(edge < edgeOld){
+//			qDebug().nospace().noquote() << "Calling mapToScene(0, 0, " << event->oldSize().width() << ", " << event->oldSize().height() << ") when edge < edgeOld";
+//			fitInViewSenceRect = this->mapToScene(0, 0, event->oldSize().width(), event->oldSize().height()).boundingRect();
+//			qDebug() << "MaptoScene when edge < edgeOld:" << fitInViewSenceRect;
+//			this->fitInView(fitInViewSenceRect, Qt::KeepAspectRatioByExpanding);
+//		}else{
+//			qDebug().nospace().noquote() << "Calling mapToScene(0, 0, " << event->oldSize().width() << ", " << event->oldSize().height() << ") when else";
+//			fitInViewSenceRect = this->mapToScene(0, 0, event->oldSize().width(), event->oldSize().height()).boundingRect();
+//			qDebug() << "MaptoScene when else:" << fitInViewSenceRect;
+//			this->fitInView(fitInViewSenceRect, Qt::KeepAspectRatio);
+//		}
 
-		event->accept();
-	}
+//		event->accept();
+//	}
 
 	void mousePressEvent(QMouseEvent *event){
 		if(event->buttons() & Qt::RightButton){
@@ -97,6 +98,9 @@ class RpgView : public QGraphicsView
 
 			this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->value() - dx);
 			this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - dy);
+
+			qDebug() << "HOR:" << this->horizontalScrollBar()->value() << "" << "VER:" << this->verticalScrollBar()->value();
+			qDebug() << "SceneRect:" << this->scene()->sceneRect();
 
 			this->lastPos = pos;
 		}
@@ -190,8 +194,8 @@ private:
 		}
 		this->setPalette(pal);
 //		this->setFixedSize(ScreenWidth + 2, ScreenHeight + 2);
-		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//		this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 		this->setRenderHint(QPainter::TextAntialiasing);
 
