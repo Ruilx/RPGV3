@@ -19,7 +19,7 @@ class RpgObject : public QGraphicsObject
 	bool running = false;
 
 protected:
-	virtual QRectF boundingRect() const{
+	virtual QRectF boundingRect() const Override{
 		return QRectF();
 	}
 

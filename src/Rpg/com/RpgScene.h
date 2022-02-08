@@ -5,6 +5,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <Rpg/Global.h>
 
+#include <QPen>
+
 /**
  * @brief The RpgScene class
  * RpgScene预示着游戏中的每一个地图, 包括标题和各种过场
@@ -18,6 +20,7 @@ class RpgScene : public QGraphicsScene
 	Q_OBJECT
 
 	QString mapFile;
+
 public:
 	RpgScene(QObject *parent = nullptr): QGraphicsScene(parent){
 		this->setSceneRect(0, 0, ScreenWidth, ScreenHeight);

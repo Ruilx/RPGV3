@@ -39,6 +39,7 @@ unix{
 SOURCES += \
     src/Rpg/core/RpgAutoTileRendererBase.cpp \
     src/Rpg/core/RpgAutoTileRendererSpecLocation.cpp \
+    src/Rpg/core/RpgItem/RpgAxisItem.cpp \
     src/Rpg/core/RpgVar.cpp \
     src/main.cpp \
     src/MainWindow.cpp \
@@ -83,6 +84,7 @@ HEADERS += \
     src/MainWindow.h \
     src/Rpg/core/RpgAutoTileRendererBase.h \
     src/Rpg/core/RpgAutoTileRendererSpecLocation.h \
+    src/Rpg/core/RpgItem/RpgAxisItem.h \
     src/Rpg/core/RpgVar.h \
     src/Rpg/exception/RpgException.h \
     src/Rpg/exception/RpgFileCannotOpenException.h \
