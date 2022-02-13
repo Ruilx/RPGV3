@@ -18,7 +18,7 @@ class RpgFont
 		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::FontFile, fileManagerName);
 		int fontId = QFontDatabase::addApplicationFont(filename);
 		if(fontId == -1){
-			qDebug() << CodePath << "The name of font:" << fileManagerName << "is not valid from font database.";
+			rDebug() << CodePath << "The name of font:" << fileManagerName << "is not valid from font database.";
 			return;
 		}
 		this->fontMap.insert(name, fontId);
@@ -55,7 +55,7 @@ public:
 			}
 		}
 		QStringList fontList = QFontDatabase::applicationFontFamilies(this->fontMap.value(name));
-		//qDebug() << "Detected font:" << name << "with:" << fontList;
+		//rDebug() << "Detected font:" << name << "with:" << fontList;
 		if(fontList.length() >= 1){
 			return fontList.at(0);
 		}else{
@@ -90,7 +90,7 @@ public:
 
 	void _dumpFonts(){
 		for(QHash<QString, int>::ConstIterator i = this->fontMap.constBegin(); i != this->fontMap.constEnd(); i++){
-			qDebug() << i.key() << "=>" << i.value();
+			rDebug() << i.key() << "=>" << i.value();
 		}
 	}
 };

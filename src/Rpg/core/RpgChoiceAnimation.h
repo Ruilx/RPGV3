@@ -30,7 +30,7 @@ class RpgChoiceAnimation
 
 	QPropertyAnimation* makeDialogAnimation(RpgChoiceAnimation::AnimationMode mode){
 		if(this->dialog == nullptr){
-			qDebug() << CodePath << "=>this->dialog is nullptr.";
+			rDebug() << CodePath << "=>this->dialog is nullptr.";
 			return nullptr;
 		}
 		QPropertyAnimation *dialogAnimation = new QPropertyAnimation(this->dialogProperties, "opacity");

@@ -10,7 +10,8 @@ class Rpg
 public:
 	static const int Infinity = 0;
 
-	const QSizeF ScreenSize = QSizeF(ScreenWidth, ScreenHeight);
+	static constexpr QSizeF ScreenSize = QSizeF(ScreenWidth, ScreenHeight);
+	static constexpr QSizeF MapTileSize = QSizeF(MapTileWidth, MapTileHeight);
 
 	enum Speed{
 		SpeedSlow = 500,
@@ -26,7 +27,12 @@ public:
 		SingleWordSpeedInfinity = 0,
 	};
 
-	enum ZValues{
+	enum AvatarMirroringMode{
+		AvatarNormal = 0,
+		AvatarMirror = 1,
+	};
+
+	enum ZValue{
 		ZValueBackground = BackgroundZValue,
 		ZValueMap = MapZValue,
 		ZValueMapFront = MapFrontZValue,
