@@ -420,6 +420,16 @@ public:
 	}
 
 	/**
+	 * @brief appendMessage
+	 * @param text
+	 * @param name
+	 * 添加一段消息
+	 */
+	inline void appendMessage(const QString &text, const QString &name = QString()){
+		this->messages.append(RpgDialogMessage(text, name));
+	}
+
+	/**
 	 * @brief setFont
 	 * @param font
 	 * 设置字体

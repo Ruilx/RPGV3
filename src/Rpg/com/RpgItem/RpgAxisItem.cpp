@@ -11,7 +11,6 @@ void RpgAxisItem::draw(QPainter &p){
 	if(!p.isActive()){
 		return;
 	}
-	rDebug() << "Redraw!";
 	const QRectF area = QRectF(this->pos(), this->size);
 	const qreal width = area.width();
 	const qreal height = area.height();

@@ -4,6 +4,8 @@
 #include <Rpg/com/RpgItem/RpgAxisItem.h>
 #include <Rpg/com/RpgScene.h>
 
+#include <Rpg/com/RpgDialog.h>
+
 void MainWindow::testModel(){
 	RpgAxisItem *item = new RpgAxisItem(QRectF(0, 0, ScreenWidth, ScreenHeight), Rpg::MapTileSize, Rpg::MapTileSize);
 
@@ -11,6 +13,17 @@ void MainWindow::testModel(){
 	RpgView::instance()->setScene(scene);
 
 	scene->addItem(item);
+
+//	RpgSpecLocationChopingDialog base("blueSkin");
+
+//	RpgDialog dialog(&base);
+
+//	dialog.setDialogAlign(Rpg::AlignBottom);
+
+//	dialog.appendMessage("This is a text");
+
+//	dialog.run();
+//	dialog.waitForComplete();
 
 }
 

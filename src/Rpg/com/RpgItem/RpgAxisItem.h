@@ -6,7 +6,8 @@
 
 /**
  * @brief The RpgAxisItem class
- * RpgAxis
+ * Rpg 正交坐标item对象 类
+ * 在窗口中绘图一套带网格的直角坐标系, 以便更好的调试使用
  */
 class RpgAxisItem : public RpgObject
 {
