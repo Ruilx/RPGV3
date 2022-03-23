@@ -14,7 +14,7 @@ public:
 	}
 
 	QString toString() const Q_DECL_NOTHROW{
-		return QString("%1: %2 = 0x%3").arg(this->info).arg(this->name).arg(long(this->pointer));
+		return QString("%1: %2 = 0x%3").arg(this->info).arg(this->name).arg((const int64_t)(this->pointer));
 	}
 };
 

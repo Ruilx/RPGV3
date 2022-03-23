@@ -70,6 +70,7 @@ Thumbs.db
 
 # Python byte code
 *.pyc
+__pycache__/
 
 # Binaries
 *.dll
@@ -88,3 +89,6 @@ libs/
 # PPT?
 *.ppt
 *.pptx
+
+# data directory
+data/music

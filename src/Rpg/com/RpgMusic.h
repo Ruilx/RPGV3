@@ -30,16 +30,19 @@
  *
  * @see https://www.qtav.org
  * @see https://github.com/wang-bin/QtAV
+ *
+ * 2022/03/24
+ * 使用编译的1.13版本的QtAV组件, 升级至64位, 使用Qt 5.12.11 MinGW x86_64
  */
 class RpgMusic : public QObject
 {
 	Q_OBJECT
 	static RpgMusic *_instance;
 
-	QtAV::AVPlayer *music = new QtAV::AVPlayer(this);
+	QtAV::AVPlayer *music = nullptr;
 	qreal volume = 1.0f;
 
-	QPropertyAnimation *volumeAnimation = new QPropertyAnimation(this->music->audio(), "volume", this);
+	QPropertyAnimation *volumeAnimation = nullptr;
 
 	void volumeTransition(bool upward, int duration = 500){
 		if(upward){
@@ -64,7 +67,22 @@ public:
 	}
 
 	explicit RpgMusic(QObject *parent = nullptr): QObject(parent){
-		this->music->audio()->setVolume(1.0f);
+		QtAV::setLogLevel(QtAV::LogWarning);
+		QtAV::setFFmpegLogLevel("warn");
+
+		rDebug() << "====================";
+		rDebug() << QtAV::aboutQtAV_PlainText();
+		rDebug() << "====================";
+
+		if(this->music == nullptr){
+			this->music = new QtAV::AVPlayer(this);
+		}
+
+		if(this->volumeAnimation == nullptr){
+			this->volumeAnimation = new QPropertyAnimation(this->music->audio(), "volume", this);
+		}
+
+		this->music->audio()->setVolume(this->volume);
 
 		connect(this->music, &QtAV::AVPlayer::stateChanged, [this](QtAV::AVPlayer::State state){
 			if(state == QtAV::AVPlayer::PlayingState){
@@ -202,5 +220,9 @@ private slots:
 		throw RpgMusicInvalidMediaException(this->music->file());
 	}
 };
+
+#ifndef rpgMusic
+#define rpgMusic (RpgMusic::instance())
+#endif
 
 #endif // RPGMUSIC_H

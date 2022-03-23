@@ -164,10 +164,12 @@ DISTFILES += \
 	data/music/月光（オルゴール）.ogg \
 	data/se/banned.wav \
 	data/se/select.wav \
-	initialize.json
+	initialize.json \
+	.gitignore \
+	rpgvar.ini
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libs/ -lQtAV1
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libs/ -lQtAVd1
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libs/ -lQtAV1 -lQtAVWidgets1
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libs/ -lQtAVd1 -lQtAVWidgetsd1
 
 INCLUDEPATH += $$PWD/include
 DEPENDPATH += $$PWD/include
