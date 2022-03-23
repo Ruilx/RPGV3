@@ -2,7 +2,7 @@
 
 void RpgDialog::showMessage(int index){
 	if(index < 0 || index > this->messagesReady.length()){
-		qDebug() << CodePath << "index out of bound: [0," << this->messagesReady.length() << ")";
+		rDebug() << "index out of bound: [0," << this->messagesReady.length() << ")";
 		return;
 	}
 	const RpgDialogMessage current = this->messagesReady.at(index);
@@ -248,7 +248,7 @@ void RpgDialog::showMessage(int index){
 		this->messageBox->setPos(QPointF(MessageMarginH, MessageMarginV));
 		this->setMessageTextWidth(dialogSize.width() - 2 * MessageMarginH);
 	}
-	qDebug() << animations;
+	rDebug() << "Animations:" << animations;
 	this->dialogAnimation->runDialogAvatarAnimations(mode, this->lastDialogMessage.getAvatarMode(), animations);
 	this->showText(current.getText(), current.getSpeed(), current.getPointSize(), current.getName(), current.getLineHeight());
 	this->lastDialogMessage = current;

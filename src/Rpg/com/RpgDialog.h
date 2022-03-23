@@ -163,7 +163,7 @@ private:
 
 //	void showMessage1(int index){
 //		if(index < 0 || index > this->messagesReady.length()){
-//			qDebug() << CodePath << "Index out of range: [0," << this->messagesReady.length() << ")";
+//			rDebug() << "Index out of range: [0," << this->messagesReady.length() << ")";
 //			return;
 //		}
 //		const RpgDialogMessage currentMessage = this->messagesReady.at(index);
@@ -201,7 +201,7 @@ private:
 //				oppositeAvatarBox = this->avatarBoxLeft;
 //				this->avatarBoxRight->setPixmap(avatarPixmap);
 //			}else{
-//				qDebug() << CodePath << "CurrentAround is not valid.";
+//				rDebug() << "CurrentAround is not valid.";
 //				goto ShowMessage;
 //			}
 
@@ -246,11 +246,11 @@ private:
 		if(RpgState::instance()->getTop() == RpgState::DialogMode){
 			RpgState::instance()->popMode();
 		}else{
-			qDebug() << CodePath << "RpgState: Current top mode isn't DialogMode.";
+			rDebug() << "RpgState: Current top mode isn't DialogMode.";
 		}
 	}
 
-	void keyReleaseEvent(QKeyEvent *event){
+	void keyReleaseEvent(QKeyEvent *event) Override{
 		if(!event->isAutoRepeat()){
 			if(!this->isRunning()){
 				return;
@@ -288,7 +288,7 @@ private:
 //		if(mod != Qt::NoModifier){
 //			return;
 //		}
-//		qDebug() << CodePath << QString("Receive key Release: %1 + %2").arg(RpgUtils::keyModifierToString(mod)).arg(RpgUtils::keyToString((Qt::Key)key));
+//		rDebug() << QString("Receive key Release: %1 + %2").arg(RpgUtils::keyModifierToString(mod)).arg(RpgUtils::keyToString((Qt::Key)key));
 //		if(key == Qt::Key_Return || key == Qt::Key_Space){
 //			if(this->showTextInProgressFlag == true){
 //				this->quickShowFlag = true;
@@ -314,7 +314,7 @@ public:
 	RpgDialog(RpgDialogBase *dialogBase, QGraphicsObject *parentItem = nullptr): RpgObject(parentItem){
 		this->setTextColor(Qt::white);
 		this->messageBox->setFont(RpgFont::instance()->getFont("dialog"));
-		qDebug() << CodePath << this->messageBox->font().family();
+		rDebug() << this->messageBox->font().family();
 
 		if(dialogBase == nullptr){
 			throw RpgNullPointerException("RpgDialogBase not set");
@@ -322,7 +322,7 @@ public:
 		this->skin = static_cast<RpgDialogBase*>(dialogBase);
 
 		this->messageBox->document()->setDefaultStyleSheet(Rpg::getDefaultCss());
-		qDebug() << CodePath << "Default CSS:" << this->messageBox->document()->defaultStyleSheet();
+		rDebug() << "Default CSS:" << this->messageBox->document()->defaultStyleSheet();
 		this->messageBox->document()->setUndoRedoEnabled(false);
 		QTextOption messageTextOption = this->messageBox->document()->defaultTextOption();{
 			messageTextOption.setWrapMode(QTextOption::WrapAnywhere);
@@ -420,6 +420,16 @@ public:
 	}
 
 	/**
+	 * @brief appendMessage
+	 * @param text
+	 * @param name
+	 * 添加一段消息
+	 */
+	inline void appendMessage(const QString &text, const QString &name = QString()){
+		this->messages.append(RpgDialogMessage(text, name));
+	}
+
+	/**
 	 * @brief setFont
 	 * @param font
 	 * 设置字体
@@ -483,11 +493,11 @@ public:
 		int width = size.width();
 		int height = size.height();
 		if(width < RpgDialog::MinDialogWidth || width > RpgDialogBase::maxDialogSize().width()){
-			qDebug() << CodePath << "Given width:" << width << "is out of range: (" << RpgDialog::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ")";
+			rDebug() << "Given width:" << width << "is out of range: (" << RpgDialog::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ")";
 			return;
 		}
 		if(height < RpgDialog::MinDialogHeight || height > RpgDialogBase::maxDialogSize().height()){
-			qDebug() << CodePath << "Given height:" << height << "is out of range: (" << RpgDialog::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ")";
+			rDebug() << "Given height:" << height << "is out of range: (" << RpgDialog::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ")";
 			return;
 		}
 		this->dialogSize.setWidth(width);
@@ -529,7 +539,7 @@ public:
 		RpgObject::run();
 		// 重新设定其Scene
 		if(RpgView::instance()->scene() == nullptr){
-			qDebug() << CodePath << "RpgView not loaded scene yet.";
+			rDebug() << "RpgView not loaded scene yet.";
 			this->end();
 			throw RpgNullPointerException("RpgView::instance()->scene()");
 		}else{
@@ -540,7 +550,7 @@ public:
 		// 确定继续三角形存在
 		for(int i = 0; i < this->skin->getContinueSymbolImageLength(); i++){
 			if(this->skin->getContinueSymbolImage(i).isNull()){
-				qDebug() << CodePath << "Continue symbol frame " << i << " is null.";
+				rDebug() << "Continue symbol frame " << i << " is null.";
 				this->end();
 				return;
 			}
@@ -548,7 +558,7 @@ public:
 		// 复制消息组件
 		// 在这里Ready是用来显示的, messages是用来事先设置的
 		if(this->messages.isEmpty()){
-			qDebug() << CodePath << "Detected message is empty, exitted";
+			rDebug() << "Detected message is empty, exitted";
 			this->end();
 			return;
 		}else{
@@ -571,7 +581,7 @@ public:
 
 	int waitForComplete(){
 		if(!this->isRunning()){
-			qDebug() << CodePath << "RpgDialog is not running.";
+			rDebug() << "RpgDialog is not running.";
 			return -1;
 		}
 		QEventLoop eventLoop(this);

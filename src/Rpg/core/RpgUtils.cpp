@@ -287,10 +287,6 @@ QPointF RpgUtils::getDialogPos(Rpg::BlockAlign align, const QSize &dialogSize, i
 	return RpgUtils::getBlockPos(align, dialogSize, QSizeF(marginW, marginH), QSizeF(ScreenWidth, ScreenHeight));
 }
 
-//QGraphicsItem RpgUtils::genViewGrids(qreal paddingWidth, qreal paddingHeight, qreal radiusWidth, qreal radiusHeight){
-
-//	return QGraphicsItem();
-//}
 
 
 

@@ -8,8 +8,7 @@
 #define EnumKeyToString(key) #key
 
 class QGraphicsItem;
-class RpgUtils
-{
+class RpgUtils {
 public:
 	static void msleep(int msec);
 	static const QByteArray readFile(const QString &filename, int length = 1048576);
@@ -23,7 +22,6 @@ public:
 	static QPointF getBlockPos(Rpg::BlockAlign align, const QSizeF &blockSize, const QSizeF &margin, const QSizeF &parentSize);
 	static QPointF getDialogPos(Rpg::BlockAlign align, const QSize &dialogSize, int marginW, int marginH);
 
-//	static QGraphicsItem genViewGrids(qreal paddingWidth = MapTileWidth, qreal paddingHeight = MapTileHeight, qreal radiusWidth = MapTileWidth, qreal radiusHeight = MapTileHeight);
 };
 
 #endif // RPGUTILS_H

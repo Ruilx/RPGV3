@@ -45,7 +45,7 @@ private:
 	 */
 	void lyricAnimationShow(){
 		if(this->scene() == nullptr){
-			qDebug() << CodePath << "This object not in any scene";
+			rDebug() << "This object not in any scene";
 			return;
 		}
 		if(this->lyricOpacityAnimation->state() != QPropertyAnimation::Stopped){
@@ -62,7 +62,7 @@ private:
 	 */
 	void lyricAnimationHide(){
 		if(this->scene() == nullptr){
-			qDebug() << CodePath << "This object not in any scene";
+			rDebug() << "This object not in any scene";
 			return;
 		}
 		if(this->lyricOpacityAnimation->state() != QPropertyAnimation::Stopped){
@@ -112,7 +112,7 @@ public:
 		if(music != nullptr){
 			this->musicObj = music;
 		}else{
-			qDebug() << CodePath << "Given RpgMusic point is not a pointer. using default RpgMusic instead.";
+			rDebug() << "Given RpgMusic point is not a pointer. using default RpgMusic instead.";
 			this->musicObj = RpgMusic::instance();
 		}
 	}
@@ -124,17 +124,17 @@ public:
 	 */
 	void loadLyricFromFile(const QString &filename){
 		if(this->getProcessing()){
-			qDebug() << CodePath << "Cannot load the lyric while running!";
+			rDebug() << "Cannot load the lyric while running!";
 			return;
 		}
 		if(filename.isEmpty() || !QFile::exists(filename)){
-			qDebug() << CodePath << QString("filename \"%1\" is not exist.").arg(filename);
+			rDebug() << QString("filename \"%1\" is not exist.").arg(filename);
 			// Todo: throw a exception file not exist.
 			return;
 		}
 		QFile f(filename);
 		if(!f.open(QIODevice::ReadOnly)){
-			qDebug() << CodePath << QString("filename \"%1\" cannot open: %2").arg(filename, f.errorString());
+			rDebug() << QString("filename \"%1\" cannot open: %2").arg(filename, f.errorString());
 			return;
 		}
 		this->lyricMap.clear();
@@ -147,12 +147,12 @@ public:
 				continue;
 			}
 			if(!line.startsWith("[")){
-				qDebug() << CodePath << QString("Invalid line data: not start with '[': \"%1\". Ignored.").arg(line);
+				rDebug() << QString("Invalid line data: not start with '[': \"%1\". Ignored.").arg(line);
 				continue;
 			}
 			int rightBraPos = line.indexOf("]");
 			if(rightBraPos == -1){
-				qDebug() << CodePath << QString("Invalid line data: Syntax error: cannot find timestamp tip: \"%1\". Ignored.").arg(line);
+				rDebug() << QString("Invalid line data: Syntax error: cannot find timestamp tip: \"%1\". Ignored.").arg(line);
 				continue;
 			}
 			QString timestamp = line.mid(1, rightBraPos -1);
@@ -170,7 +170,7 @@ public:
 					if(timeTimestamp.isNull() || !timeTimestamp.isValid()){
 						timeTimestamp = QTime::fromString(timestamp, "mm:ss.zzz");
 						if(timeTimestamp.isNull() || !timeTimestamp.isValid()){
-							qDebug() << CodePath << QString("Invalid line data: timestamp cannot resolve to [int], [double] [hh:mm:ss.zzz] or [mm:ss:zzz]: \"%1\". Ignored.").arg(line);
+							rDebug() << QString("Invalid line data: timestamp cannot resolve to [int], [double] [hh:mm:ss.zzz] or [mm:ss:zzz]: \"%1\". Ignored.").arg(line);
 							continue;
 						}else{
 							this->lyricMap.insert(timeTimestamp.msecsSinceStartOfDay(), lyricText);
@@ -203,7 +203,7 @@ public:
 	void loadLyric(const QString &name){
 		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::LyricFile, name);
 		if(filename.isEmpty()){
-			qDebug() << CodePath << QString("Cannot open resource: \"%1\"").arg(name);
+			rDebug() << QString("Cannot open resource: \"%1\"").arg(name);
 			// Todo: throw Resource not found exception;
 			return;
 		}
@@ -218,7 +218,7 @@ public:
 		RpgObject::run();
 		// 重新设定其Scene
 		if(RpgView::instance()->scene() == nullptr){
-			qDebug() << CodePath << "RpgView not loaded scene yet.";
+			rDebug() << "RpgView not loaded scene yet.";
 			this->end();
 			throw RpgNullPointerException("RpgView::instance()->scene()");
 		}else{
@@ -227,13 +227,13 @@ public:
 		}
 
 		if(this->lyricMap.isEmpty()){
-			qDebug() << CodePath << "RpgLyric::lyricMap is empty, please load lyric first";
+			rDebug() << "RpgLyric::lyricMap is empty, please load lyric first";
 			this->end();
 			return;
 		}
 
 		if(this->musicObj != nullptr && this->musicObj->getLoop() != 1){
-			qDebug() << CodePath << "The loop BGM cannot display the lyric...";
+			rDebug() << "The loop BGM cannot display the lyric...";
 			this->end();
 			return;
 		}
@@ -264,11 +264,11 @@ public:
 	 * 在debug显示全部歌词
 	 */
 	void _dumpLyric(){
-		qDebug() << CodePath << "lyric =================================================";
+		rDebug() << "lyric =================================================";
 		for(QMap<int, QString>::ConstIterator i = this->lyricMap.constBegin(); i != this->lyricMap.constEnd(); i++){
-			qDebug() << CodePath << QString("[%1]%2").arg(i.key()).arg(i.value());
+			rDebug() << QString("[%1]%2").arg(i.key()).arg(i.value());
 		}
-		qDebug() << CodePath << "=======================================================";
+		rDebug() << "=======================================================";
 	}
 
 protected:

@@ -28,7 +28,7 @@ public:
 		QString one;
 		bool findTagRear = false;
 		if(!this->hasNext()){
-			qDebug() << "Touched getOne no next.";
+			rDebug() << "Touched getOne no next.";
 			return QString();
 		}
 		one.append(*this->iter);
@@ -48,7 +48,7 @@ public:
 
 	const QString chopLeft(){
 		if(!this->hasNext()){
-			qDebug() << "Touched chopLeft no next.";
+			rDebug() << "Touched chopLeft no next.";
 			return this->left;
 		}else{
 			const QString one = this->getOne();
@@ -59,10 +59,10 @@ public:
 					if(currentCloseTag == one){
 						this->tags.pop();
 					}else{
-						qDebug() << CodePath << "Code tag is not legal:" << one;
+						rDebug() << CodePath << "Code tag is not legal:" << one;
 						int fixTagsLoc = this->tags.lastIndexOf(one);
 						if(fixTagsLoc != -1){
-							qDebug() << CodePath << "Auto fix the tag:" << one;
+							rDebug() << CodePath << "Auto fix the tag:" << one;
 							this->tags.removeAt(fixTagsLoc);
 						}
 					}

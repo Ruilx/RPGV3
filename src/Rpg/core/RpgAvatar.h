@@ -56,7 +56,7 @@ public:
 
 	void setAvatar(const QString &name, const QPixmap &avatar){
 		if(avatar.isNull()){
-			qDebug() << CodePath << "The name: " << name << " of pixmap is null";
+			rDebug() << CodePath << "The name: " << name << " of pixmap is null";
 			return;
 		}
 		this->avatars.insert(name, avatar);
@@ -66,7 +66,7 @@ public:
 		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::AvatarFile, fileManagerName);
 		QPixmap pixmap(filename);
 		if(pixmap.isNull()){
-			qDebug() << CodePath << "The name: " << name << " of filename: " << filename << " isn't a pixmap";
+			rDebug() << CodePath << "The name: " << name << " of filename: " << filename << " isn't a pixmap";
 			return;
 		}
 		this->avatars.insert(name, pixmap);
@@ -86,7 +86,7 @@ public:
 			if(this->avatars.contains(name)){
 				return this->avatars.value(name);
 			}
-			qDebug() << CodePath << "Cannot found avatar pixmap with name: " << name << ".";
+			rDebug() << CodePath << "Cannot found avatar pixmap with name: " << name << ".";
 			throw RpgMapKeyNotFoundException(name);
 		}
 	}
@@ -108,7 +108,7 @@ public:
 				case Rpg::AvatarHalfBodyBehind:
 					pixmap = pixmap.scaledToHeight(ScreenHeight * RpgAvatar::avatarMaxScaleRatio, Qt::SmoothTransformation);
 					if(pixmap.width() >= ScreenWidth * RpgAvatar::avatarMaxScaleRatio){
-						qDebug() << CodePath << "pixmap size:" << pixmap.size() << " width is bigger than ScreenWidth * RpgAvatar::avatarMaxScaleRatio(" << RpgAvatar::avatarMaxScaleRatio << "):" << (ScreenWidth * 0.8f);
+						rDebug() << CodePath << "pixmap size:" << pixmap.size() << " width is bigger than ScreenWidth * RpgAvatar::avatarMaxScaleRatio(" << RpgAvatar::avatarMaxScaleRatio << "):" << (ScreenWidth * 0.8f);
 						pixmap = pixmap.scaledToWidth(ScreenWidth * RpgAvatar::avatarMaxScaleRatio, Qt::SmoothTransformation);
 					}
 					break;
@@ -119,7 +119,7 @@ public:
 					pixmap = pixmap.scaled(side, side, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 				}
 					break;
-				case Rpg::AvatarAroundUnknown:
+				case Rpg::AvatarModeUnknown:
 				default:
 					throw RpgRuntimeException("Touched Rpg::AvatarAroundUnknown or default!");
 			}
@@ -130,7 +130,7 @@ public:
 
 	void _dumpAvatars(){
 		for(QHash<QString, QPixmap>::ConstIterator i = this->avatars.constBegin(); i != this->avatars.constEnd(); i++){
-			qDebug() << i.key() << "=>" << i.value();
+			rDebug() << i.key() << "=>" << i.value();
 		}
 	}
 };

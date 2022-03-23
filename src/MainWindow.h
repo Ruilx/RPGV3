@@ -51,8 +51,8 @@ public:
 		};
 		this->setSizePolicy(policy);
 
-		//RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, "title", QUrl::fromLocalFile("data/music/title.ogg"));
-		//RpgMusic::instance()->playMusic("title");
+//		RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, "title", QUrl::fromLocalFile("data/music/title.ogg"));
+//		RpgMusic::instance()->playMusic("title");
 
 		QString initJsonFile = "initialize.json";
 		RpgPreload preload(initJsonFile);
