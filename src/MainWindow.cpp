@@ -9,7 +9,7 @@
 
 void MainWindow::testModel()
 {
-	rpgMusic->playMusic("年中混乱中");
+	//rpgMusic->playMusic("年中混乱中");
 
 	RpgAxisItem *item = new RpgAxisItem(QRectF(0, 0, ScreenWidth, ScreenHeight), Rpg::MapTileSize, Rpg::MapTileSize);
 
@@ -18,7 +18,7 @@ void MainWindow::testModel()
 
 	scene->addItem(item);
 
-	RpgSpecLocationChopingDialog base("blueSkin");
+	RpgSpecLocationChopingDialog base("skin");
 
 	RpgDialog dialog(&base);
 

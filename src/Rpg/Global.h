@@ -32,23 +32,44 @@
 #endif
 
 #ifndef rDebug
-#	define rDebug() qDebug().noquote() << CodePath
+#	define rDebug() (qDebug().noquote() << CodePath)
+#endif
+
+// 打印Debug信息, 信息之间不加空格分隔, 常用在拼写格式紧凑的打印中
+#ifndef rInlineDebug
+#	define rInlineDebug() (qDebug().noquote().nospace() << CodePath)
 #endif
 
 #ifndef rInfo
-#	define rInfo() qInfo().noquote() << CodePath
+#	define rInfo() (qInfo().noquote() << CodePath)
+#endif
+
+#ifndef rInlineInfo
+#	define rInlineInfo() (qDebug().noquote().nospace() << CodePath)
 #endif
 
 #ifndef rWarning
-#	define rWarning() qWarning().noquote() << CodePath
+#	define rWarning() (qWarning().noquote() << CodePath)
+#endif
+
+#ifndef rInlineWarning
+#	define rInlineWarning() (qWarning().noquote().nospace() << CodePath)
 #endif
 
 #ifndef rCritical
-#	define rCritical() qCritical().noquote() << CodePath
+#	define rCritical() (qCritical().noquote() << CodePath)
+#endif
+
+#ifndef rInlineCritical
+#	define rInlineCritical() (qCritical().noquote().nospace() << CodePath)
 #endif
 
 #ifndef rError
 #	define rError() rCritical()
+#endif
+
+#ifndef rInlineError
+#	define rInlineError() rInlineCritical()
 #endif
 
 #ifndef rFatal

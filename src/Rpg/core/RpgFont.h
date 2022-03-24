@@ -95,4 +95,8 @@ public:
 	}
 };
 
+#ifndef rpgFont
+#	define rpgFont (RpgFont::instance())
+#endif
+
 #endif // RPGFONT_H

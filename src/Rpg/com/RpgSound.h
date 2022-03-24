@@ -1,9 +1,7 @@
 #ifndef RPGSOUND_H
 #define RPGSOUND_H
 
-#include <QObject>
-#include <Rpg/Global.h>
-#include <Rpg/core/RpgFileManager.h>
+#include <QtCore>
 
 #include <QSoundEffect>
 
@@ -46,5 +44,9 @@ public slots:
 	void play(const QString &soundName, qreal volume = 1.0, int times = 1);
 	void stop(const QString &soundName);
 };
+
+#ifndef rpgSound
+#	define rpgSound (RpgSound::instance())
+#endif
 
 #endif // RPGSOUND_H

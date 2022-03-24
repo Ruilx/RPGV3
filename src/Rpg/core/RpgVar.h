@@ -36,13 +36,9 @@ typedef QHash<QString, QVariant> RpgVarHash;
 class RpgVar
 {
 	static RpgVar *_instance;
-
 	QString group;
-
 	QHash<QString, RpgVarHash*> vars;
-
-	RpgVar(){}
-
+	explicit RpgVar(){}
 public:
 	~RpgVar();
 
@@ -176,5 +172,9 @@ public:
 	 */
 	void dumpRpgVars() NoThrow;
 };
+
+#ifndef rpgVar
+#	define rpgVar (RpgVar::instance())
+#endif
 
 #endif // RPGVAR_H

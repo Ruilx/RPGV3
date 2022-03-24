@@ -12,6 +12,8 @@
 class RpgState : public QObject
 {
 	Q_OBJECT
+	const int MaxStates = 10;
+
 	static RpgState *_instance;
 public:
 
@@ -45,67 +47,19 @@ private:
 	QHash<Mode, QVector<RpgObject*> > modeObjects;
 
 public:
-	explicit RpgState(QObject *parent = nullptr): QObject(parent){
-		if(this->modeStack.isEmpty()){
-			this->modeStack.push(AutoMode);
-		}
-	}
+	explicit RpgState(QObject *parent = nullptr);
 
 //	inline const QString getModeStr(Mode mode){
 //		return this->modeStrHash.value(mode, "");
 //	}
 
-	inline Mode getTop() const{
-		return this->modeStack.top();
-	}
+	inline Mode getTop() const{ return this->modeStack.top(); }
+	void pushState(Mode mode);
+	Mode popState();
 
-	void pushMode(Mode mode){
-		this->modeStack.push(mode);
-	}
+	void registerRpgObject(RpgObject *obj, Mode mode);
 
-	Mode popMode(){
-		if(this->modeStack.isEmpty()){
-			qDebug() << CodePath << "Mode Stack is empty. cannot pop.";
-			return UnknowMode;
-		}
-		return this->modeStack.pop();
-	}
-
-	void registerRpgObject(RpgObject *obj, Mode mode){
-		if(obj == nullptr){
-			qDebug() << CodePath << "RpgObject is null";
-			throw RpgNullPointerException("RpgState::registerRpgObject=>obj", obj);
-		}
-		if(this->modeObjects.contains(mode)){
-			QVector<RpgObject*> objs = this->modeObjects.value(mode);
-			objs.append(obj);
-			this->modeObjects.insert(mode, objs);
-		}else{
-			QVector<RpgObject*> objs;
-			objs.append(obj);
-			this->modeObjects.insert(mode, objs);
-		}
-	}
-
-	void unregisterRpgObject(RpgObject *obj, Mode mode){
-		if(obj == nullptr){
-			qDebug() << CodePath << "RpgObject is null";
-			throw RpgNullPointerException("RpgState::unregisterRpgObject=>obj", obj);
-		}
-		if(this->modeObjects.contains(mode)){
-			QVector<RpgObject*> objs = this->modeObjects.value(mode);
-			int index = -1;
-			if((index = objs.indexOf(obj)) == -1){
-				qDebug() << CodePath << "The mode " << mode << " does not register this RpgObject: " << obj;
-				return;
-			}
-			objs.removeAt(index);
-			this->modeObjects.insert(mode, objs);
-		}else{
-			qDebug() << CodePath << "The mode " << mode << " does not have any object called: " << obj;
-			return;
-		}
-	}
+	void unregisterRpgObject(RpgObject *obj, Mode mode);
 
 signals:
 
@@ -171,77 +125,9 @@ public slots:
 //		}
 //	}
 
-	void keyPressEvent(QKeyEvent *event, const QGraphicsScene *scene){
-		if(event == nullptr){
-			qDebug() << CodePath << "Receive key event is nullptr.";
-			return;
-		}
-		int key = event->key();
-		Qt::KeyboardModifiers mod = event->modifiers();
-		qDebug() << CodePath << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
-		if(this->modeStack.isEmpty()){
-			qDebug() << CodePath << "Mode stack is empty, cannot getting Mode.";
-			throw RpgNullPointerException("RpgState::keyPressEvent => event", event);
-		}
-		if(scene == nullptr){
-			qDebug() << CodePath << "Must specified a valid scene to pass the key.";
-			throw RpgNullPointerException("RpgState::keyPressEvent => scene", scene);
-		}
-		Mode topMode = this->modeStack.top();
-		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
-		for(RpgObject *obj: objects){
-			if(obj == nullptr){
-				qDebug() << "RpgObject is null, cannot pass key to the object";
-				continue;
-			}
-			if(obj->scene() == scene){
-				if(obj->getProcessing()){
-					/* The event must be allocated on the heap since the post event queue will take ownership of the event
-					 * and delete it once it has been posted.
-					 */
-					QKeyEvent *keyPressEvent = new QKeyEvent(QEvent::KeyPress, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
-					qDebug() << CodePath << "Send Event to obj:" << obj;
-					qApp->postEvent(obj, keyPressEvent);
-				}
-			}
-		}
-	}
+	void keyPressEvent(QKeyEvent *event, const QGraphicsScene *scene);
 
-	void keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
-		if(event == nullptr){
-			qDebug() << CodePath << "Receive key event is nullptr.";
-			throw RpgNullPointerException("RpgState::keyReleaseEvent => event", event);
-		}
-		int key = event->key();
-		Qt::KeyboardModifiers mod = event->modifiers();
-		qDebug() << CodePath << "Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
-		if(this->modeStack.isEmpty()){
-			qDebug() << CodePath << "Mode stack is empty, cannot getting Mode.";
-			return;
-		}
-		if(scene == nullptr){
-			qDebug() << CodePath << "Must specified a valid scene to pass the key.";
-			throw RpgNullPointerException("RpgState::keyReleaseEvent => scene", scene);
-		}
-		Mode topMode = this->modeStack.top();
-		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
-		for(RpgObject *obj: objects){
-			if(obj == nullptr){
-				qDebug() << "RpgObject is null, cannot pass key to the object";
-				continue;
-			}
-			if(obj->scene() == scene){
-				if(obj->getProcessing()){
-					/* The event must be allocated on the heap since the post event queue will take ownership of the event
-					 * and delete it once it has been posted.
-					 */
-					QKeyEvent *keyReleaseEvent = new QKeyEvent(QEvent::KeyRelease, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
-					qDebug() << CodePath << "Send Event to obj:" << obj;
-					qApp->postEvent(obj, keyReleaseEvent);
-				}
-			}
-		}
-	}
+	void keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene);
 };
 
 #endif // RPGSTATE_H

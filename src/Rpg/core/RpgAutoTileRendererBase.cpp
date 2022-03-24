@@ -19,6 +19,16 @@ RpgAutoTileRendererBase::RpgAutoTileRendererBase(const QString &name){
 	}
 }
 
+RpgAutoTileRendererBase::~RpgAutoTileRendererBase(){
+	for(QMap<quint8, RpgSeqTilesArray*>::const_iterator i = this->tilesMap.constBegin(); i != this->tilesMap.constEnd(); i++){
+		if(i.value() != nullptr){
+			i.value()->clear();
+			delete i.value();
+		}
+	}
+	this->tilesMap.clear();
+}
+
 void RpgAutoTileRendererBase::insertTile(Rpg::AutoTileBlockType type, const QPixmap &pixmap){
 	if(pixmap.isNull()){
 		qDebug() << CodePath << "Given pixmap is null.";

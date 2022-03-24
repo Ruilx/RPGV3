@@ -2,7 +2,7 @@
     "map": {},
     "file": {},
     "font": {
-        "dialogFont": "data/font/A-OTF-FolkPro-Medium.otf",
+        "dialog": "data/font/unifont-12.1.03.ttf",
         "applicationFont": "data/font/msyh.ttc",
         "simplifyChineseCharactersSupport": "data/font/msyhl.ttc"
     },

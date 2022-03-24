@@ -92,7 +92,7 @@ private:
 	void showDialog(){
 		this->show();
 		emit this->enterDialogMode();
-		RpgState::instance()->pushMode(RpgState::DialogMode);
+		RpgState::instance()->pushState(RpgState::DialogMode);
 		RpgDialogAnimation::Animations animations = RpgDialogAnimation::AnimationDialogShow;
 //		this->dialogAnimation->runDialogAvatarAnimations();
 
@@ -112,9 +112,9 @@ public:
 			}
 			message = new QGraphicsTextItem(this);
 			message->setFont(RpgFont::instance()->getFont("dialog"));
-			qDebug() << CodePath << message->font().family();
+			rDebug() << message->font().family();
 			message->document()->setDefaultStyleSheet(Rpg::getDefaultCss());
-			qDebug() << CodePath << message->document()->defaultStyleSheet();
+			rDebug() << message->document()->defaultStyleSheet();
 			message->document()->setUndoRedoEnabled(false);
 			QTextOption messageTextOption = message->document()->defaultTextOption();{
 				// Dialog用的QTextOption是QTextOption::WrapAnywhere
@@ -258,13 +258,13 @@ public:
 		int width = size.width();
 		int height = size.height();
 		if(width < RpgChoice::MinDialogWidth || width > RpgDialogBase::maxDialogSize().width()){
-			qDebug() << CodePath << "Given width:" << width << "is out of range: (" << RpgChoice::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ")";
+			rDebug() << "Given width:" << width << "is out of range: (" << RpgChoice::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ")";
 			return;
 		}
 		// height按理来说应该大于ChoiceBuff加前后的padding, margin之后的结果, 但调大之后会导致很奇怪的显示方式, 之后希望调大之后能够出更多的选项等
 		// Todo: height值的优化
 		if(height < RpgChoice::MinDialogHeight || height > RpgDialogBase::maxDialogSize().height()){
-			qDebug() << CodePath << "Given height:" << height << "is out of range: (" << RpgChoice::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ")";
+			rDebug() << "Given height:" << height << "is out of range: (" << RpgChoice::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ")";
 			return;
 		}
 		this->dialogSize.setWidth(width);
@@ -311,7 +311,7 @@ public:
 		RpgObject::run();
 		// 重新设定其Scene
 		if(RpgView::instance()->scene() == nullptr){
-			qDebug() << CodePath << "RpgView not loaded seene yet.";
+			rDebug() << "RpgView not loaded seene yet.";
 			this->end();
 			throw RpgNullPointerException("RpgView::instance()->scene()");
 		}else{
@@ -322,7 +322,7 @@ public:
 		// 确定上下三角形的存在
 		for(int i = 0; i < this->skin->getContinueSymbolImageLength(); i++){
 			if(this->skin->getContinueSymbolImage(i).isNull()){
-				qDebug() << CodePath << "UpDown symbol frame" << i << "is null";
+				rDebug() << "UpDown symbol frame" << i << "is null";
 				this->end();
 				return;
 			}
@@ -331,7 +331,7 @@ public:
 		// 复制消息组件
 		// 在这里Ready是用来显示的, messages是事先设置的
 		if(this->messages.isEmpty()){
-			qDebug() << CodePath << "Detached message is empty, exitted";
+			rDebug() << "Detached message is empty, exitted";
 			this->end();
 			return;
 		}else{

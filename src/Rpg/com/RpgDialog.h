@@ -222,7 +222,7 @@ private:
 	void showDialog(){
 		this->show();
 		emit this->enterDialogMode();
-		RpgState::instance()->pushMode(RpgState::DialogMode);
+		RpgState::instance()->pushState(RpgState::DialogMode);
 		this->showMessage(0);
 	}
 
@@ -244,7 +244,7 @@ private:
 		this->clearMessages();
 		emit this->exitDialogMode();
 		if(RpgState::instance()->getTop() == RpgState::DialogMode){
-			RpgState::instance()->popMode();
+			RpgState::instance()->popState();
 		}else{
 			rDebug() << "RpgState: Current top mode isn't DialogMode.";
 		}

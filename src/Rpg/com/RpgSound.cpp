@@ -1,6 +1,9 @@
 #include "RpgSound.h"
 #include <QtConcurrent>
 
+#include <Rpg/Global.h>
+#include <Rpg/core/RpgFileManager.h>
+
 #include <Rpg/exception/RpgNullPointerException.h>
 
 RpgSound *RpgSound::_instance = nullptr;

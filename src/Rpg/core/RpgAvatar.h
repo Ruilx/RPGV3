@@ -135,4 +135,8 @@ public:
 	}
 };
 
+#ifndef rpgAvatar
+#	define rpgAvatar (RpgAvatar::instance())
+#endif
+
 #endif // RPGAVATAR_H

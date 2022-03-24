@@ -60,15 +60,7 @@ protected:
 	 */
 	RpgAutoTileRendererBase(const QString &name);
 
-	~RpgAutoTileRendererBase(){
-		for(QMap<quint8, RpgSeqTilesArray*>::const_iterator i = this->tilesMap.constBegin(); i != this->tilesMap.constEnd(); i++){
-			if(i.value() != nullptr){
-				i.value()->clear();
-				delete i.value();
-			}
-		}
-		this->tilesMap.clear();
-	}
+	~RpgAutoTileRendererBase();
 
 	/**
 	 * @brief renderTiles
