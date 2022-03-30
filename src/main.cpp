@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
-	qDebug() << CodePath << "Build time:" << parseBuildDatetime().toString("yyyy-MM-dd HH:mm:ss");
+	rDebug() << "Build time:" << parseBuildDatetime().toString("yyyy-MM-dd HH:mm:ss");
 
 	initRandomSeed();
 
@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
 	a.setKeyboardInputInterval(1000);
 
 
-	qDebug() << CodePath << "Current working dir:" << QDir::currentPath();
-	qDebug() << CodePath << "Library paths:" << a.libraryPaths();
+	rDebug() << "Current working dir:" << QDir::currentPath();
+	rDebug() << "Library paths:" << a.libraryPaths();
 
 	a.setFont(qApp->font());
-	qDebug() << CodePath << "Application font:" << a.font();
+	rDebug() << "Application font:" << a.font();
 
 	try{
 		MainWindow w;
@@ -49,16 +49,16 @@ int main(int argc, char *argv[])
 
 		return a.exec();
 	}catch(const RpgException &e){
-		qDebug() << "RPG_EXCEPTION:" << e.toString();
+		rDebug() << "RPG_EXCEPTION:" << e.toString();
 		return 1;
 	}catch(const QUnhandledException &e){
-		qDebug() << "QTU_EXCEPTION:" << e.what();
+		rDebug() << "QTU_EXCEPTION:" << e.what();
 		return 1;
 	}catch(const std::exception &e){
-		qDebug() << "STD_EXCEPTION:" << e.what();
+		rDebug() << "STD_EXCEPTION:" << e.what();
 		return 1;
 	}catch(...){
-		qDebug() << "FTL_EXCEPTION: FATAL! Unknown error occurred, aborting...";
+		rDebug() << "FTL_EXCEPTION: FATAL! Unknown error occurred, aborting...";
 		return 2;
 	}
 }

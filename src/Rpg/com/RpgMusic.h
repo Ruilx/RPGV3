@@ -87,10 +87,10 @@ public:
 		connect(this->music, &QtAV::AVPlayer::stateChanged, [this](QtAV::AVPlayer::State state){
 			if(state == QtAV::AVPlayer::PlayingState){
 				if(this->music->currentRepeat() == 0){
-					qDebug() << CodePath << "Now playing:" << this->music->file() << "with volume:" << this->music->audio()->volume();
+					rDebug() << "Now playing:" << this->music->file() << "with volume:" << this->music->audio()->volume();
 					emit this->started();
 				}else{
-					qDebug() << CodePath << "Continue playing:" << this->music->file();
+					rDebug() << "Continue playing:" << this->music->file();
 				}
 			}else if(state == QtAV::AVPlayer::StoppedState){
 				emit this->stopped();
@@ -101,7 +101,7 @@ public:
 			if(status == QtAV::EndOfMedia){
 
 			}else if(status == QtAV::InvalidMedia){
-				qDebug() << CodePath << "INVALID MEDIA";
+				rDebug() << "Invalid media:" << this->music->file();
 				this->music->stop();
 				emit this->invaildMediaSignal();
 			}
@@ -113,10 +113,10 @@ public:
 		});
 
 		connect(this->music, &QtAV::AVPlayer::error, [this](QtAV::AVError error){
-			qDebug() << "Error:" << error.string();
+			rDebug() << "Error:" << error.string();
 		});
 
-		this->music->setRepeat(-1);
+		this->setLoop(-1);
 	}
 
 	~RpgMusic(){

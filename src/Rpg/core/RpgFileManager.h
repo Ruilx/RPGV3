@@ -50,7 +50,7 @@ private:
 	QHash<FileType, QString> fileTypeName;
 
 public:
-	RpgFileManager() NoThrow;
+	RpgFileManager();
 
 	void addFile(FileType type, const QString &name, const QUrl &url);
 	void addFile(FileType type, const QString &name, const QString &filename);
@@ -62,7 +62,7 @@ public:
 	QUrl getFile(FileType type, const QString &name) const;
 	QString getFileString(FileType type, const QString &name) const;
 
-	void dumpFiles() NoThrow;
+	void dumpFiles();
 
 	// 考虑一下
 	inline QString operator ()(FileType type, const QString &name) const{

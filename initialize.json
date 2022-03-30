@@ -2,15 +2,19 @@
     "map": {},
     "file": {},
     "font": {
-        "dialog": "data/font/unifont-12.1.03.ttf",
+        "dialogFont": "data/font/A-OTF-FolkPro-Medium.otf",
+		"dialog": "data/font/HarmonyOS_Sans_SC_Medium.ttf",
         "applicationFont": "data/font/msyh.ttc",
         "simplifyChineseCharactersSupport": "data/font/msyhl.ttc"
     },
     "image": {
-        "skin": "data/images/skin/blackAlpha.png"
+		"skin": "data/images/skin/blackAlpha.png",
+		"blueSkin": "data/images/skin/blueAlpha.png"
     },
     "music": {
-        "moonLight": "data/music/月光（オルゴール）.mp3"
+		"moonLight": "data/music/月光（オルゴール）.mp3",
+		"年中混乱中": "data/music/年中混乱中.128k.mp3",
+		"king": "data/music/King.wav"
     },
     "lyric": {
         
