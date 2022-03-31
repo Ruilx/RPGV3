@@ -8,13 +8,12 @@
         "simplifyChineseCharactersSupport": "data/font/msyhl.ttc"
     },
     "image": {
-		"skin": "data/images/skin/blackAlpha.png",
-		"blueSkin": "data/images/skin/blueAlpha.png"
+        "skin": "data/images/skin/blackAlpha.png",
+	"blueSkin": "data/images/skin/blueAlpha.png"
     },
     "music": {
-		"moonLight": "data/music/月光（オルゴール）.mp3",
-		"年中混乱中": "data/music/年中混乱中.128k.mp3",
-		"king": "data/music/King.wav"
+        "moonLight": "data/music/月光（オルゴール）.mp3",
+	"title": "data/music/title.ogg"
     },
     "lyric": {
         

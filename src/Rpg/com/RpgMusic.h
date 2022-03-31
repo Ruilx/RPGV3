@@ -45,18 +45,22 @@ class RpgMusic : public QObject
 	QPropertyAnimation *volumeAnimation = nullptr;
 
 	void volumeTransition(bool upward, int duration = 500){
-		if(upward){
-			this->volumeAnimation->setStartValue(0);
-			this->volumeAnimation->setEndValue(this->volume);
+		if(duration > 0){
+			if(upward){
+				this->volumeAnimation->setStartValue(0);
+				this->volumeAnimation->setEndValue(this->volume);
+			}else{
+				this->volumeAnimation->setStartValue(this->volume);
+				this->volumeAnimation->setEndValue(0);
+			}
+			this->volumeAnimation->setDuration(duration);
+			this->volumeAnimation->start();
+			QEventLoop loop;
+			this->connect(this->volumeAnimation, &QPropertyAnimation::finished, &loop, &QEventLoop::quit);
+			loop.exec();
 		}else{
-			this->volumeAnimation->setStartValue(this->volume);
-			this->volumeAnimation->setEndValue(0);
+			this->music->audio()->setVolume(this->volume);
 		}
-		this->volumeAnimation->setDuration(duration);
-		this->volumeAnimation->start();
-		QEventLoop loop;
-		this->connect(this->volumeAnimation, &QPropertyAnimation::finished, &loop, &QEventLoop::quit);
-		loop.exec();
 	}
 public:
 	static RpgMusic *instance(){
@@ -87,7 +91,7 @@ public:
 		connect(this->music, &QtAV::AVPlayer::stateChanged, [this](QtAV::AVPlayer::State state){
 			if(state == QtAV::AVPlayer::PlayingState){
 				if(this->music->currentRepeat() == 0){
-					rDebug() << "Now playing:" << this->music->file() << "with volume:" << this->music->audio()->volume();
+					rDebug() << "Now playing:" << this->music->file() << "with volume:" << this->volume; //this->music->audio()->volume();
 					emit this->started();
 				}else{
 					rDebug() << "Continue playing:" << this->music->file();

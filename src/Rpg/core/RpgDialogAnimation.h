@@ -40,7 +40,7 @@ class RpgDialogAnimation
 	 */
 	QPropertyAnimation* makeDialogAnimation(RpgDialogAnimation::AnimationMode mode){
 		if(this->dialog == nullptr){
-			qDebug() << CodePath << "=>this->dialog is nullptr.";
+			rWarning() << "=>this->dialog is nullptr.";
 			return nullptr;
 			//throw RpgNullPointerException("RpgDialogAnimtion::dialog");
 		}
@@ -69,7 +69,7 @@ class RpgDialogAnimation
 	QPropertyAnimation* makeAvatarAnimation(QGraphicsPixmapItem *target, RpgDialogAnimation::AnimationMode mode, Rpg::AvatarMode avatarMode, Rpg::AvatarAround avatarAround){
 		QPropertyAnimation *avatarAnimation = nullptr;
 		if(target == nullptr){
-			qDebug() << CodePath << "target is nullptr.";
+			rWarning() << "target is nullptr.";
 			return nullptr;
 		}
 		if(!target->pixmap().isNull() && (avatarMode == Rpg::AvatarHalfBodyFront || avatarMode == Rpg::AvatarHalfBodyBehind)){
@@ -102,9 +102,9 @@ class RpgDialogAnimation
 				}
 			}
 		}else{
-			qDebug() << CodePath << "touched!";
-			qDebug() << target->pixmap().isNull();
-			qDebug() << avatarMode;
+			rDebug() << "touched!";
+			rDebug() << target->pixmap().isNull();
+			rDebug() << avatarMode;
 		}
 		return avatarAnimation;
 	}
@@ -119,7 +119,7 @@ class RpgDialogAnimation
 	QPropertyAnimation* makeAvatarOpacityAnimation(QGraphicsPixmapItem *target, RpgDialogAnimation::AnimationMode mode){
 		QPropertyAnimation *avatarAnimation = nullptr;
 		if(target == nullptr){
-			qDebug() << CodePath << "target is nullptr.";
+			rWarning() << "target is nullptr.";
 			return nullptr;
 		}
 		if(!target->pixmap().isNull()){
@@ -181,7 +181,7 @@ class RpgDialogAnimation
 	 */
 	inline void start(){
 		if(this->group->animationCount() <= 0){
-			qDebug() << CodePath << "No animations found.";
+			rDebug() << "No animations found.";
 			return;
 		}
 		if(this->isRunning()){
@@ -306,15 +306,15 @@ public:
 
 //	void runDialogAvatarAnimations(Rpg::AvatarMode mode, AnimationType type){
 //		if(this->dialog == nullptr){
-//			qDebug() << CodePath << "Specific dialog is nullptr";
+//			rDebug() << "Specific dialog is nullptr";
 //			throw RpgNullPointerException("=>this->dialog:QGraphicsItem");
 //		}
 //		if(this->avatarItemLeft == nullptr){
-//			qDebug() << CodePath << "Specific avatarItemLeft is nullptr";
+//			rDebug() << "Specific avatarItemLeft is nullptr";
 //			throw RpgNullPointerException("=>this->avatarItemLeft:QGraphicsPixmapItem");
 //		}
 //		if(this->avatarItemRight == nullptr){
-//			qDebug() << CodePath << "Specific avatarItemRight is nullptr";
+//			rDebug() << "Specific avatarItemRight is nullptr";
 //			throw RpgNullPointerException("=>this->avatarItemRight:QGraphicsPixmapItem");
 //		}
 //		this->clear();
@@ -385,15 +385,15 @@ public:
 
 	void runDialogAvatarAnimations(Rpg::AvatarMode mode, Rpg::AvatarMode lastMode, Animations animations){
 		if(this->dialog == nullptr){
-			qDebug() << CodePath << "Specific dialog is nullptr";
+			rDebug() << "Specific dialog is nullptr";
 			throw RpgNullPointerException("=>this->dialog:QGraphicsItem");
 		}
 		if(this->avatarItemLeft == nullptr){
-			qDebug() << CodePath << "Specific avatarItemLeft is nullptr";
+			rDebug() << "Specific avatarItemLeft is nullptr";
 			throw RpgNullPointerException("=>this->avatarItemLeft:QGraphicsPixmapItem");
 		}
 		if(this->avatarItemRight == nullptr){
-			qDebug() << CodePath << "Specific avatarItemRight is nullptr";
+			rDebug() << "Specific avatarItemRight is nullptr";
 			throw RpgNullPointerException("=>this->avatarItemRight:QGraphicsPixmapItem");
 		}
 		this->clear();
@@ -402,7 +402,7 @@ public:
 		}
 		if(animations.testFlag(AnimationDialogHide)){
 			if(animations.testFlag(AnimationDialogShow)){
-				qDebug() << CodePath << "Cannot deal both same target showing and hiding. Default run 'show' way.";
+				rDebug() << "Cannot deal both same target showing and hiding. Default run 'show' way.";
 			}else{
 				this->appendToGroup(this->makeDialogAnimation(AnimationExit));
 			}
@@ -415,7 +415,7 @@ public:
 		}
 		if(animations.testFlag(AnimationLeftAvatarHide)){
 			if(animations.testFlag(AnimationDialogShow)){
-				qDebug() << CodePath << "Cannot deal both same target showing and hiding. Default run 'show' way.";
+				rDebug() << "Cannot deal both same target showing and hiding. Default run 'show' way.";
 			}else{
 				this->appendToGroup(this->makeAvatarAnimation(this->avatarItemLeft, AnimationExit, lastMode, Rpg::AvatarAroundLeft));
 //				if(!animations.testFlag(AnimationDialogHide)){
@@ -431,7 +431,7 @@ public:
 		}
 		if(animations.testFlag(AnimationRightAvatarHide)){
 			if(animations.testFlag(AnimationRightAvatarShow)){
-				qDebug() << CodePath << "Cannot deal both same target showing and hiding. Default run 'show' way.";
+				rDebug() << "Cannot deal both same target showing and hiding. Default run 'show' way.";
 			}else{
 				this->appendToGroup(this->makeAvatarAnimation(this->avatarItemRight, AnimationExit, lastMode, Rpg::AvatarAroundRight));
 //				if(!animations.testFlag(AnimationDialogHide)){

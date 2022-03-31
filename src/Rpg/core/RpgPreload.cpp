@@ -17,6 +17,19 @@ const QMap<QString, QUrl> RpgPreload::parseDict(const QJsonObject &object){
 	return dict;
 }
 
+bool RpgPreload::parseValueToDict(const QJsonValue &value, void (*cb)(const QMap<QString, QUrl> &)) {
+	if(!value.isObject()){
+		rWarning() << "JSON value not an OBJECT," << RpgUtils::detectJsonValue(value) << "found.";
+		return false;
+	}
+	QJsonObject obj = value.toObject();
+	QMap<QString, QUrl> dict = this->parseDict(obj);
+	if(cb != nullptr){
+		cb(dict);
+	}
+	return true;
+}
+
 bool RpgPreload::handlePreload(const QByteArray &loadingJson){
 	if(loadingJson.isEmpty()){
 		rDebug() << "Initialization file is Empty.";
@@ -38,139 +51,141 @@ bool RpgPreload::handlePreload(const QByteArray &loadingJson){
 		QJsonValue value = root.value(key);
 		if(key == "init"){
 			// Execute Script Scene
-			if(!value.isString()){
-				rDebug() << "Init value is not a String, " << RpgUtils::detectJsonValue(value) << " found.";
-				return false;
-			}
-			this->bootScriptSceneName = value.toString();
+			this->parseInit(value);
 		}else if(key == "map"){
 			// Map List
-			if(!value.isObject()){
-				rDebug() << "Map Object is not an Object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject mapObj = value.toObject();
-			QStringList keys = mapObj.keys();
-			for(const QString &key: keys){
-				QJsonValue value = mapObj.value(key);
-				if(!value.isObject()){
-					rDebug() << "Map Scene is not an object, " << RpgUtils::detectJsonValue(value) << " found.";
-					continue;
-				}
-				QString mapName;
-				QString scriptName;
-				QJsonObject sceneNameObj = value.toObject();
-				QStringList keys = sceneNameObj.keys();
-				for(const QString &key: keys){
-					QJsonValue value = sceneNameObj.value(key);
-					if(key == "map"){
-						mapName = value.toString();
-					}else if(key == "script"){
-						scriptName = value.toString();
-					}else{
-						continue;
-					}
-				}
-				if(mapName.isEmpty() || scriptName.isEmpty()){
-					rDebug() << "Map file name or script name is/are empty, the scene " << key << " invalid";
-					continue;
-				}else{
-					RpgFileManager::instance()->addFile(RpgFileManager::MapFile, key, QUrl(mapName));
-					RpgFileManager::instance()->addFile(RpgFileManager::ScriptFile, key, QUrl(scriptName));
-
-					// TODO: Setup RpgScene Below
-					// ...
-				}
-			}
+			this->parseMaps(value);
 		}else if(key == "music"){
 			// Music List
-			if(!value.isObject()){
-				rDebug() << "Music object is not an object, " << RpgUtils::detectJsonValue(value) << " found";
-				continue;
-			}
-			QJsonObject musicObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(musicObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, dict);
+			this->parseMusics(value);
 		}else if(key == "soundEffect" || key == "se"){
 			// Sound effect List
-			if(!value.isObject()){
-				rDebug() << "Sound effect object is not an object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject soundObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(soundObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::SoundEffectFile, dict);
+			this->parseSoundEffects(value);
 		}else if(key == "image"){
 			// Image List
-			if(!value.isObject()){
-				rDebug() << "Image object is not an object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject imageObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(imageObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, dict);
+			this->parseImages(value);
 		}else if(key == "lyric"){
 			// Lyric List
-			if(!value.isObject()){
-				rDebug() << "Lyric object is not an Object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject lyricObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(lyricObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::LyricFile, dict);
+			this->parseLyrics(value);
 		}else if(key == "font"){
 			// Font List
-			if(!value.isObject()){
-				rDebug() << "Font object is not an Object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject fontObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(fontObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::FontFile, dict);
+			this->parseFonts(value);
 		}else if(key == "avatar"){
 			// Avatar List
-			if(!value.isObject()){
-				rDebug() << "Avatar object is not an Object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject avatarObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(avatarObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::AvatarFile, dict);
+			this->parseAvatars(value);
 		}else if(key == "character"){
 			// Character List
-			if(!value.isObject()){
-				rDebug() << "Character object is not an Object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject characterObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(characterObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::CharacterFile, dict);
+			this->parseCharacters(value);
 		}else if(key == "mapBlock"){
 			// Map Block List
-			if(!value.isObject()){
-				rDebug() << "Map Block object is not an Object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject mapBlockObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(mapBlockObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::MapBlockFile, dict);
-		}
-
-		else if(key == "file"){
+			this->parseMapBlocks(value);
+		}else if(key == "file"){
 			// File List
-			if(!value.isObject()){
-				rDebug() << "File object is not an Object, " << RpgUtils::detectJsonValue(value) << " found.";
-				continue;
-			}
-			QJsonObject fileObj = value.toObject();
-			QMap<QString, QUrl> dict = this->parseDict(fileObj);
-			RpgFileManager::instance()->addFile(RpgFileManager::NormalFile, dict);
+			this->parseFile(value);
 		}else{
 			// Extra
+			rWarning() << "Cannot parse" << key << "with any parse rules.";
 			continue;
 		}
 	}
 	return true;
+}
+
+bool RpgPreload::parseInit(const QJsonValue &value){
+	if(!value.isString()){
+		rError() << "JSON value not a STRING," << RpgUtils::detectJsonValue(value) << "found.";
+		return false;
+	}
+	this->bootScriptSceneName = value.toString();
+	return true;
+}
+
+bool RpgPreload::parseMaps(const QJsonValue &value){
+	if(!value.isObject()){
+		rError() << "JSON value not an OBJECT," << RpgUtils::detectJsonValue(value) << "found.";
+		return false;
+	}
+	QJsonObject obj = value.toObject();
+	for(const QString &key: obj.keys()){
+		QJsonValue v = obj.value(key);
+		if(!v.isObject()){
+			rError() << "Map scene value not an OBJECT," << RpgUtils::detectJsonValue(v) << "found.";
+			continue;
+		}
+		QJsonObject sceneNameObj = value.toObject();
+		do{
+			if(!sceneNameObj.contains("map") || !sceneNameObj.value("map").isString()){
+				rWarning() << "JSON node map name not a STRING," << RpgUtils::detectJsonValue(sceneNameObj.value("map")) << "found.";
+				break;
+			}
+			if(!sceneNameObj.contains("script") || !sceneNameObj.value("script").isString()){
+				rWarning() << "JSON node map script not a STRING," << RpgUtils::detectJsonValue(sceneNameObj.value("script")) << "found.";
+				break;
+			}
+			QString mapName = sceneNameObj.value("map").toString();
+			QString scriptName = sceneNameObj.value("script").toString();
+			if(mapName.isEmpty() || scriptName.isEmpty()){
+				rError() << "Map file name or script name empty, scene '" << key << "' is invalid.";
+				break;
+			}
+
+		}while(false);
+	}
+	return true;
+}
+
+bool RpgPreload::parseMusics(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::MusicFile, dict);
+	});
+}
+
+bool RpgPreload::parseSoundEffects(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::SoundEffectFile, dict);
+	});
+}
+
+bool RpgPreload::parseImages(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::ImageFile, dict);
+	});
+}
+
+bool RpgPreload::parseLyrics(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::LyricFile, dict);
+	});
+}
+
+bool RpgPreload::parseFonts(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::FontFile, dict);
+	});
+}
+
+bool RpgPreload::parseAvatars(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::AvatarFile, dict);
+	});
+}
+
+bool RpgPreload::parseCharacters(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::CharacterFile, dict);
+	});
+}
+
+bool RpgPreload::parseMapBlocks(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::MapBlockFile, dict);
+	});
+}
+
+bool RpgPreload::parseFile(const QJsonValue &value){
+	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
+		rpgFileManager->addFile(RpgFileManager::NormalFile, dict);
+	});
 }
 
 RpgPreload::RpgPreload(const QString &filename){

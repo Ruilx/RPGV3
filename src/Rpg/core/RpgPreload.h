@@ -27,48 +27,12 @@ class RpgPreload
 
 	const QMap<QString, QUrl> parseDict(const QJsonObject &object);
 
+	bool parseValueToDict(const QJsonValue &value, void(*cb)(const QMap<QString, QUrl> &));
+
 	bool handlePreload(const QByteArray &loadingJson);
 
-	bool parseInit(const QJsonValue &value){
-		if(!value.isString()){
-			rError() << "JSON value not a STRING," << RpgUtils::detectJsonValue(value) << "found.";
-			return false;
-		}
-		this->bootScriptSceneName = value.toString();
-		return true;
-	}
-	bool parseMaps(const QJsonValue &value){
-		if(!value.isObject()){
-			rError() << "JSON value not an OBJECT," << RpgUtils::detectJsonValue(value) << "found.";
-			return false;
-		}
-		QJsonObject obj = value.toObject();
-		for(const QString &key: obj.keys()){
-			QJsonValue v = obj.value(key);
-			if(!v.isObject()){
-				rError() << "Map scene value not an OBJECT," << RpgUtils::detectJsonValue(v) << "found.";
-				continue;
-			}
-			QJsonObject sceneNameObj = value.toObject();
-			do{
-				if(!sceneNameObj.contains("map") || !sceneNameObj.value("map").isString()){
-					rWarning() << "JSON node map name not a STRING," << RpgUtils::detectJsonValue(sceneNameObj.value("map")) << "found.";
-					break;
-				}
-				if(!sceneNameObj.contains("script") || !sceneNameObj.value("script").isString()){
-					rWarning() << "JSON node map script not a STRING," << RpgUtils::detectJsonValue(sceneNameObj.value("script")) << "found.";
-					break;
-				}
-				QString mapName = sceneNameObj.value("map").toString();
-				QString scriptName = sceneNameObj.value("script").toString();
-				if(mapName.isEmpty() || scriptName.isEmpty()){
-					rError() << "Map file name or script name empty, scene '" << key << "' is invalid.";
-					break;
-				}
-
-			}while(false);
-		}
-	}
+	bool parseInit(const QJsonValue &value);
+	bool parseMaps(const QJsonValue &value);
 	bool parseMusics(const QJsonValue &value);
 	bool parseSoundEffects(const QJsonValue &value);
 	bool parseImages(const QJsonValue &value);
@@ -80,6 +44,10 @@ class RpgPreload
 	bool parseFile(const QJsonValue &value);
 public:
 	RpgPreload(const QString &filename);
+
+	inline const QString &getBootScriptSceneName() const{
+		return this->bootScriptSceneName;
+	}
 };
 
 #endif // RPGPRELOAD_H

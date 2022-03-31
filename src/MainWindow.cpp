@@ -9,7 +9,7 @@
 
 void MainWindow::testModel()
 {
-	rpgMusic->playMusic("年中混乱中");
+	rpgMusic->playMusic("title");
 
 	RpgAxisItem *item = new RpgAxisItem(QRectF(0, 0, ScreenWidth, ScreenHeight), Rpg::MapTileSize, Rpg::MapTileSize);
 
@@ -25,6 +25,9 @@ void MainWindow::testModel()
 	dialog.setDialogAlign(Rpg::AlignBottom);
 
 	dialog.appendMessage("This is a text");
+	dialog.appendMessage("This is another text");
+	dialog.appendMessage("中文显示");
+	dialog.appendMessage(RpgDialogMessage("RPGDialogMessage", "NAME"));
 
 	dialog.run();
 	dialog.waitForComplete();

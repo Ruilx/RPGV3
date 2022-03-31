@@ -314,7 +314,7 @@ public:
 	RpgDialog(RpgDialogBase *dialogBase, QGraphicsObject *parentItem = nullptr): RpgObject(parentItem){
 		this->setTextColor(Qt::white);
 		this->messageBox->setFont(RpgFont::instance()->getFont("dialog"));
-		rDebug() << this->messageBox->font().family();
+		rDebug() << "Dialog using font:" << this->messageBox->font().family();
 
 		if(dialogBase == nullptr){
 			throw RpgNullPointerException("RpgDialogBase not set");
