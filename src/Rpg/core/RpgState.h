@@ -130,4 +130,8 @@ public slots:
 	void keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene);
 };
 
+#ifndef rpgState
+#	define rpgState (RpgState::instance())
+#endif
+
 #endif // RPGSTATE_H

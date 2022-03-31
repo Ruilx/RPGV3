@@ -43,6 +43,9 @@ public:
 
 	static inline const QSize selectBarSize(){ return QSize(ScreenWidth - (MarginH << 1) - (PaddingH << 1), 32); }
 
+	static const int MinDialogWidth = 125;
+	static const int MinDialogHeight = 125;
+
 protected:
 	QString dialogSkinName;
 
@@ -131,7 +134,11 @@ public:
 		return this->continueSymbolList.at(index);
 	}
 
-	int getContinueSymbolImageLength() const{
+	Q_DECL_DEPRECATED int getContinueSymbolImageLength() const{
+		return this->getContinueSymbolImageCount();
+	}
+
+	int getContinueSymbolImageCount() const{
 		return this->continueSymbolList.length();
 	}
 
