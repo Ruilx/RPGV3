@@ -126,7 +126,7 @@ public:
 	 * @return
 	 * 获得继续图标
 	 */
-	const QPixmap &getContinueSymbolImage(int index){
+	const QPixmap &getContinueSymbolImage(int index) const{
 		if(index < 0 || index >= this->continueSymbolList.length()){
 			qDebug() << CodePath << "Index out of range:" << index;
 			return this->invalidPixmap;

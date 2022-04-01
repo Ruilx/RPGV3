@@ -37,6 +37,12 @@ class RpgDialogItem : public RpgObject
 //	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 //	void boundingRect() override;
 
+	void timerEvent(QTimerEvent *event);
+
+	// timer
+	int timerId = -1;
+	bool timerProcessing = false;
+
 	// 按键
 	void keyReleaseEvent(QKeyEvent *event) override;
 public:
@@ -75,6 +81,9 @@ public:
 	void appendMessage(const QList<RpgDialogMessage> &messages);
 	void appendMessage(const QString &text, const QString &name = QString());
 
+	// 清除消息
+	inline void clearMessages(){ this->messages.clear(); }
+
 	// 字体
 	inline void setFont(const QFont &font){ this->messageBox->setFont(font); }
 	inline QFont getFont() const{ return this->messageBox->font(); }
@@ -82,15 +91,27 @@ public:
 	// 行高
 	void setLineHeight(qreal pixel, int lineHeightType = QTextBlockFormat::FixedHeight);
 
+	// 窗口大小
+	void setDialogSize(const QSize &size);
+	inline const QSize getDialogSize() const{ return this->dialogSize; }
 
+	// 窗口位置
+	void setDialogAlign(Rpg::BlockAlign align){ this->dialogAlign = align; }
+	inline Rpg::BlockAlign getDialogAlign() const { return this->dialogAlign; }
+
+	// 构造
 	RpgDialogItem(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr);
 	~RpgDialogItem();
 
+	// 执行
+	void run() override;
 private:
 	void showDialog();
 	void hideDialog();
 
+	void showNextMessage();
 	void showMessage(index);
+	void showText(const QString &text, int speed = 0, int pointSize = -1, const QString &name = QString(), qreal lineHeight = 35);
 };
 
 #endif // RPGDIALOGITEM_H

@@ -4,9 +4,48 @@
 #include <QTextCursor>
 #include <QTextBlockFormat>
 
+#include <Rpg/com/RpgView.h>
+
 #include <Rpg/core/RpgState.h>
 #include <Rpg/core/RpgFont.h>
 #include <Rpg/core/RpgAvatar.h>
+#include <Rpg/core/RpgHtmlSplit.h>
+
+void RpgDialogItem::timerEvent(QTimerEvent *event){
+	this->timerProcessing = true;
+	if(event->timerId() == this->timerId){
+		this->killTimer(this->timerId);
+		this->timerId = -1;
+	}
+	this->showNextMessage();
+}
+
+void RpgDialogItem::keyReleaseEvent(QKeyEvent *event){
+	if(!event->isAutoRepeat()){
+		if(this->timerProcessing){
+			rDebug() << "TimerEvent is processing messages, this key ignored.";
+			return;
+		}
+		if(this->timerId() > 0){
+			this->killTimer(this->timerId);
+		}
+		if(!this->isRunning()){
+			rWarning() << "RpgDialogItem not running.";
+			return;
+		}
+		if(event->modifiers() != Qt::NoModifier){
+			return;
+		}
+		int key = event->key();
+		if(key == Qt::Key_Return || key == Qt::Key_Space){
+			if(this->showTextInProgressFlag == true){
+				this->quickShowFlag = true;
+			}else{
+				this->showNextMessage();
+			}
+		}
+	}
+}
 
 void RpgDialogItem::appendMessage(const RpgDialogMessage &message){
 	if(this->isRunning()){
@@ -38,6 +77,21 @@ void RpgDialogItem::setLineHeight(qreal pixel, int lineHeightType){
 	textBlockFormat.setLineHeight(pixel, lineHeightType);
 	textCursor.setBlockFormat(textBlockFormat);
 	this->messageBox->setTextCursor(textCursor);
+}
+
+void RpgDialogItem::setDialogSize(const QSize &size){
+	int w = size.width();
+	int h = size.height();
+	if(w < RpgDialogBase::MinDialogWidth || w > RpgDialogBase::maxDialogSize().width()){
+		rWarning() << "Dialog size width:" << w << "is out of range: (" << RpgDialogBase::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ")";
+		return;
+	}
+	if(h < RpgDialogBase::MinDialogHeight || w > RpgDialogBase::maxDialogSize().height()){
+		rWarning() << "Dialog size height:" << h << "is out of range: (" << RpgDialogBase::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ")";
+		return;
+	}
+	this->dialogSize.setWidth(w);
+	this->dialogSize.setHeight(h);
 }
 
 RpgDialogItem::RpgDialogItem(RpgDialogBase *dialogBase, QGraphicsObject *parent): RpgObject(parent){
@@ -103,10 +157,99 @@ RpgDialogItem::~RpgDialogItem(){
 	rpgState->unregisterRpgObject(this, RpgState::DialogMode);
 }
 
+void RpgDialogItem::run(){
+	RpgObject::run();
+	// move to scene
+	if(rpgView->scene() == nullptr){
+		rError() << "RpgView not loaded any scene yet.";
+		this->end();
+		throw RpgNullPointerException("rpgView->scene()");
+	}else{
+		// 如果该对象已装载至其他的scene的时候, 这个函数能自动将这个对象在其他scene删除后添加至该scene
+		rpgView->scene()->addItem(this);
+	}
+
+	// 确定继续三角形存在
+	for(int i = 0; i < this->skin->getContinueSymbolImageCount(); i++){
+		if(this->skin->getContinueSymbolImage(i).isNull()){
+			rWarning() << "Continue symbol frame" << i << "is null.";
+			this->end();
+			return;
+		}
+	}
+
+	// 判断是否有messages
+	if(this->messages.isEmpty()){
+		rError() << "Messages is empty, exitted.";
+		this->end();
+		return;
+	}
+
+	// 计算对话框位置
+	QPointF dialogPos = RpgUtils::getDialogPos(this->dialogAlign, this->dialogSize, RpgDialogBase::MarginH, RpgDialogBase::MarginV);
+
+	this->box->setPixmap(this->skin->getDialogImage(this->dialogSize));
+	this->box->setPos(dialogPos);
+
+	this->continueSymbol->setVisible(false);
+
+	this->showDialog();
+}
+
 void RpgDialogItem::showDialog(){
 	this->show();
 	rpgState->pushState(RpgState::DialogMode);
 	this->showMessage(0);
+}
+
+void RpgDialogItem::hideDialog(){
+	if(this->continueSymbolTimeLine->state() != QTimeLine::NotRunning){
+		this->continueSymbolTimeLine->stop();
+	}
+	RpgDialogAnimation::Animations animations;
+	animations.setFlag(RpgDialogAnimation::AnimationDialogHide);
+	if(this->avatarBoxLeft->opacity() != 0){
+		animations.setFlag(RpgDialogAnimation::AnimationLeftAvatarHide);
+	}
+	if(this->avatarBoxRight->opacity() != 0){
+		animations.setFlag(RpgDialogAnimation::AnimationRightAvatarHide);
+	}
+	this->dialogAnimation->runDialogAvatarAnimations((*this->lastDialogMessage).getAvatarMode(), (*this->lastDialogMessage).getAvatarMode(), animations);
+	this->dialogAnimation->waitAnimationFinish();
+
+	this->hide();
+	this->clearMessages();
+	// emit...
+	if(rpgState->getTop() == RpgState::DialogMode){
+		rpgState->popState();
+	}else{
+		rDebug() << "RpgState stack top not DialogMode.";
+	}
+}
+
+void RpgDialogItem::showNextMessage(){
+	this->messageIndex++;
+	if(this->messageIndex >= this->messages.length()){
+		// 会话全部完成
+		this->hideDialog();
+		this->messageIndex = 0;
+		this->lastDialogMessage = this->messages.constBegin();
+		this->end();
+		return;
+	}else{
+		this->showMessage(this->messageIndex);
+
+		// 设置超时时间
+		if(this->timerId > 0){
+			this->killTimer(this->timerId);
+			this->timerId = -1;
+		}
+		int waitTime = this->messages.at(index).getWaitTime();
+		if(waitTime >= 0){
+			// startTimer时长为0时, 程序可能会反复post timerEvent, 可能会导致爆炸, 选择100ms进行延迟假装立即返回(用户按键也没那么快)
+			this->timerId = this->startTimer(waitTime <= 100? 100: waitTime);
+		}
+	}
 }
 
 void RpgDialogItem::showMessage(index){
@@ -208,11 +351,190 @@ void RpgDialogItem::showMessage(index){
 					if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundLeft){
 						// same position, waiting to avatar exit
 						RpgDialogAnimation::Animations animationsTemp = 0;
+						animationsTemp.setFlag(RpgDialogAnimation::AnimationLeftAvatarHide);
+						this->dialogAnimation->runDialogAvatarAnimations(mode, (*this->lastDialogMessage).getAvatarMode(), animationsTemp);
+						this->dialogAnimation->waitAnimationFinish();
+
+						this->avatarBoxLeft->setPixmap(avatarPixmap);
+						this->avatarBoxLeft->setPos(QPointF(MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxLeft->setOpacity(1.0f);
+						this->avatarBoxLeft->setZValue(0.1f);
+						this->avatarBoxLeft->show();
+					}else if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundRight){
+						// 不同位置, (可以不等待) 但是左边已经有了等待, 所以也加上等待
+						RpgDialogAnimation::Animations animationsTemp = 0;
+						animationsTemp.setFlag(RpgDialogAnimation::AnimationRightAvatarHide);
+						this->dialogAnimation->runDialogAvatarAnimations(mode, (*this->lastDialogMessage).getAvatarMode(), animationsTemp);
+						this->dialogAnimation->waitAnimationFinish();
+						this->avatarBoxRight->hide(); // 右侧隐藏
+						this->avatarBoxLeft->setPixmap(avatarPixmap);
+						this->avatarBoxLeft->setPos(QPointF(MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxLeft->setOpacity(1.0f);
+						this->avatarBoxLeft->setZValue(0.1f);
+						this->avatarBoxLeft->show();
+					}else{
+						// 上一次为没有
+						this->avatarBoxLeft->setPixmap(avatarPixmap);
+						this->avatarBoxLeft->setPos(QPointF(MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxLeft->setOpacity(1.0f);
+						this->avatarBoxLeft->setZValue(0.1f);
+						this->avatarBoxLeft->show();
 					}
+				}else{
+					// 是同一个模式, 只需要调整位置和hide就行
+					if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundLeft){
+						this->avatarBoxLeft->setPixmap(avatarPixmap);
+						this->avatarBoxLeft->setPos(QPointF(MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxLeft->setOpacity(1.0f);
+						this->avatarBoxLeft->setZValue(0.1f);
+						this->avatarBoxLeft->show();
+					}else if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundRight){
+						this->avatarBoxRight->hide(); // 右侧隐藏
+						this->avatarBoxLeft->setPixmap(avatarPixmap);
+						this->avatarBoxLeft->setPos(QPointF(MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxLeft->setOpacity(1.0f);
+						this->avatarBoxLeft->setZValue(0.1f);
+						this->avatarBoxLeft->show();
+					}
+				}
+				this->messageBox->setPos(QPointF(this->avatarBoxLeft->pixmap().width() + 2 * MessageMarginH, MessageMarginV));
+				this->setMessageTextWidth(this->dialogSize.width() - this->messageBox->pos().x() - MessageMarginH);
+			}else if(around == Rpg::AvatarAroundRight){
+				// 右, 需要调整位置, 如果之前是立绘, 将立绘头像退出
+				if((*this->lastDialogMessage).getAvatarMode() != Rpg::AvatarFrame){
+					// 不是同一个模式, 需要强制迁出立绘
+					if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundLeft){
+						// 不同位置, (可以不等待) 但是右边已经有了等待, 所以也加上等待
+						RpgDialogAnimation::Animations animationsTemp = 0;
+						animationsTemp.setFlag(RpgDialogAnimation::AnimationLeftAvatarHide);
+						this->dialogAnimation->runDialogAvatarAnimations(mode, (*this->lastDialogMessage).getAvatarMode(), animationsTemp);
+						this->dialogAnimation->waitAnimationFinish();
+						this->avatarBoxLeft->hide();
+						this->avatarBoxRight->setPixmap(avatarPixmap);
+						this->avatarBoxRight->setPos(QPointF(this->dialogSize.width() - avatarPixmap.width() - MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxRight->setOpacity(1.0f);
+						this->avatarBoxRight->setZValue(0.1f);
+						this->avatarBoxRight->show();
+					}else if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundRight){
+						// 相同位置, 需要等待立绘退出之后才能转换显示成头像模式
+						RpgDialogAnimation::Animations animationsTemp = 0;
+						animationsTemp.setFlag(RpgDialogAnimation::AnimationDialogHide);
+						this->dialogAnimation->runDialogAvatarAnimations(mode, (*this->lastDialogMessage).getAvatarMode(), animationsTemp);
+						this->avatarBoxRight->setPixmap(avatarPixmap);
+						this->avatarBoxRight->setPos(QPointF(this->dialogSize.width() - avatarPixmap.width() - MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxRight->setOpacity(1.0f);
+						this->avatarBoxRight->setZValue(0.1f);
+						this->avatarBoxRight->show();
+					}else{
+						// 上一次为没有
+						this->avatarBoxRight->setPixmap(avatarPixmap);
+						this->avatarBoxRight->setPos(QPointF(this->dialogSize.width() - avatarPixmap.width() - MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxRight->setOpacity(1.0f);
+						this->avatarBoxRight->setZValue(0.1f);
+						this->avatarBoxRight->show();
+					}
+				}else{
+					// 是同一个模式, 只需要调整位置和hide就行
+					if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundLeft){
+						this->avatarBoxLeft->hide();
+						this->avatarBoxRight->setPixmap(avatarPixmap);
+						this->avatarBoxRight->setPos(QPointF(this->dialogSize.width() - avatarPixmap.width() - MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxRight->setOpacity(1.0f);
+						this->avatarBoxRight->setZValue(0.1f);
+						this->avatarBoxRight->show();
+					}else if((*this->lastDialogMessage).getAvatarAround() == Rpg::AvatarAroundRight){
+						this->avatarBoxRight->setPixmap(avatarPixmap);
+						this->avatarBoxRight->setPos(QPointF(this->dialogSize.width() - avatarPixmap.width() - MessageMarginH, MessageMarginV) + this->box->pos());
+						this->avatarBoxRight->setOpacity(1.0f);
+						this->avatarBoxRight->setZValue(0.1f);
+						this->avatarBoxRight->show();
+					}
+				}
+				this->messageBox->setPos(QPointF(MessageMarginH, MessageMarginV));
+				this->setMessageTextWidth(this->dialogSize.width() - this->avatarBoxRight->pixmap().width() - MessageMarginH);
+			}
+		}
+	}else{
+		// 没有立绘
+		bool lastHasAvatar = !(*this->lastDialogMessage).getCharacterName().isEmpty();
+		Rpg::AvatarMode lastMode = (*this->lastDialogMessage).getAvatarMode();
+		Rpg::AvatarAround lastAround = (*this->lastDialogMessage).getAvatarAround();
+		if(lastHasAvatar){
+			// 上一次有立绘
+			if(lastMode == Rpg::AvatarHalfBodyFront || lastMode == Rpg::AvatarHalfBodyBehind){
+				// 上一次立绘是半身立绘
+				if(lastAround == Rpg::AvatarAroundLeft){
+					// 从左边退出
+					animations.setFlag(RpgDialogAnimation::AnimationLeftAvatarHide);
+				}else if(lastAround == Rpg::AvatarAroundRight){
+					// 从右边退出
+					animations.setFlag(RpgDialogAnimation::AnimationRightAvatarHide);
+				}
+			}else if(lastMode == Rpg::AvatarFrame){
+				// 上一次立绘是头像
+				if(lastAround == Rpg::AvatarAroundLeft){
+					this->avatarBoxLeft->hide();
+				}else if(lastAround == Rpg::AvatarAroundRight){
+					this->avatarBoxRight->hide();
 				}
 			}
 		}
+		// 还原消息宽度
+		this->messageBox->setPos(QPointF(MessageMarginH, MessageMarginV));
+		this->setMessageTextWidth(dialogSize.width() - 2 * MessageMarginH);
 	}
+	rDebug() << "Animations:" << animations;
+	this->dialogAnimation->runDialogAvatarAnimations(mode, (*this->lastDialogMessage).getAvatarMode(), animations);
+	this->showText(current.getText(), current.getSpeed(), current.getPointSize(), current.getName(), current.getLineHeight());
+	this->lastDialogMessage++;
+}
 
-
+void RpgDialogItem::showText(const QString &text, int speed, int pointSize, const QString &name, qreal lineHeight){
+	if(text.isEmpty()){
+		return;
+	}
+	this->showTextInProgressFlag = true;
+	this->continueSymbolTimeLine->stop();
+	this->continueSymbol->setVisible(false);
+	this->messageBox->document()->clear();
+	if(pointSize > 0 && this->messageBox->font().pointSize() != pointSize){
+		QFont font = this->messageBox->font();
+		font.setPointSize(pointSize);
+		this->messageBox->setFont(font);
+	}
+	if(speed > 0){
+		this->quickShowFlag = false;
+		RpgHtmlSplit htmlSplit(text);
+		while(htmlSplit.hasNext()){
+			QString wordLeft = htmlSplit.chopLeft();
+			if(!name.isEmpty()){
+				wordLeft.prepend(name % "<br>");
+			}
+			this->messageBox->setHtml(wordLeft);
+			this->setLineHeight(lineHeight);
+			RpgUtils::msleep(speed);
+			if(this->quickShowFlag == true){
+				if(!name.isEmpty()){
+					this->messageBox->setHtml(name % "<br>" % text);
+					this->setLineHeight(lineHeight);
+				}else{
+					this->messageBox->setHtml(text);
+					this->setLineHeight(lineHeight);
+				}
+				this->quickShowFlag = false;
+				break;
+			}
+		}
+	}else{
+		if(!name.isEmpty()){
+			this->messageBox->setHtml(name % "<br>" % text);
+			this->setLineHeight(lineHeight);
+		}else{
+			this->messageBox->setHtml(text);
+			this->setLineHeight(lineHeight);
+		}
+	}
+	this->showTextInProgressFlag = false;
+	this->continueSymbol->setVisible(true);
+	this->continueSymbolTimeLine->start();
 }
