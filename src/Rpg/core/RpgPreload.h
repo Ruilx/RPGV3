@@ -45,9 +45,7 @@ class RpgPreload
 public:
 	RpgPreload(const QString &filename);
 
-	inline const QString &getBootScriptSceneName() const{
-		return this->bootScriptSceneName;
-	}
+	inline const QString &getBootScriptSceneName() const{ return this->bootScriptSceneName; }
 };
 
 #endif // RPGPRELOAD_H

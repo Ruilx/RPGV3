@@ -2,6 +2,13 @@
 
 RpgState *RpgState::_instance = nullptr;
 
+RpgState *RpgState::instance(){
+	if(_instance == nullptr){
+		_instance = new RpgState(nullptr);
+	}
+	return _instance;
+}
+
 RpgState::RpgState(QObject *parent): QObject(parent){
 	if(this->modeStack.isEmpty()){
 		this->modeStack.push(AutoMode);
@@ -67,11 +74,11 @@ void RpgState::keyPressEvent(QKeyEvent *event, const QGraphicsScene *scene){
 	}
 	int key = event->key();
 	Qt::KeyboardModifiers mod = event->modifiers();
-	rDebug() << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(this->modeStack.isEmpty()){
 		rDebug() << "Mode stack is empty, cannot getting Mode.";
 		throw RpgNullPointerException("RpgState::keyPressEvent => event", event);
 	}
+	rDebug() << "[" << RpgState::stateModeString.value(this->modeStack.top()) << "] Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(scene == nullptr){
 		rDebug() << "Must specified a valid scene to pass the key.";
 		throw RpgNullPointerException("RpgState::keyPressEvent => scene", scene);
@@ -84,7 +91,7 @@ void RpgState::keyPressEvent(QKeyEvent *event, const QGraphicsScene *scene){
 			continue;
 		}
 		if(obj->scene() == scene){
-			if(obj->getProcessing()){
+			if(obj->getRunning()){
 				/* The event must be allocated on the heap since the post event queue will take ownership of the event
 				 * and delete it once it has been posted.
 				 */
@@ -103,11 +110,11 @@ void RpgState::keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
 	}
 	int key = event->key();
 	Qt::KeyboardModifiers mod = event->modifiers();
-	rDebug() << "Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(this->modeStack.isEmpty()){
 		rDebug() << "Mode stack is empty, cannot getting Mode.";
 		return;
 	}
+	rDebug() << "[" << RpgState::stateModeString.value(this->modeStack.top()) << "] Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(scene == nullptr){
 		rDebug() << "Must specified a valid scene to pass the key.";
 		throw RpgNullPointerException("RpgState::keyReleaseEvent => scene", scene);
@@ -120,7 +127,7 @@ void RpgState::keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
 			continue;
 		}
 		if(obj->scene() == scene){
-			if(obj->getProcessing()){
+			if(obj->getRunning()){
 				/* The event must be allocated on the heap since the post event queue will take ownership of the event
 				 * and delete it once it has been posted.
 				 */

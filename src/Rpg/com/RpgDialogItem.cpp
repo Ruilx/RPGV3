@@ -2,7 +2,6 @@
 
 #include <QTextDocument>
 #include <QTextCursor>
-#include <QTextBlockFormat>
 
 #include <Rpg/com/RpgView.h>
 
@@ -18,6 +17,7 @@ void RpgDialogItem::timerEvent(QTimerEvent *event){
 		this->timerId = -1;
 	}
 	this->showNextMessage();
+	this->timerProcessing = false;
 }
 
 void RpgDialogItem::keyReleaseEvent(QKeyEvent *event){
@@ -26,7 +26,7 @@ void RpgDialogItem::keyReleaseEvent(QKeyEvent *event){
 			rDebug() << "TimerEvent is processing messages, this key ignored.";
 			return;
 		}
-		if(this->timerId() > 0){
+		if(this->timerId > 0){
 			this->killTimer(this->timerId);
 		}
 		if(!this->isRunning()){
@@ -159,6 +159,7 @@ RpgDialogItem::~RpgDialogItem(){
 
 void RpgDialogItem::run(){
 	RpgObject::run();
+	emit this->enterDialogMode();
 	// move to scene
 	if(rpgView->scene() == nullptr){
 		rError() << "RpgView not loaded any scene yet.";
@@ -191,9 +192,27 @@ void RpgDialogItem::run(){
 	this->box->setPixmap(this->skin->getDialogImage(this->dialogSize));
 	this->box->setPos(dialogPos);
 
-	this->continueSymbol->setVisible(false);
+	// 设置lastDialogMessage为空, 在showMessage中切换至message::constBegin
+	this->lastDialogMessage = this->emptyMessage.constBegin();
 
+	this->continueSymbol->setVisible(false);
 	this->showDialog();
+}
+
+int RpgDialogItem::waitForComplete(){
+	if(!this->isRunning()){
+		rDebug() << "RpgDialog not running.";
+		return -1;
+	}
+	QEventLoop eventLoop(this);
+	this->connect(this, &RpgDialogItem::exitDialogMode, &eventLoop, &QEventLoop::quit);
+	eventLoop.exec();
+	return 0;
+}
+
+void RpgDialogItem::end(){
+	emit this->exitDialogMode();
+	RpgObject::end();
 }
 
 void RpgDialogItem::showDialog(){
@@ -219,12 +238,13 @@ void RpgDialogItem::hideDialog(){
 
 	this->hide();
 	this->clearMessages();
-	// emit...
+
 	if(rpgState->getTop() == RpgState::DialogMode){
 		rpgState->popState();
 	}else{
 		rDebug() << "RpgState stack top not DialogMode.";
 	}
+	this->end();
 }
 
 void RpgDialogItem::showNextMessage(){
@@ -234,7 +254,6 @@ void RpgDialogItem::showNextMessage(){
 		this->hideDialog();
 		this->messageIndex = 0;
 		this->lastDialogMessage = this->messages.constBegin();
-		this->end();
 		return;
 	}else{
 		this->showMessage(this->messageIndex);
@@ -244,7 +263,7 @@ void RpgDialogItem::showNextMessage(){
 			this->killTimer(this->timerId);
 			this->timerId = -1;
 		}
-		int waitTime = this->messages.at(index).getWaitTime();
+		int waitTime = this->messages.at(this->messageIndex).getWaitTime();
 		if(waitTime >= 0){
 			// startTimer时长为0时, 程序可能会反复post timerEvent, 可能会导致爆炸, 选择100ms进行延迟假装立即返回(用户按键也没那么快)
 			this->timerId = this->startTimer(waitTime <= 100? 100: waitTime);
@@ -252,7 +271,7 @@ void RpgDialogItem::showNextMessage(){
 	}
 }
 
-void RpgDialogItem::showMessage(index){
+void RpgDialogItem::showMessage(int index){
 	if(index < 0 || index > this->messages.length()){
 		rWarning() << "Index out of range: [0," << this->messages.length() << ")";
 		return;
@@ -262,8 +281,12 @@ void RpgDialogItem::showMessage(index){
 	Rpg::AvatarMode mode = current.getAvatarMode(); // 前半身立绘, 后半身立绘, 头像
 	Rpg::AvatarAround around = current.getAvatarAround(); // 左, 右
 	RpgDialogAnimation::Animations animations = 0;
-	if(index = 0){
+	if(index == 0){
 		animations.setFlag(RpgDialogAnimation::AnimationDialogShow);
+	}
+	if(index == 1){
+		// 设置lastDialogMessage到messages::constBegin
+		this->lastDialogMessage = this->messages.constBegin();
 	}
 
 	if(!characterName.isEmpty()){
@@ -486,7 +509,9 @@ void RpgDialogItem::showMessage(index){
 	rDebug() << "Animations:" << animations;
 	this->dialogAnimation->runDialogAvatarAnimations(mode, (*this->lastDialogMessage).getAvatarMode(), animations);
 	this->showText(current.getText(), current.getSpeed(), current.getPointSize(), current.getName(), current.getLineHeight());
-	this->lastDialogMessage++;
+	if(index != 0){
+		this->lastDialogMessage++;
+	}
 }
 
 void RpgDialogItem::showText(const QString &text, int speed, int pointSize, const QString &name, qreal lineHeight){

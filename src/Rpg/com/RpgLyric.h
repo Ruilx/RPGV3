@@ -123,7 +123,7 @@ public:
 	 * 从文件读取歌词(不推荐)
 	 */
 	void loadLyricFromFile(const QString &filename){
-		if(this->getProcessing()){
+		if(this->getRunning()){
 			rDebug() << "Cannot load the lyric while running!";
 			return;
 		}
@@ -278,7 +278,7 @@ protected:
 	 */
 	void showLyric(){
 		this->connect(this->musicObj, &RpgMusic::seeked, [this](int ms){
-			if(this->lyricI == this->lyricMap.constEnd() || !this->getProcessing()){
+			if(this->lyricI == this->lyricMap.constEnd() || !this->getRunning()){
 				return;
 			}
 			while(this->lyricI != this->lyricMap.constEnd() && int(this->lyricI.key()) < ms){
@@ -300,14 +300,14 @@ protected:
 		});
 
 		this->connect(this->musicObj, &RpgMusic::stopped, [this](){
-			if(!this->getProcessing()){
+			if(!this->getRunning()){
 				return;
 			}
 			this->lyricAnimationHide();
 			RpgUtils::msleep(300);
 			this->hideLyric();
 			this->lyricI = this->lyricMap.constBegin();
-			this->setProcessing(false);
+			this->setRunning(false);
 		});
 
 		this->show();

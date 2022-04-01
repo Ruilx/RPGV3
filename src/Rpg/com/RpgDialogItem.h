@@ -4,6 +4,8 @@
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsPixmapItem>
 
+#include <QTextBlockFormat>
+
 #include <Rpg/Rpg.h>
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgUtils.h>
@@ -57,7 +59,14 @@ private:
 	// 消息列表
 	QList<RpgDialogMessage> messages;
 	int messageIndex = 0;
+
+	QList<RpgDialogMessage> emptyMessage = {RpgDialogMessage("", "")};
 	QList<RpgDialogMessage>::ConstIterator lastDialogMessage;
+	/* 关于lastDialogMessage的补丁
+	 * lastDialogMessage从index改成iterator之后, 读取lastDialogMessage的第一项可能会出问题
+	 * 读取模式时要从"永远不同"开始, 但List并无"空"项, 所以在此定义一个emptyMessage List用来存
+	 * 储空项, 从第二项开始将lastDialogMessage导至messages的第0项, 由此向后继续
+	 */
 
 	// 正在运行的Flag
 	bool showTextInProgressFlag = false;
@@ -67,9 +76,7 @@ private:
 	QTimeLine *continueSymbolTimeLine = new QTimeLine(1000, this);
 
 
-	inline void setMessageTextWidth(qreal width){
-		this->messageBox->setTextWidth(width);
-	}
+	inline void setMessageTextWidth(qreal width){ this->messageBox->setTextWidth(width); }
 
 public:
 	// 文字颜色(不含CSS标签颜色)
@@ -105,13 +112,18 @@ public:
 
 	// 执行
 	void run() override;
+	int waitForComplete();
+	void end() override;
 private:
 	void showDialog();
 	void hideDialog();
 
 	void showNextMessage();
-	void showMessage(index);
+	void showMessage(int index);
 	void showText(const QString &text, int speed = 0, int pointSize = -1, const QString &name = QString(), qreal lineHeight = 35);
+signals:
+	void enterDialogMode();
+	void exitDialogMode();
 };
 
 #endif // RPGDIALOGITEM_H
