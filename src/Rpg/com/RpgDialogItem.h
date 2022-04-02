@@ -39,9 +39,8 @@ class RpgDialogItem : public RpgObject
 //	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 //	void boundingRect() override;
 
-	void timerEvent(QTimerEvent *event);
-
 	// timer
+	void timerEvent(QTimerEvent *event);
 	int timerId = -1;
 	bool timerProcessing = false;
 
@@ -52,7 +51,7 @@ public:
 	const int MessageMarginH = 10;
 	const int MessageMarginV = 5;
 
-	// 消息使用内部字体
+	// 消息使用内部字体名
 	const char *FontName = "dialog";
 private:
 

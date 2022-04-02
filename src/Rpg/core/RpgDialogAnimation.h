@@ -75,8 +75,10 @@ class RpgDialogAnimation
 		if(!target->pixmap().isNull() && (avatarMode == Rpg::AvatarHalfBodyFront || avatarMode == Rpg::AvatarHalfBodyBehind)){
 			RpgItemProperties *properties = nullptr;
 			if(target == this->avatarItemLeft){
+				// target 必不是nullptr, 如果avatarItemLeft是空的情况, avatarItemLeftProperties不会复制到properties中.
 				properties = this->avatarItemLeftProperties;
 			}else if(target == this->avatarItemRight){
+				// target 必不是nullptr, 如果avatarItemRight是空的情况, avatarItemRightProperties不会复制到properties中.
 				properties = this->avatarItemRightProperties;
 			}else{
 				throw RpgRuntimeException("Target is not fit weather left avatar or right avatar.");
@@ -248,7 +250,7 @@ public:
 		return QPointF(ScreenWidth - pixmapSize.width(), ScreenHeight - pixmapSize.height());
 	}
 
-	RpgDialogAnimation(QGraphicsItem *dialog, QGraphicsPixmapItem *avatarItemLeft, QGraphicsPixmapItem *avatarItemRight, int duration = 300, QEasingCurve::Type easingCurveType = QEasingCurve::OutQuad, QObject *parent = nullptr): group(new QParallelAnimationGroup(parent)){
+	RpgDialogAnimation(QGraphicsItem *dialog, QGraphicsPixmapItem *avatarItemLeft = nullptr, QGraphicsPixmapItem *avatarItemRight = nullptr, int duration = 300, QEasingCurve::Type easingCurveType = QEasingCurve::OutQuad, QObject *parent = nullptr): group(new QParallelAnimationGroup(parent)){
 		this->dialog = dialog;
 		this->avatarItemLeft = avatarItemLeft;
 		this->avatarItemRight = avatarItemRight;
@@ -256,8 +258,12 @@ public:
 		this->easingCurveType = easingCurveType;
 
 		this->dialogProperties = new RpgItemProperties(this->dialog);
-		this->avatarItemLeftProperties = new RpgItemProperties(this->avatarItemLeft);
-		this->avatarItemRightProperties = new RpgItemProperties(this->avatarItemRight);
+		if(this->avatarItemLeft != nullptr){
+			this->avatarItemLeftProperties = new RpgItemProperties(this->avatarItemLeft);
+		}
+		if(this->avatarItemRight != nullptr){
+			this->avatarItemRightProperties = new RpgItemProperties(this->avatarItemRight);
+		}
 
 //		QObject::connect(this->group, &QParallelAnimationGroup::finished, [this](){
 //			qDebug() << "Dialog:" << this->dialog->pos() << this->dialog->boundingRect() << "Visible:" << this->dialog->isVisible() << "Opacity:" << this->dialog->opacity();
