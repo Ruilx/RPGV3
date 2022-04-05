@@ -11,7 +11,14 @@ const QMap<QString, QUrl> RpgPreload::parseDict(const QJsonObject &object){
 			rDebug() << "The value of the Key: " << key << " is empty.";
 			continue;
 		}else{
-			dict.insert(key, QUrl(stringValue));
+			QString lowerStr = stringValue.toLower();
+			if(lowerStr.startsWith("http:") || lowerStr.startsWith("https:") ||
+					lowerStr.startsWith("ftp:") || lowerStr.startsWith("tcp:") ||
+					lowerStr.startsWith("file:") || lowerStr.startsWith("qrc:")){
+				dict.insert(key, QUrl(stringValue));
+			}else{
+				dict.insert(key, QUrl::fromLocalFile(stringValue));
+			}
 		}
 	}
 	return dict;

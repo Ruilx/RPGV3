@@ -13,6 +13,7 @@
 void RpgDialogItem::timerEvent(QTimerEvent *event){
 	this->timerProcessing = true;
 	if(event->timerId() == this->timerId){
+		rDebug() << "Killing timer" << this->timerId;
 		this->killTimer(this->timerId);
 		this->timerId = -1;
 	}
@@ -27,7 +28,9 @@ void RpgDialogItem::keyReleaseEvent(QKeyEvent *event){
 			return;
 		}
 		if(this->timerId > 0){
+			rDebug() << "Killing timer" << this->timerId;
 			this->killTimer(this->timerId);
+			this->timerId = -1;
 		}
 		if(!this->isRunning()){
 			rWarning() << "RpgDialogItem not running.";
@@ -260,6 +263,7 @@ void RpgDialogItem::showNextMessage(){
 
 		// 设置超时时间
 		if(this->timerId > 0){
+			rDebug() << "Killing timer:" << this->timerId;
 			this->killTimer(this->timerId);
 			this->timerId = -1;
 		}
@@ -267,6 +271,7 @@ void RpgDialogItem::showNextMessage(){
 		if(waitTime >= 0){
 			// startTimer时长为0时, 程序可能会反复post timerEvent, 可能会导致爆炸, 选择100ms进行延迟假装立即返回(用户按键也没那么快)
 			this->timerId = this->startTimer(waitTime <= 100? 100: waitTime);
+			rDebug() << "Timer started:" << this->timerId;
 		}
 	}
 }

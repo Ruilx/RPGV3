@@ -71,9 +71,13 @@ protected:
 	void renderDialog(const QSize &dialogSize) NoThrow Override Final;
 	void renderSelectBar(const QSize &selectBarSize) NoThrow Override Final;
 	void renderContinueSymbols() NoThrow Override Final{}
+	void renderUpArrowSymbols() NoThrow Override Final{}
+	void renderDownArrowSymbols() NoThrow Override Final{}
 
 public:
 	RpgSpecLocationChopingDialog(const QString &dialogSkinName);
+
+	const QPixmap &getDownArrowSymbolImage(int index) const;
 };
 
 #endif // RPGSPECLOCATIONCHOPINGDIALOG_H

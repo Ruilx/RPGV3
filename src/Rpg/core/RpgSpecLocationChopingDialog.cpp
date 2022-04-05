@@ -21,7 +21,7 @@ RpgSpecLocationChopingDialog::RpgSpecLocationChopingDialog(const QString &dialog
 		throw RpgRuntimeException("Base image is not valid.");
 	}
 	if(this->base.width() < 192 || this->base.height() < 128){
-		qDebug() << CodePath << "Loaded skin pixmap not fit.";
+		rError() << "Loaded skin pixmap not fit.";
 		throw RpgRuntimeException("Loaded skin pixmap not fit.");
 	}
 
@@ -54,6 +54,14 @@ RpgSpecLocationChopingDialog::RpgSpecLocationChopingDialog(const QString &dialog
 	this->continueSymbolList.append(continueSymbol.copy(this->continueSymbol2Rect));
 	this->continueSymbolList.append(continueSymbol.copy(this->continueSymbol3Rect));
 	this->continueSymbolList.append(continueSymbol.copy(this->continueSymbol4Rect));
+
+	QMatrix upDownMirror;
+	upDownMirror.rotate(180);
+	for(QList<QPixmap>::ConstIterator i: this->continueSymbolList){
+		this->upArrowSymbolList.append((*i).transformed(upDownMirror, Qt::SmoothTransformation));
+	}
+
+	// downArrow与continueSymbol相同, 在get函数中复用, 不再render
 }
 
 void RpgSpecLocationChopingDialog::renderDialog(const QSize &dialogSize) NoThrow{
@@ -112,3 +120,10 @@ void RpgSpecLocationChopingDialog::renderSelectBar(const QSize &selectBarSize) N
 	this->selectBarBackground.insert(RpgSpecLocationChopingDialog::generateQSizePair(selectBarSize), selectBarImage);
 }
 
+const QPixmap &RpgSpecLocationChopingDialog::getDownArrowSymbolImage(int index) const{
+	if(index < 0 || index >= this->continueSymbolList.length()){
+		rError() << "Index out of range:" << index;
+		return this->invalidPixmap;
+	}
+	return this->continueSymbolList.at(index);
+}

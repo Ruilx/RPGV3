@@ -4,6 +4,7 @@
 #include <QtCore>
 
 #include <QSoundEffect>
+#include <QMutex>
 
 /**
  * @brief The RpgSound class
@@ -13,8 +14,9 @@ class RpgSound : public QObject
 {
 	Q_OBJECT
 	static RpgSound *_instance;
+	int maxPlayingCount = 10;
 
-	QThreadPool *threadPool = nullptr;
+	QHash<qint64, QSoundEffect *> playingSounds;
 public:
 	static RpgSound *instance(){
 		if(_instance == nullptr){
@@ -24,16 +26,14 @@ public:
 	}
 
 	explicit RpgSound(QObject *parent = nullptr): QObject(parent){
-		if(this->threadPool == nullptr){
-			this->threadPool = new QThreadPool(this);
-			this->threadPool->setMaxThreadCount(10);
-		}
+		this->playingSounds.clear();
 	}
 
 	~RpgSound(){
-		if(this->threadPool != nullptr){
-			this->threadPool->waitForDone();
-			this->threadPool->clear();
+		for(auto i: this->playingSounds){
+			if(i != nullptr){
+				i->stop();
+			}
 		}
 	}
 
@@ -41,8 +41,8 @@ signals:
 	void started(const QString &soundName);
 	void stopped(const QString &soundName);
 public slots:
-	void play(const QString &soundName, qreal volume = 1.0, int times = 1);
-	void stop(const QString &soundName);
+	qint64 play(const QString &soundName, qreal volume = 1.0, int times = 1);
+	void stop(qint64 index);
 };
 
 #ifndef rpgSound

@@ -54,7 +54,7 @@ public:
 	const char *FontName = "dialog";
 private:
 	// 选择列表
-	QList<RpgChoiceMessage> messages;
+	QList<RpgChoiceMessage> choices;
 	int mesasgeIndex = 0;
 
 	// 正在运行的Flag
@@ -68,8 +68,43 @@ private:
 public:
 	// 文字颜色(不含CSS标签颜色)
 	inline void setTextColor(const QColor &color){ this->textColor = color; }
+	inline void setTextColor(Qt::GlobalColor color){ this->textColor = QColor(color); }
 
-	RpgChoiceItem();
+	inline void appendChoice(const RpgChoiceMessage &choice);
+	inline void appendChoice(const QList<RpgChoiceMessage> &choices);
+	inline void appendChoice(const QString &text, bool enabled = true);
+
+	inline void clearChoices(){ this->choices.clear(); }
+
+	// 字体 (借当前父系font的值)
+	inline void setFont(const QFont &font){ this->setFont(font); }
+	inline QFont getFont() const { return this->font(); }
+
+	// 窗口大小
+	void setDialogSize(const QSize &size);
+	inline const QSize getDialogSize() const { return this->dialogSize; }
+
+	// 窗口位置
+	void setDialogAlign(Rpg::BlockAlign align){ this->dialogAlign = align; }
+	inline Rpg::BlockAlign getDialogAlign() const { return this->dialogAlign; }
+
+	// 构造
+	RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr);
+	~RpgChoiceItem();
+
+	// 执行
+	void run() override;
+	int waitForComplete();
+	void end() override;
+
+private:
+	void showDialog();
+	void hideDialog();
+
+signals:
+	void enterDialogMode();
+	void exitDialogMode();
+
 };
 
 #endif // RPGCHOICEITEM_H

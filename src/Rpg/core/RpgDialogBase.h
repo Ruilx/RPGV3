@@ -75,6 +75,18 @@ protected:
 	 */
 	QList<QPixmap> continueSymbolList;
 
+	/**
+	 * @brief downArrowSymbolList
+	 * 所记录的下箭头动画列表
+	 */
+	QList<QPixmap> downArrowSymbolList;
+
+	/**
+	 * @brief upArrowSymbolList
+	 * 所记录的上箭头动画列表
+	 */
+	QList<QPixmap> upArrowSymbolList;
+
 //	virtual void renderDialog(const QSize &dialogSize) NoThrow{ Unused(dialogSize) }
 //	virtual void renderSelectBar(const QSize &selectBarSize) NoThrow{ Unused(selectBarSize) }
 //	virtual void renderContinueSymbols() NoThrow{}
@@ -82,6 +94,8 @@ protected:
 	virtual void renderDialog(const QSize &dialogSize) NoThrow Pure;
 	virtual void renderSelectBar(const QSize &selectBarSize) NoThrow Pure;
 	virtual void renderContinueSymbols() NoThrow Pure;
+	virtual void renderUpArrowSymbols() NoThrow Pure;
+	virtual void renderDownArrowSymbols() NoThrow Pure;
 
 	static const QPair<int, int> generateQSizePair(const QSize &size){
 		return QPair<int, int>(size.width(), size.height());
@@ -98,13 +112,7 @@ public:
 	 * @return
 	 * 获得窗口背景(缓存)
 	 */
-	const QPixmap getDialogImage(const QSize &dialogSize){
-		QPair<qreal, qreal> dialogSizePair = RpgDialogBase::generateQSizePair(dialogSize);
-		if(!this->dialogBackground.contains(dialogSizePair)){
-			this->renderDialog(dialogSize);
-		}
-		return this->dialogBackground.value(dialogSizePair);
-	}
+	const QPixmap &getDialogImage(const QSize &dialogSize);
 
 	/**
 	 * @brief getSelectBarImage
@@ -112,13 +120,7 @@ public:
 	 * @return
 	 * 获得选择框(缓存)
 	 */
-	QPixmap getSelectBarImage(const QSize &selectBarSize){
-		QPair<qreal, qreal> selectBarSizePair = RpgDialogBase::generateQSizePair(selectBarSize);
-		if(!this->selectBarBackground.contains(selectBarSizePair)){
-			this->renderSelectBar(selectBarSize);
-		}
-		return this->selectBarBackground.value(selectBarSizePair);
-	}
+	const QPixmap &getSelectBarImage(const QSize &selectBarSize);
 
 	/**
 	 * @brief getContinueSymbolImage
@@ -126,51 +128,24 @@ public:
 	 * @return
 	 * 获得继续图标
 	 */
-	const QPixmap &getContinueSymbolImage(int index) const{
-		if(index < 0 || index >= this->continueSymbolList.length()){
-			qDebug() << CodePath << "Index out of range:" << index;
-			return this->invalidPixmap;
-		}
-		return this->continueSymbolList.at(index);
-	}
+	const QPixmap &getContinueSymbolImage(int index) const;
 
-	Q_DECL_DEPRECATED int getContinueSymbolImageLength() const{
-		return this->getContinueSymbolImageCount();
-	}
+	Q_DECL_DEPRECATED inline int getContinueSymbolImageLength() const{ return this->getContinueSymbolImageCount(); }
+	inline int getContinueSymbolImageCount() const{ return this->continueSymbolList.length(); }
 
-	int getContinueSymbolImageCount() const{
-		return this->continueSymbolList.length();
-	}
+	const QPixmap &getUpArrowSymbolImage(int index) const;
+	inline int getUpArrowSymbolImageCount() const{ return this->upArrowSymbolList.length(); }
 
-	explicit RpgDialogBase(const QString &dialogSkinName){
-		this->setDialogSkinName(dialogSkinName);
-//		this->renderDialog(RpgDialogBase::dialogSize());
-//		this->renderSelectBar(RpgDialogBase::selectBarSize());
-//		this->renderContinueSymbols();
-	}
+	const QPixmap &getDownArrowSymbolImage(int index) const;
+	inline int getDownArrowSymbolImageCount() const{ return this->downArrowSymbolList.length(); }
+
+	explicit RpgDialogBase(const QString &dialogSkinName);
 
 	~RpgDialogBase(){}
 
-	void setDialogSkinName(const QString &dialogSkinName){
-		this->dialogSkinName = dialogSkinName;
-		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::ImageFile, dialogSkinName);
-		if(filename.isEmpty()){
-			throw RpgResourceNotFoundException(filename);
-		}
-		this->base = QPixmap(filename);
-		if(this->base.isNull()){
-			qDebug() << CodePath << "Cannot load skin file:" << filename;
-			throw RpgFileCannotOpenException(filename);
-		}
-	}
-
-	QString getDialogSkinName() const{
-		return this->dialogSkinName;
-	}
-
-	DialogSkinChopingMode getChopingMode() const{
-		return this->chopingMode;
-	}
+	void setDialogSkinName(const QString &dialogSkinName);
+	inline QString getDialogSkinName() const{ return this->dialogSkinName; }
+	inline DialogSkinChopingMode getChopingMode() const{ return this->chopingMode; }
 };
 
 #endif // RPGDIALOGBASE_H
