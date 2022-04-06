@@ -7,7 +7,7 @@ const QPixmap &RpgDialogBase::getDialogImage(const QSize &dialogSize){
 	if(!this->dialogBackground.contains(dialogSizePair)){
 		this->renderDialog(dialogSize);
 	}
-	return this->dialogBackground.value(dialogSizePair);
+	return this->dialogBackground[dialogSizePair];
 }
 
 const QPixmap &RpgDialogBase::getSelectBarImage(const QSize &selectBarSize){
@@ -15,7 +15,7 @@ const QPixmap &RpgDialogBase::getSelectBarImage(const QSize &selectBarSize){
 	if(!this->selectBarBackground.contains(selectBarSizePair)){
 		this->renderSelectBar(selectBarSize);
 	}
-	return this->selectBarBackground.value(selectBarSizePair);
+	return this->selectBarBackground[selectBarSizePair];
 }
 
 const QPixmap &RpgDialogBase::getContinueSymbolImage(int index) const{

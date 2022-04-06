@@ -22,30 +22,31 @@ void RpgDialogItem::timerEvent(QTimerEvent *event){
 }
 
 void RpgDialogItem::keyReleaseEvent(QKeyEvent *event){
-	if(!event->isAutoRepeat()){
-		if(this->timerProcessing){
-			rDebug() << "TimerEvent is processing messages, this key ignored.";
-			return;
-		}
-		if(this->timerId > 0){
-			rDebug() << "Killing timer" << this->timerId;
-			this->killTimer(this->timerId);
-			this->timerId = -1;
-		}
-		if(!this->isRunning()){
-			rWarning() << "RpgDialogItem not running.";
-			return;
-		}
-		if(event->modifiers() != Qt::NoModifier){
-			return;
-		}
-		int key = event->key();
-		if(key == Qt::Key_Return || key == Qt::Key_Space){
-			if(this->showTextInProgressFlag == true){
-				this->quickShowFlag = true;
-			}else{
-				this->showNextMessage();
-			}
+	if(event->isAutoRepeat()){
+		return;
+	}
+	if(this->timerProcessing){
+		rDebug() << "TimerEvent is processing messages, this key ignored.";
+		return;
+	}
+	if(this->timerId > 0){
+		rDebug() << "Killing timer:" << this->timerId;
+		this->killTimer(this->timerId);
+		this->timerId = -1;
+	}
+	if(!this->isRunning()){
+		rWarning() << "RpgDialogItem not running.";
+		return;
+	}
+	if(event->modifiers() != Qt::NoModifier){
+		return;
+	}
+	int key = event->key();
+	if(key == Qt::Key_Return || key == Qt::Key_Space){
+		if(this->showTextInProgressFlag == true){
+			this->quickShowFlag = true;
+		}else{
+			this->showNextMessage();
 		}
 	}
 }

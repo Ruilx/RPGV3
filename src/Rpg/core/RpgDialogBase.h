@@ -101,7 +101,7 @@ protected:
 		return QPair<int, int>(size.width(), size.height());
 	}
 
-private:
+protected:
 	QPixmap invalidPixmap;
 
 public:

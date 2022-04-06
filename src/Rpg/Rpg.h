@@ -9,6 +9,7 @@ class Rpg
 {
 public:
 	static const int Infinity = 0;
+	static const int AnimationLoopInfinity = -1;
 
 	static constexpr QSizeF ScreenSize = QSizeF(ScreenWidth, ScreenHeight);
 	static constexpr QSizeF MapTileSize = QSizeF(MapTileWidth, MapTileHeight);

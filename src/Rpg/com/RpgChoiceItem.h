@@ -26,8 +26,10 @@ class RpgChoiceItem : public RpgObject
 	QGraphicsPixmapItem *downArrowSymbol = new QGraphicsPixmapItem(this->box);
 
 	QGraphicsPixmapItem *selectBar = new QGraphicsPixmapItem(this->box);
+	RpgItemProperties *selectItemProperties = new RpgItemProperties(this->selectBar, this);
+	QPropertyAnimation *selectBarAnimation = new QPropertyAnimation(this->selectItemProperties, "opacity", this);
 
-	QGraphicsDropShadowEffect textShadowEffect = new QGraphicsDropShadowEffect(this);
+	QGraphicsDropShadowEffect *textShadowEffect = new QGraphicsDropShadowEffect(this);
 
 	RpgDialogAnimation *dialogAnimation = new RpgDialogAnimation(this->box, nullptr, nullptr, 300, QEasingCurve::OutQuad, this);
 
@@ -40,6 +42,8 @@ class RpgChoiceItem : public RpgObject
 	int timerId = -1;
 	bool timerProcessing = false;
 
+	int timeout = 0;
+
 	// 按键
 	void keyReleaseEvent(QKeyEvent *event) override;
 
@@ -47,7 +51,18 @@ class RpgChoiceItem : public RpgObject
 	//qreal textWidth = 0;
 	QColor textColor = QColor(Qt::white);
 	QFont font;
+	// 计算出的选项与选项之间的间距(run计算出来的)
+	qreal innerPaddingV = 0;
 
+	int speed = Rpg::SpeedFast;
+
+	// 选择框在屏幕上的消息位置
+	int selectingIndex = 0;
+	// 展示第一个选项在列表中的哪一个
+	int fromIndex = 0;
+
+	// 返回结果
+	int chosenIndex = 0;
 public:
 	// 消息框内部间距
 	const int MessageMarginH = 10;
@@ -58,7 +73,10 @@ public:
 private:
 	// 选择列表
 	QList<RpgChoiceMessage> choices;
-	int mesasgeIndex = 0;
+	//int mesasgeIndex = 0;
+
+	// 默认选中的index
+	int defaultChoiceIndex = 0;
 
 	// 正在运行的Flag
 	bool showTextInProgressFlag = false;
@@ -68,6 +86,7 @@ private:
 	QTimeLine *arrowSymbolsTimeLine = new QTimeLine(1000, this);
 
 	//inline void setChoiceTextWidth(qreal width){ this->textWidth = width; }
+	void clearTextItems();
 public:
 	// 文字颜色(不含CSS标签颜色)
 	inline void setTextColor(const QColor &color){ this->textColor = color; }
@@ -79,8 +98,19 @@ public:
 
 	inline void clearChoices(){ this->choices.clear(); }
 
+	inline void setDefaultChoice(int index);
+	inline void setDefaultChoice(const QString &value);
+	inline int getDefaultChoice() const { return this->defaultChoiceIndex; }
+
+	inline void setTimeout(int timeout){ this->timeout = timeout; }
+	inline int getTimeout() const { return this->timeout; }
+
+	// 载入前出字速度
+	inline void setSpeed(int speed){ this->speed = speed; }
+	inline int getSpeed() const { return this->speed; }
+
 	// 字体 (借当前父系font的值)
-	inline void setFont(const QFont &font){ this->font = QFont(font); }
+	inline void setFont(const QFont &font) { this->font = QFont(font); }
 	inline QFont getFont() const { return this->font; }
 
 	// 窗口大小
@@ -100,10 +130,15 @@ public:
 	int waitForComplete();
 	void end() override;
 
+	// 获得选项值
+	inline const QString &getValue() const { return this->choices.at(this->chosenIndex).getValue(); }
+
 private:
 	void showDialog();
 	void hideDialog();
 
+	void setChoicesText(int from, bool withSpeed = false);
+	void setSelectBarIndex(int index);
 signals:
 	void enterDialogMode();
 	void exitDialogMode();

@@ -57,8 +57,8 @@ RpgSpecLocationChopingDialog::RpgSpecLocationChopingDialog(const QString &dialog
 
 	QMatrix upDownMirror;
 	upDownMirror.rotate(180);
-	for(QList<QPixmap>::ConstIterator i: this->continueSymbolList){
-		this->upArrowSymbolList.append((*i).transformed(upDownMirror, Qt::SmoothTransformation));
+	for(const QPixmap &i: this->continueSymbolList){
+		this->upArrowSymbolList.append(i.transformed(upDownMirror, Qt::SmoothTransformation));
 	}
 
 	// downArrow与continueSymbol相同, 在get函数中复用, 不再render

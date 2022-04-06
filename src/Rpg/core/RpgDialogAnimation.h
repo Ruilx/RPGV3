@@ -14,6 +14,8 @@
 
 class RpgDialogAnimation
 {
+	QObject *parent = nullptr;
+
 	int duration = 300;
 	QEasingCurve::Type easingCurveType = QEasingCurve::OutQuad;
 
@@ -44,7 +46,7 @@ class RpgDialogAnimation
 			return nullptr;
 			//throw RpgNullPointerException("RpgDialogAnimtion::dialog");
 		}
-		QPropertyAnimation *dialogAnimation = new QPropertyAnimation(this->dialogProperties, "opacity");
+		QPropertyAnimation *dialogAnimation = new QPropertyAnimation(this->dialogProperties, "opacity", this->parent);
 		dialogAnimation->setDuration(this->duration);
 		dialogAnimation->setEasingCurve(this->easingCurveType);
 		if(mode == AnimationEnter){
@@ -83,7 +85,7 @@ class RpgDialogAnimation
 			}else{
 				throw RpgRuntimeException("Target is not fit weather left avatar or right avatar.");
 			}
-			avatarAnimation = new QPropertyAnimation(properties, "pos");
+			avatarAnimation = new QPropertyAnimation(properties, "pos", this->parent);
 			avatarAnimation->setDuration(this->duration);
 			avatarAnimation->setEasingCurve(this->easingCurveType);
 			if(mode == AnimationEnter){
@@ -133,7 +135,7 @@ class RpgDialogAnimation
 			}else{
 				throw RpgRuntimeException("Target is not fit weather left avatar or right avatar.");
 			}
-			avatarAnimation = new QPropertyAnimation(properties, "opacity");
+			avatarAnimation = new QPropertyAnimation(properties, "opacity", this->parent);
 			avatarAnimation->setDuration(this->duration);
 			avatarAnimation->setEasingCurve(this->easingCurveType);
 			if(mode == AnimationEnter){
@@ -250,19 +252,19 @@ public:
 		return QPointF(ScreenWidth - pixmapSize.width(), ScreenHeight - pixmapSize.height());
 	}
 
-	RpgDialogAnimation(QGraphicsItem *dialog, QGraphicsPixmapItem *avatarItemLeft = nullptr, QGraphicsPixmapItem *avatarItemRight = nullptr, int duration = 300, QEasingCurve::Type easingCurveType = QEasingCurve::OutQuad, QObject *parent = nullptr): group(new QParallelAnimationGroup(parent)){
+	RpgDialogAnimation(QGraphicsItem *dialog, QGraphicsPixmapItem *avatarItemLeft = nullptr, QGraphicsPixmapItem *avatarItemRight = nullptr, int duration = 300, QEasingCurve::Type easingCurveType = QEasingCurve::OutQuad, QObject *parent = nullptr): parent(parent), group(new QParallelAnimationGroup(parent)){
 		this->dialog = dialog;
 		this->avatarItemLeft = avatarItemLeft;
 		this->avatarItemRight = avatarItemRight;
 		this->duration = duration;
 		this->easingCurveType = easingCurveType;
 
-		this->dialogProperties = new RpgItemProperties(this->dialog);
+		this->dialogProperties = new RpgItemProperties(this->dialog, parent);
 		if(this->avatarItemLeft != nullptr){
-			this->avatarItemLeftProperties = new RpgItemProperties(this->avatarItemLeft);
+			this->avatarItemLeftProperties = new RpgItemProperties(this->avatarItemLeft, parent);
 		}
 		if(this->avatarItemRight != nullptr){
-			this->avatarItemRightProperties = new RpgItemProperties(this->avatarItemRight);
+			this->avatarItemRightProperties = new RpgItemProperties(this->avatarItemRight, parent);
 		}
 
 //		QObject::connect(this->group, &QParallelAnimationGroup::finished, [this](){
@@ -272,14 +274,14 @@ public:
 //		});
 	}
 
-	RpgDialogAnimation(QGraphicsItem *dialog, int duration, QEasingCurve::Type easingCurveType, QObject *parent): group(new QParallelAnimationGroup(parent)){
+	RpgDialogAnimation(QGraphicsItem *dialog, int duration, QEasingCurve::Type easingCurveType, QObject *parent): parent(parent), group(new QParallelAnimationGroup(parent)){
 		this->dialog = dialog;
 		this->avatarItemLeft = nullptr;
 		this->avatarItemRight = nullptr;
 		this->duration = duration;
 		this->easingCurveType = easingCurveType;
 
-		this->dialogProperties = new RpgItemProperties(this->dialog);
+		this->dialogProperties = new RpgItemProperties(this->dialog, parent);
 	}
 
 	~RpgDialogAnimation(){
