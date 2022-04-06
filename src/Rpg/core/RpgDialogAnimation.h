@@ -385,8 +385,21 @@ public:
 
 	void runDialogAnimations(Animations animations){
 		if(this->dialog == nullptr){
-
+			rDebug() << "Specific dialog is nullptr";
+			throw RpgNullPointerException("=>this->dialog:QGraphicsItem");
 		}
+		this->clear();
+		if(animations.testFlag(AnimationDialogShow)){
+			this->appendToGroup(this->makeDialogAnimation(AnimationEnter));
+		}
+		if(animations.testFlag(AnimationDialogHide)){
+			if(animations.testFlag(AnimationDialogShow)){
+				rDebug() << "Cannot deal both same target showing and hiding. Default run 'show' way.";
+			}else{
+				this->appendToGroup(this->makeDialogAnimation(AnimationExit));
+			}
+		}
+		this->start();
 	}
 
 	void runDialogAvatarAnimations(Rpg::AvatarMode mode, Rpg::AvatarMode lastMode, Animations animations){

@@ -25,6 +25,8 @@ class RpgChoiceItem : public RpgObject
 	QGraphicsPixmapItem *upArrowSymbol = new QGraphicsPixmapItem(this->box);
 	QGraphicsPixmapItem *downArrowSymbol = new QGraphicsPixmapItem(this->box);
 
+	QGraphicsPixmapItem *selectBar = new QGraphicsPixmapItem(this->box);
+
 	QGraphicsDropShadowEffect textShadowEffect = new QGraphicsDropShadowEffect(this);
 
 	RpgDialogAnimation *dialogAnimation = new RpgDialogAnimation(this->box, nullptr, nullptr, 300, QEasingCurve::OutQuad, this);
@@ -42,8 +44,9 @@ class RpgChoiceItem : public RpgObject
 	void keyReleaseEvent(QKeyEvent *event) override;
 
 	// 因为动态生成列表, 所以在run之前一些配置在这里存储, 在run的时候动态设置上
-	qreal textWidth = 0;
+	//qreal textWidth = 0;
 	QColor textColor = QColor(Qt::white);
+	QFont font;
 
 public:
 	// 消息框内部间距
@@ -64,7 +67,7 @@ private:
 	// 上下箭头三角形 时间轴
 	QTimeLine *arrowSymbolsTimeLine = new QTimeLine(1000, this);
 
-	inline void setMessageTextWidth(qreal width){ this->textWidth = width; }
+	//inline void setChoiceTextWidth(qreal width){ this->textWidth = width; }
 public:
 	// 文字颜色(不含CSS标签颜色)
 	inline void setTextColor(const QColor &color){ this->textColor = color; }
@@ -77,8 +80,8 @@ public:
 	inline void clearChoices(){ this->choices.clear(); }
 
 	// 字体 (借当前父系font的值)
-	inline void setFont(const QFont &font){ this->setFont(font); }
-	inline QFont getFont() const { return this->font(); }
+	inline void setFont(const QFont &font){ this->font = QFont(font); }
+	inline QFont getFont() const { return this->font; }
 
 	// 窗口大小
 	void setDialogSize(const QSize &size);

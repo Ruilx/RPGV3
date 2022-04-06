@@ -57,8 +57,9 @@ RpgChoiceItem::RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 
 	this->upArrowSymbol->setZValue(0.3);
 	this->downArrowSymbol->setZValue(0.3);
+	this->selectBar->setZValue(0.4);
 
-	this->setMessageTextWidth(this->dialogSize.width() - (2.0 * MessageMarginH));
+	//this->setMessageTextWidth(this->dialogSize.width() - (2.0 * MessageMarginH));
 
 	// 阴影设置
 	this->textShadowEffect.setColor(QColor(Qt::black));
@@ -86,27 +87,86 @@ void RpgChoiceItem::run(){
 		rpgView->scene()->addItem(this);
 	}
 
+	qreal textWidth = this->dialogSize.width() - (2 * RpgDialogBase::PaddingH);
+	qreal innerPaddingV = 0;
+
 	int innerDialogHeight = this->dialogSize.height() - (RpgDialogBase::PaddingV * 2);
 	int selectBarHeight = this->skin->selectBarSize().height();
 	qreal fRatio = qreal(innerDialogHeight) / selectBarHeight;
-	int iRatio = innerDialogHeight / selectBarHeight;
+	int iRatio = innerDialogHeight / selectBarHeight; // 选择项目数
 	if(fRatio < 1){
 		rWarning() << "dialog size cannot fit even 1 choice.";
 		this->end();
 		return;
 	}
-	if(fRatio - iRatio <= 1e-5){
-
+	if(iRatio == 1){
+		innerPaddingV = 0;
+	}else if(iRatio > 1){
+		if(fRatio - iRatio <= 1){
+			innerPaddingV = 0;
+		}else{
+			innerPaddingV = (this->dialogSize.height() - (selectBarHeight * iRatio)) / (iRatio - 1);
+		}
 	}
 
-
+	// 判断是否有choices
 	if(this->choices.isEmpty()){
-		rDebug() << "Detected choices is empty, exitted";
+		rDebug() << "Detected choices is empty, exitting";
 		this->end();
 		return;
-	}else if(this->choices.length())
-
 	}
+
+	// 判断是否被重新设定textItems了
+	if(!this->textItems.isEmpty()){
+		rError() << "Run while textItems wasn't emptied, will damage when append new choices.";
+		rError() << "It usually caused by 'hide' method not cleared the textItems list items.";
+		this->end();
+		return;
+	}
+
+	int displayChoices = qMin(this->choices.length(), iRatio);
+	int curHeight = RpgDialogBase::PaddingV;
+	for(int i = 0; i < displayChoices; i++){
+		QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
+		item->setFont(this->font);
+		item->setPos(RpgDialogBase::MarginH, curHeight);
+		item->setZValue(0.2);
+		item->setTextWidth(textWidth);
+		item->setGraphicsEffect(this->textShadowEffect);
+		this->textItems.append(item);
+
+		curHeight += selectBarHeight + innerPaddingV;
+	}
+
+	// 计算对话框位置
+	QPointF dialogPos = RpgUtils::getDialogPos(this->dialogAlign, this->dialogSize, RpgDialogBase::MarginH, RpgDialogBase::MarginV);
+
+	this->box->setPixmap(this->skin->getDialogImage(this->dialogSize));
+	this->box->setPos(dialogPos);
+
+	this->upArrowSymbol->setVisible(false);
+	this->downArrowSymbol->setVisible(false);
+
+	this->showDialog();
+
+}
+
+void RpgChoiceItem::end(){
+	emit this->exitDialogMode();
+	// 回收选项中新增的TextItem的内存
+	for(QList<QGraphicsTextItem*>::ConstIterator i: this->textItems){
+		if((*i) != nullptr){
+			(*i)->deleteLater();
+		}
+	}
+	this->textItems.clear();
+	RpgObject::end();
+}
+
+void RpgChoiceItem::showDialog(){
+	this->show();
+	rpgState->pushState(RpgState::DialogMode);
+	this->dialogAnimation->runDialogAnimations();
 
 }
 
