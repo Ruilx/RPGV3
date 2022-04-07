@@ -79,6 +79,7 @@ public:
 
 	// 消息使用内部字体名
 	const char *FontName = "dialog";
+	const QColor bannedColor = QColor(Qt::darkGray);
 private:
 	// 选择列表
 	QList<RpgChoiceMessage> choices;

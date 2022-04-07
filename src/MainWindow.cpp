@@ -71,18 +71,18 @@ void MainWindow::testModel()
 
 	RpgChoiceItem dialog(&base);
 	dialog.setDialogAlign(Rpg::AlignBottom);
-	dialog.setDialogSize(QSize(150, 180));
+	//dialog.setDialogSize(QSize(150, 180));
 	dialog.appendChoice("Choice 1");
-	dialog.appendChoice("Choice 2");
+	dialog.appendChoice("Choice 2", false);
 	dialog.appendChoice("Choice 3");
-	dialog.appendChoice("Choice 4");
+	dialog.appendChoice("Choice 4", false);
 	dialog.appendChoice("Choice 5");
-	dialog.appendChoice("Choice 6");
+	dialog.appendChoice("Choice 6", false);
 	dialog.appendChoice("Choice 7");
-	dialog.appendChoice("Choice 8");
+	dialog.appendChoice("Choice 8", false);
 	dialog.appendChoice("Choice 9");
-	dialog.setDefaultChoice(8);
-	dialog.setTimeout(5000);
+	dialog.setDefaultChoice(0);
+	//dialog.setTimeout(5000);
 
 	dialog.run();
 	int res = dialog.waitForComplete();

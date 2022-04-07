@@ -52,6 +52,7 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 					this->killTimer(this->timerId);
 					this->timerId = -1;
 				}
+				rpgSound->play("accepted");
 				this->hideDialog();
 				return;
 			}else{
@@ -436,6 +437,11 @@ void RpgChoiceItem::setChoicesText(int from, bool withSpeed){
 	if(!withSpeed || this->speed <= 0){
 		for(int i = 0; i < qMin(this->textItems.length(), this->choices.length() - from); i++){
 			this->textItems.at(i)->setHtml(this->choices.at(from + i).getText());
+			if(this->choices.at(from + i).getEnabled()){
+				this->textItems.at(i)->setDefaultTextColor(this->textColor);
+			}else{
+				this->textItems.at(i)->setDefaultTextColor(this->bannedColor);
+			}
 		}
 		for(int i = this->choices.length() - from; i < this->textItems.length(); i++){
 			this->textItems.at(i)->document()->clear();
@@ -448,6 +454,11 @@ void RpgChoiceItem::setChoicesText(int from, bool withSpeed){
 		if(this->speed > 0){
 			this->quickShowFlag = false;
 			for(int i = 0; i < qMin(this->textItems.length(), this->choices.length() - from); i++){
+				if(this->choices.at(from + i).getEnabled()){
+					this->textItems.at(i)->setDefaultTextColor(this->textColor);
+				}else{
+					this->textItems.at(i)->setDefaultTextColor(this->bannedColor);
+				}
 				RpgHtmlSplit htmlSplit(this->choices.at(from + i).getText());
 				while(htmlSplit.hasNext()){
 					QString wordLeft = htmlSplit.chopLeft();
