@@ -331,11 +331,11 @@ public:
 
 
 		// 继续三角形动画
-		this->continueSymbolTimeLine->setFrameRange(0, this->skin->getContinueSymbolImageLength());
+		this->continueSymbolTimeLine->setFrameRange(0, this->skin->getContinueSymbolImageCount());
 		this->continueSymbolTimeLine->setLoopCount(Rpg::Infinity);
 
 		this->connect(this->continueSymbolTimeLine, &QTimeLine::frameChanged, [this](int frameIndex){
-			if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageLength()){
+			if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageCount()){
 				const QPixmap framePixmap = this->skin->getContinueSymbolImage(frameIndex);
 				//this->continueSymbol->setPos((this->dialogSize.width() - framePixmap.width()) / 2.0, this->dialogSize.height() - (framePixmap.height() / 2.0));
 				//this->continueSymbol->setPos((this->dialogSize.width() - framePixmap.width()) / 2.0, this->dialogSize.height() - (framePixmap.height() * 0.75f));
@@ -548,7 +548,7 @@ public:
 		}
 
 		// 确定继续三角形存在
-		for(int i = 0; i < this->skin->getContinueSymbolImageLength(); i++){
+		for(int i = 0; i < this->skin->getContinueSymbolImageCount(); i++){
 			if(this->skin->getContinueSymbolImage(i).isNull()){
 				rDebug() << "Continue symbol frame " << i << " is null.";
 				this->end();

@@ -29,7 +29,12 @@ class RpgChoiceItem : public RpgObject
 	RpgItemProperties *selectItemProperties = new RpgItemProperties(this->selectBar, this);
 	QPropertyAnimation *selectBarAnimation = new QPropertyAnimation(this->selectItemProperties, "opacity", this);
 
-	QGraphicsDropShadowEffect *textShadowEffect = new QGraphicsDropShadowEffect(this);
+	// effect只能对一个text item增加effect, 所以这里做成配置式的
+	// 在设置effect的时候item会take ownership of the effect, 所以对其中直接new
+	//QGraphicsDropShadowEffect *textShadowEffect = new QGraphicsDropShadowEffect(this);
+	QColor textShadowEffectColor = QColor(Qt::black);
+	qreal textShadowEffectBlurRadius = 5;
+	QPointF textShadowEffectOffset = QPointF(2, 2);
 
 	RpgDialogAnimation *dialogAnimation = new RpgDialogAnimation(this->box, nullptr, nullptr, 300, QEasingCurve::OutQuad, this);
 
@@ -53,8 +58,12 @@ class RpgChoiceItem : public RpgObject
 	QFont font;
 	// 计算出的选项与选项之间的间距(run计算出来的)
 	qreal innerPaddingV = 0;
+	// 计算出第一个选项距离顶增加的距离(run计算出来的)
+	qreal addingPaddingV = 0;
+	// 计算出的选项上的select bar的高度
+	int selectBarHeight = RpgDialogBase::selectBarSize().height();
 
-	int speed = Rpg::SpeedFast;
+	int speed = Rpg::SingleWordSpeedFast;
 
 	// 选择框在屏幕上的消息位置
 	int selectingIndex = 0;
@@ -94,12 +103,14 @@ public:
 
 	inline void appendChoice(const RpgChoiceMessage &choice);
 	inline void appendChoice(const QList<RpgChoiceMessage> &choices);
-	inline void appendChoice(const QString &text, bool enabled = true);
+	inline void appendChoice(const QString &text, bool enabled = true){
+		this->choices.append(RpgChoiceMessage(text, enabled));
+	}
 
 	inline void clearChoices(){ this->choices.clear(); }
 
-	inline void setDefaultChoice(int index);
-	inline void setDefaultChoice(const QString &value);
+	void setDefaultChoice(int index);
+	void setDefaultChoice(const QString &value);
 	inline int getDefaultChoice() const { return this->defaultChoiceIndex; }
 
 	inline void setTimeout(int timeout){ this->timeout = timeout; }

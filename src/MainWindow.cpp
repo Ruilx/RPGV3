@@ -5,6 +5,7 @@
 #include <Rpg/com/RpgScene.h>
 
 #include <Rpg/com/RpgDialogItem.h>
+#include <Rpg/com/RpgChoiceItem.h>
 #include <Rpg/com/RpgMusic.h>
 #include <Rpg/core/RpgDialogMessage.h>
 
@@ -21,7 +22,7 @@ void MainWindow::testModel()
 
 	scene->addItem(item);
 
-//	RpgSpecLocationChopingDialog base("skin");
+	RpgSpecLocationChopingDialog base("skin");
 
 //	RpgDialogItem dialog(&base);
 
@@ -51,16 +52,41 @@ void MainWindow::testModel()
 //	dialog.run();
 //	dialog.waitForComplete();
 
-	for(int i = 0; i < 11; i++){
-		rpgSound->play("banned");
-		RpgUtils::msleep(1);
-	}
+//	for(int i = 0; i < 11; i++){
+//		rpgSound->play("banned");
+//		RpgUtils::msleep(1);
+//	}
 
-	RpgUtils::msleep(2000);
-	for(int i = 0; i < 10; i++){
-		rpgSound->play("select");
-		RpgUtils::msleep(1);
-	}
+//	RpgUtils::msleep(2000);
+//	for(int i = 0; i < 10; i++){
+//		rpgSound->play("select");
+//		RpgUtils::msleep(1);
+//	}
+
+	RpgDialogItem msg(&base);
+	msg.setDialogAlign(Rpg::AlignBottom);
+	msg.appendMessage("Choice 1<br>Choice 2<br>Choice 3");
+	msg.run();
+	msg.waitForComplete();
+
+	RpgChoiceItem dialog(&base);
+	dialog.setDialogAlign(Rpg::AlignBottom);
+	dialog.setDialogSize(QSize(150, 180));
+	dialog.appendChoice("Choice 1");
+	dialog.appendChoice("Choice 2");
+	dialog.appendChoice("Choice 3");
+	dialog.appendChoice("Choice 4");
+	dialog.appendChoice("Choice 5");
+	dialog.appendChoice("Choice 6");
+	dialog.appendChoice("Choice 7");
+	dialog.appendChoice("Choice 8");
+	dialog.appendChoice("Choice 9");
+	dialog.setDefaultChoice(8);
+	dialog.setTimeout(5000);
+
+	dialog.run();
+	int res = dialog.waitForComplete();
+	rDebug() << "RES:" << res;
 
 
 	this->canClose = true;

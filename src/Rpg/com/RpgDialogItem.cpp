@@ -270,6 +270,9 @@ void RpgDialogItem::showNextMessage(){
 		}
 		int waitTime = this->messages.at(this->messageIndex).getWaitTime();
 		if(waitTime >= 0){
+			if(this->timerId >= 0){
+				qWarning() << "Handle timerId not reset to -1: " << this->timerId;
+			}
 			// startTimer时长为0时, 程序可能会反复post timerEvent, 可能会导致爆炸, 选择100ms进行延迟假装立即返回(用户按键也没那么快)
 			this->timerId = this->startTimer(waitTime <= 100? 100: waitTime);
 			rDebug() << "Timer started:" << this->timerId;

@@ -126,17 +126,17 @@ public:
 		// 上三角的形成
 		QMatrix upDownMirror;
 		upDownMirror.rotate(180);
-		for(int i = 0; i < this->skin->getContinueSymbolImageLength(); i++){
+		for(int i = 0; i < this->skin->getContinueSymbolImageCount(); i++){
 			QPixmap triangle = this->skin->getContinueSymbolImage(i).transformed(upDownMirror, Qt::SmoothTransformation);
 			this->upPixmap.append(triangle);
 		}
 
 
 		// 上三角形和下三角形的动画(公用一个Timeline)
-		this->arrowSymbolTimeLine->setFrameRange(0, this->skin->getContinueSymbolImageLength());
+		this->arrowSymbolTimeLine->setFrameRange(0, this->skin->getContinueSymbolImageCount());
 		this->arrowSymbolTimeLine->setLoopCount(Rpg::Infinity);
 		this->connect(this->arrowSymbolTimeLine, &QTimeLine::frameChanged, [this](int frameIndex){
-			if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageLength()){
+			if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageCount()){
 				QPixmap framePixmap = this->skin->getContinueSymbolImage(frameIndex);
 				this->downSymbol->setPos((this->dialogSize.width() - framePixmap.width()) / 2.0, this->dialogSize.height() - (framePixmap.height() / 2.0));
 				this->downSymbol->setPixmap(framePixmap);
@@ -320,7 +320,7 @@ public:
 		}
 
 		// 确定上下三角形的存在
-		for(int i = 0; i < this->skin->getContinueSymbolImageLength(); i++){
+		for(int i = 0; i < this->skin->getContinueSymbolImageCount(); i++){
 			if(this->skin->getContinueSymbolImage(i).isNull()){
 				rDebug() << "UpDown symbol frame" << i << "is null";
 				this->end();

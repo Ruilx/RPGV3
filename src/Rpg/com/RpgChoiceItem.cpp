@@ -4,6 +4,7 @@
 #include <Rpg/com/RpgSound.h>
 #include <Rpg/core/RpgState.h>
 #include <Rpg/core/RpgHtmlSplit.h>
+#include <Rpg/core/RpgFont.h>
 
 #include <QTextDocument>
 
@@ -27,11 +28,6 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 		rDebug() << "TimerEvent is processing choices. this key ignored.";
 		return;
 	}
-	if(this->timerId > 0){
-		rDebug() << "Killing timer:" << this->timerId;
-		this->killTimer(this->timerId);
-		this->timerId = -1;
-	}
 	if(!this->isRunning()){
 		qWarning() << "RpgChoiceItem not running.";
 		return;
@@ -51,6 +47,11 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 			this->chosenIndex = this->fromIndex + this->selectingIndex;
 			if(this->choices.at(this->chosenIndex).getEnabled()){
 				// 选中项目可执行
+				if(this->timerId > 0){
+					rDebug() << "Killing timer:" << this->timerId;
+					this->killTimer(this->timerId);
+					this->timerId = -1;
+				}
 				this->hideDialog();
 				return;
 			}else{
@@ -95,40 +96,45 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 						}
 					}
 				}
-			}
-		}else if(key == Qt::Key_Down || key == Qt::Key_S){
-			// 显示下一个项目 (光标希望向下走)
-			if(this->choices.length() == 1){
-				// 如果列表中只有一个选项, 啥也不做
-				return;
-			}else{
-				// 大于一个选项
-				int maxFromIndex = this->choices.length() - this->textItems.length();
-				if(this->fromIndex >= (maxFromIndex <= 0 ? 0 : maxFromIndex)){
-					// 正在显示后N项
-					if(this->selectingIndex == qMin(this->textItems.length() -1, this->choices.length() -1)){
-						// 光标在最后一个了 (光标和列表都不能往下了)
-						rDebug() << "Last choose last, cannot down.";
-						return;
-					}else{
-						// 光标不在最后一个 (可以正常往下了)
-						this->selectingIndex++;
-						this->setSelectBarIndex(this->selectingIndex);
-						rpgSound->play("select");
-					}
+			}else if(key == Qt::Key_Down || key == Qt::Key_S){
+				// 显示下一个项目 (光标希望向下走)
+				if(this->choices.length() == 1){
+					// 如果列表中只有一个选项, 啥也不做
+					return;
 				}else{
-					// 正在显示 非后N项 (不在最后几个)
-					if(this->selectingIndex == qMin(this->textItems.length() -1, this->choices.length() -1)){
-						// 光标不能往下了 (光标不能往下了, 但from还可以往下)
-						// 向下滚动一行显示的内容, 光标位置不变
-						this->fromIndex++;
-						this->setChoicesText(this->fromIndex);
-						rpgSound->play("select");
+					// 大于一个选项
+					int maxFromIndex = this->choices.length() - this->textItems.length();
+					if(this->fromIndex >= (maxFromIndex <= 0 ? 0 : maxFromIndex)){
+						// 正在显示后N项
+						if(this->selectingIndex == qMin(this->textItems.length() -1, this->choices.length() -1)){
+							// 光标在最后一个了 (光标和列表都不能往下了)
+							rDebug() << "Last choose last, cannot down.";
+							return;
+						}else{
+							// 光标不在最后一个 (需要再判断是否处于选项的后几个(假设选项有9个, 一页显示3个, 最后应该是(7, 8, 9), 但从8开始显示就会出现(8, 9, 空)的情况, 这时候光标选中9的时候就不能再往下了)
+							if(this->fromIndex + this->selectingIndex >= this->choices.length() -1){
+								// 如果已经到达选项的最下面, 光标就不能再往下了
+								rDebug() << "Last choice but cursor not at end, (maybe starting posision to high), cursor cannot moving downward.";
+								return;
+							}
+							this->selectingIndex++;
+							this->setSelectBarIndex(this->selectingIndex);
+							rpgSound->play("select");
+						}
 					}else{
-						// 光标不在最后一个选项上 (可以往上了)
-						this->selectingIndex++;
-						this->setSelectBarIndex(this->selectingIndex);
-						rpgSound->play("select");
+						// 正在显示 非后N项 (不在最后几个)
+						if(this->selectingIndex == qMin(this->textItems.length() -1, this->choices.length() -1)){
+							// 光标不能往下了 (光标不能往下了, 但from还可以往下)
+							// 向下滚动一行显示的内容, 光标位置不变
+							this->fromIndex++;
+							this->setChoicesText(this->fromIndex);
+							rpgSound->play("select");
+						}else{
+							// 光标不在最后一个选项上 (可以往下了)
+							this->selectingIndex++;
+							this->setSelectBarIndex(this->selectingIndex);
+							rpgSound->play("select");
+						}
 					}
 				}
 			}
@@ -153,9 +159,7 @@ void RpgChoiceItem::appendChoice(const QList<RpgChoiceMessage> &choices){
 	this->choices.append(choices);
 }
 
-void RpgChoiceItem::appendChoice(const QString &text, bool enabled){
-	this->choices.append(RpgChoiceMessage(text, enabled));
-}
+
 
 void RpgChoiceItem::setDefaultChoice(int index){
 	if(index < 0 || index >= this->choices.length()){
@@ -204,10 +208,10 @@ RpgChoiceItem::RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 	this->connect(this->arrowSymbolsTimeLine, &QTimeLine::frameChanged, [this](int frameIndex){
 		if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageCount()){
 			const QPixmap upArrowPixmap = this->skin->getUpArrowSymbolImage(frameIndex);
-			this->upArrowSymbol->setPos((this->dialogSize.width() - upArrowPixmap.width()) / 2.0, upArrowPixmap.height() / 2.0);
+			this->upArrowSymbol->setPos((this->dialogSize.width() - upArrowPixmap.width()) / 2.0, 0);
 			this->upArrowSymbol->setPixmap(upArrowPixmap);
 			const QPixmap downArrowPixmap = this->skin->getDownArrowSymbolImage(frameIndex);
-			this->downArrowSymbol->setPos((this->dialogSize.width() - downArrowPixmap.width()) / 2.0, this->dialogSize.height() - (downArrowPixmap.height() / 2.0));
+			this->downArrowSymbol->setPos((this->dialogSize.width() - downArrowPixmap.width()) / 2.0, this->dialogSize.height() - downArrowPixmap.height());
 			this->downArrowSymbol->setPixmap(downArrowPixmap);
 		}
 	});
@@ -223,9 +227,9 @@ RpgChoiceItem::RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 	//this->setMessageTextWidth(this->dialogSize.width() - (2.0 * MessageMarginH));
 
 	// 阴影设置
-	this->textShadowEffect->setColor(QColor(Qt::black));
-	this->textShadowEffect->setBlurRadius(5.0);
-	this->textShadowEffect->setOffset(2.0, 2.0);
+//	this->textShadowEffect->setColor(QColor(Qt::black));
+//	this->textShadowEffect->setBlurRadius(5.0);
+//	this->textShadowEffect->setOffset(2.0, 2.0);
 
 	// selectBar动画设置
 	this->selectBarAnimation->setEasingCurve(QEasingCurve::OutQuad);
@@ -234,6 +238,9 @@ RpgChoiceItem::RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 	this->selectBarAnimation->setKeyValueAt(0.5, 0);
 	this->selectBarAnimation->setDuration(1500);
 	this->selectBarAnimation->setLoopCount(Rpg::AnimationLoopInfinity);
+
+	this->setFont(rpgFont->getFont(FontName, 16));
+	rDebug() << "Dialog using font:" << this->font.family();
 
 	// 默认不可见
 	this->hide();
@@ -256,12 +263,19 @@ void RpgChoiceItem::run(){
 		rpgView->scene()->addItem(this);
 	}
 
-	qreal textWidth = this->dialogSize.width() - (2 * RpgDialogBase::PaddingH);
+	// fromIndex
+	this->fromIndex = this->defaultChoiceIndex;
 
+	qreal textWidth = this->dialogSize.width() - (2 * RpgDialogBase::PaddingH);
+	rDebug() << "Dialog Height:" << this->dialogSize.height();
 	int innerDialogHeight = this->dialogSize.height() - (RpgDialogBase::PaddingV * 2);
-	int selectBarHeight = this->skin->selectBarSize().height();
+	rDebug() << "InnerDialogHeight:" << innerDialogHeight;
+	QFontMetrics fontMetrics(this->font);
+	this->selectBarHeight = fontMetrics.height() + (RpgDialogBase::PaddingV * 2); //this->skin->selectBarSize().height();
+	rDebug() << "selectBarHeight:" << selectBarHeight;
 	qreal fRatio = qreal(innerDialogHeight) / selectBarHeight;
 	int iRatio = innerDialogHeight / selectBarHeight; // 选择项目数
+	rDebug() << "ratio:" << fRatio << iRatio;
 	if(fRatio < 1){
 		rWarning() << "dialog size cannot fit even 1 choice.";
 		this->end();
@@ -270,13 +284,20 @@ void RpgChoiceItem::run(){
 	if(iRatio == 1){
 		this->innerPaddingV = 0;
 	}else if(iRatio > 1){
-		if(fRatio - iRatio <= 1){
+		if((fRatio - iRatio) * this->selectBarHeight <= 1){
 			this->innerPaddingV = 0;
 		}else{
-			this->innerPaddingV = (this->dialogSize.height() - (selectBarHeight * iRatio)) / (iRatio - 1);
+#if 0
+			this->innerPaddingV = (this->dialogSize.height() - (this->selectBarHeight * iRatio)) / (iRatio - 1);
+#else
+			this->innerPaddingV = 0;
+			this->addingPaddingV = (innerDialogHeight - (this->selectBarHeight * iRatio)) / 2;
+#endif
+
 		}
 	}
-
+	rDebug() << "adding padding V:" << this->addingPaddingV;
+	rDebug() << "inner padding V:" << this->innerPaddingV;
 	// 判断是否有choices
 	if(this->choices.isEmpty()){
 		rDebug() << "Detected choices is empty, exitting";
@@ -293,22 +314,30 @@ void RpgChoiceItem::run(){
 	}
 
 	int displayChoices = qMin(this->choices.length(), iRatio);
-	int curHeight = RpgDialogBase::PaddingV;
+	int curHeight = RpgDialogBase::PaddingV + this->addingPaddingV;
 	for(int i = 0; i < displayChoices; i++){
 		QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
 		item->setFont(this->font);
 		item->setPos(RpgDialogBase::MarginH, curHeight);
+		rDebug() << "Current POS V:" << curHeight;
 		item->setZValue(0.2);
 		item->setTextWidth(textWidth);
+		item->setDefaultTextColor(this->textColor);
 		item->document()->setUndoRedoEnabled(false);
 		QTextOption choiceTextOption = item->document()->defaultTextOption();{
 			choiceTextOption.setWrapMode(QTextOption::NoWrap);
 			item->document()->setDefaultTextOption(choiceTextOption);
 		}
-		item->setGraphicsEffect(this->textShadowEffect);
+		//item->setGraphicsEffect(this->textShadowEffect);
+		QGraphicsDropShadowEffect *itemEffect = new QGraphicsDropShadowEffect(this);
+		itemEffect->setColor(this->textShadowEffectColor);
+		itemEffect->setBlurRadius(this->textShadowEffectBlurRadius);
+		itemEffect->setOffset(this->textShadowEffectOffset);
+		// item会得到effect的控制权, 会在item销毁时帮助销毁effect, 也可以将setGraphicsEffect参数设置为nullptr删除当前设定的effect
+		item->setGraphicsEffect(itemEffect);
 		this->textItems.append(item);
 
-		curHeight += selectBarHeight + this->innerPaddingV;
+		curHeight += this->selectBarHeight + this->innerPaddingV;
 	}
 
 	// 计算对话框位置
@@ -316,6 +345,10 @@ void RpgChoiceItem::run(){
 
 	this->box->setPixmap(this->skin->getDialogImage(this->dialogSize));
 	this->box->setPos(dialogPos);
+
+	// selectBar
+	this->selectBar->setPixmap(this->skin->getSelectBarImage(QSize(this->dialogSize.width() - (2 * RpgDialogBase::PaddingH), this->skin->selectBarSize().height())));
+	this->selectBar->setVisible(false);
 
 	this->upArrowSymbol->setVisible(false);
 	this->downArrowSymbol->setVisible(false);
@@ -356,6 +389,19 @@ void RpgChoiceItem::showDialog(){
 		this->arrowSymbolsTimeLine->start();
 	}
 	this->setChoicesText(this->defaultChoiceIndex, this->speed);
+	this->setSelectBarIndex(0);
+	this->selectBar->setVisible(true);
+	if(this->selectBarAnimation->state() != QPropertyAnimation::Running){
+		this->selectBarAnimation->start();
+	}
+
+	if(this->timeout > 0){
+		if(this->timerId >= 0){
+			qWarning() << "Handle timerId not reset to -1: " << this->timerId;
+		}
+		this->timerId = this->startTimer(timeout);
+		rDebug() << "Timer started:" << this->timerId;
+	}
 }
 
 void RpgChoiceItem::hideDialog(){
@@ -442,8 +488,8 @@ void RpgChoiceItem::setSelectBarIndex(int index){
 		rDebug() << "Index is out of range: '" << index << "' not in range [0," << qMin(this->textItems.length(), this->choices.length() - index) << ")";
 		return;
 	}
-	qreal selectBarHeight = this->skin->selectBarSize().height();
-	this->selectBar->setPos(RpgDialogBase::PaddingH, (selectBarHeight + this->innerPaddingV) * this->selectingIndex);
+	this->selectBar->setPos(RpgDialogBase::PaddingH, (this->selectBarHeight + this->innerPaddingV) * this->selectingIndex + RpgDialogBase::PaddingV + RpgDialogBase::PaddingV + this->addingPaddingV);
+	rDebug() << "SELECT BAR POS:" << this->selectBar->pos();
 }
 
 

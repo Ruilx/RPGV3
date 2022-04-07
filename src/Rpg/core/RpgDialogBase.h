@@ -97,9 +97,7 @@ protected:
 	virtual void renderUpArrowSymbols() NoThrow Pure;
 	virtual void renderDownArrowSymbols() NoThrow Pure;
 
-	static const QPair<int, int> generateQSizePair(const QSize &size){
-		return QPair<int, int>(size.width(), size.height());
-	}
+	inline static const QPair<int, int> generateQSizePair(const QSize &size){ return QPair<int, int>(size.width(), size.height()); }
 
 protected:
 	QPixmap invalidPixmap;
@@ -112,7 +110,7 @@ public:
 	 * @return
 	 * 获得窗口背景(缓存)
 	 */
-	const QPixmap &getDialogImage(const QSize &dialogSize);
+	virtual const QPixmap &getDialogImage(const QSize &dialogSize);
 
 	/**
 	 * @brief getSelectBarImage
@@ -120,7 +118,7 @@ public:
 	 * @return
 	 * 获得选择框(缓存)
 	 */
-	const QPixmap &getSelectBarImage(const QSize &selectBarSize);
+	virtual const QPixmap &getSelectBarImage(const QSize &selectBarSize);
 
 	/**
 	 * @brief getContinueSymbolImage
@@ -128,15 +126,15 @@ public:
 	 * @return
 	 * 获得继续图标
 	 */
-	const QPixmap &getContinueSymbolImage(int index) const;
+	virtual const QPixmap &getContinueSymbolImage(int index) const;
 
-	Q_DECL_DEPRECATED inline int getContinueSymbolImageLength() const{ return this->getContinueSymbolImageCount(); }
+	Q_DECL_DEPRECATED virtual inline int getContinueSymbolImageLength() const{ return this->getContinueSymbolImageCount(); }
 	inline int getContinueSymbolImageCount() const{ return this->continueSymbolList.length(); }
 
-	const QPixmap &getUpArrowSymbolImage(int index) const;
+	virtual const QPixmap &getUpArrowSymbolImage(int index) const;
 	inline int getUpArrowSymbolImageCount() const{ return this->upArrowSymbolList.length(); }
 
-	const QPixmap &getDownArrowSymbolImage(int index) const;
+	virtual const QPixmap &getDownArrowSymbolImage(int index) const;
 	inline int getDownArrowSymbolImageCount() const{ return this->downArrowSymbolList.length(); }
 
 	explicit RpgDialogBase(const QString &dialogSkinName);
