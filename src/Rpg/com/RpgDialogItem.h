@@ -13,6 +13,16 @@
 #include <Rpg/core/RpgDialogAnimation.h>
 #include <Rpg/core/RpgDialogMessage.h>
 
+/**
+ * @brief The RpgDialogItem class
+ * RpgDialog 组件
+ * 展示一系列有序的会话消息, 和会话者立绘
+ * RpgDialog由背景框, 内容框, 下三角形(继续图标), 左立绘和右立绘(显示只能选其一)组成
+ * 展示时可根据立绘状态调整入/出动画, 立绘大小自适应
+ *
+ * 图片由Skin提供, 选项内容由RpgDialogMessage提供
+ *
+ */
 class RpgDialogItem : public RpgObject
 {
 	Q_OBJECT

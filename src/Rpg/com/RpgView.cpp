@@ -16,13 +16,14 @@ void RpgView::mousePressEvent(QMouseEvent *event){
 	if(event->buttons() & Qt::RightButton){
 		this->mouseMovePressed = true;
 		this->lastPos = event->pos();
-		event->accept();
+		return;
 	}
+	QGraphicsView::mousePressEvent(event);
 }
 
 void RpgView::mouseReleaseEvent(QMouseEvent *event){
-	Q_UNUSED(event)
 	this->mouseMovePressed = false;
+	QGraphicsView::mouseReleaseEvent(event);
 }
 
 void RpgView::mouseMoveEvent(QMouseEvent *event){
@@ -34,11 +35,12 @@ void RpgView::mouseMoveEvent(QMouseEvent *event){
 		this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->value() - dx);
 		this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - dy);
 
-		rDebug() << "HOR:" << this->horizontalScrollBar()->value() << "" << "VER:" << this->verticalScrollBar()->value();
-		rDebug() << "SceneRect:" << this->scene()->sceneRect();
+		//rDebug() << "HOR:" << this->horizontalScrollBar()->value() << "" << "VER:" << this->verticalScrollBar()->value();
+		//rDebug() << "SceneRect:" << this->scene()->sceneRect();
 
 		this->lastPos = pos;
 	}
+	QGraphicsView::mouseMoveEvent(event);
 }
 
 void RpgView::wheelEvent(QWheelEvent *event){
@@ -48,6 +50,7 @@ void RpgView::wheelEvent(QWheelEvent *event){
 		factor = 1 / factor;
 	}
 	this->scale(factor, factor);
+	QGraphicsView::wheelEvent(event);
 }
 
 void RpgView::keyPressEvent(QKeyEvent *event){
@@ -56,7 +59,6 @@ void RpgView::keyPressEvent(QKeyEvent *event){
 	//rDebug() << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(this->scene() != nullptr){
 		RpgState::instance()->keyPressEvent(event, this->scene());
-		event->accept();
 	}
 }
 
@@ -66,7 +68,6 @@ void RpgView::keyReleaseEvent(QKeyEvent *event){
 	//rDebug() << "Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(this->scene() != nullptr){
 		RpgState::instance()->keyReleaseEvent(event, this->scene());
-		event->accept();
 	}
 }
 

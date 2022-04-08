@@ -91,37 +91,67 @@ qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
 		rError() << "Sound effect playing count too many: max slot:" << this->maxPlayingCount;
 		return -1;
 	}
-	QSoundEffect *sound = new QSoundEffect(this);;
-	sound->setSource(url);
-	sound->setProperty("name", soundName);
-	this->connect(sound, &QSoundEffect::playingChanged, [this, sound](){
-		if(!sound->isPlaying()){
-			bool ok = false;
-			quint64 index = sound->property("index").toLongLong(&ok);
-			if(!ok){
-				rWarning() << "get a sound has no 'index' property and cannot figure out which playing sound it is.";
-				return;
-			}
-			if(this->playingSounds.contains(index)){
-				QSoundEffect *soundInHash = this->playingSounds.take(index); // & removed
-				if(soundInHash != sound){
-					rDebug() << "Not same! Index:" << index << "Hash:" << soundInHash << "Sound:" << sound;
-				}
-				sound->deleteLater();
-			}
+	QSoundEffect *sound = nullptr;
+	if(this->cachedSounds.contains(soundName)){
+		QSoundEffect *cached = this->cachedSounds.value(soundName);
+		if(cached == nullptr){
+			rDebug() << "cached soundEffect object is nullptr, will remove from cache.";
+			this->cachedSounds.remove(soundName);
+		}else if(!cached->isPlaying()){
+			sound = cached;
 		}
-	});
+	}
+	if(sound == nullptr){
+		sound = new QSoundEffect(this);
+		rDebug() << "Sound:" << sound << "CREATED.";
+		sound->setSource(url);
+		sound->setProperty("name", soundName);
+		this->connect(sound, &QSoundEffect::playingChanged, [this, sound, soundName](){
+			if(!sound->isPlaying()){
+				bool ok = false;
+				quint64 index = sound->property("index").toLongLong(&ok);
+				if(!ok){
+					rWarning() << "get a sound has no 'index' property and cannot figure out which playing sound it is.";
+					return;
+				}
+				if(this->playingSounds.contains(index)){
+					QSoundEffect *soundInHash = this->playingSounds.take(index); // & removed
+					if(soundInHash != sound){
+						rDebug() << "Not same! Index:" << index << "Hash:" << soundInHash << "Sound:" << sound;
+					}
+					if(this->cachedSounds.contains(soundName)){
+						QSoundEffect *soundInCache = this->cachedSounds.value(soundName);
+						if(soundInCache != sound){
+							sound->deleteLater();
+						}
+					}else{
+						sound->deleteLater();
+					}
+				}
+			}
+			rDebug() << "Cached:" << this->cachedSounds;
+		});
+
+		this->connect(sound, &QSoundEffect::destroyed, [](QObject *obj){
+			rDebug() << "Sound:" << obj << "DESTROYED.";
+		});
+	}
 	sound->setLoopCount(times);
 	sound->setVolume(volume);
 
 	if(sound->status() == QSoundEffect::Error){
 		rInlineWarning() << "Sound '" << soundName << "' aka file: '" << url << "' status error.";
+		return -1;
 	}
 //	if(!this->sounds.contains(soundName)){
 //		this->sounds.insert(soundName, sound); // Write operation
 //	}
 	this->playingSounds.insert(autoIncrementIndex, sound);
 	sound->setProperty("index", autoIncrementIndex);
+
+	if(!this->cachedSounds.contains(soundName)){
+		this->cachedSounds.insert(soundName, sound);
+	}
 
 	sound->play();
 	emit this->started(soundName);

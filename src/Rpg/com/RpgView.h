@@ -7,6 +7,10 @@
 
 #include <QMouseEvent>
 
+/**
+ * @brief The RpgView class
+ * RpgView为RPG组件的展示区, 并接收各种外设的输入
+ */
 class RpgView : public QGraphicsView
 {
 	static RpgView *_instance;

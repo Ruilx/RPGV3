@@ -32,7 +32,7 @@
  * @see https://github.com/wang-bin/QtAV
  *
  * 2022/03/24
- * 使用编译的1.13版本的QtAV组件, 升级至64位, 使用Qt 5.12.11 MinGW x86_64
+ * 使用编译的1.13版本的QtAV组件, 升级至64位, 使用Qt 5.12.12 MinGW x86_64
  */
 class RpgMusic : public QObject
 {

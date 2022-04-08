@@ -1,5 +1,8 @@
 #include "MainWindow.h"
 
+#include <QMenu>
+#include <QAction>
+
 #include <Rpg/Rpg.h>
 #include <Rpg/com/RpgItem/RpgAxisItem.h>
 #include <Rpg/com/RpgScene.h>
@@ -10,6 +13,21 @@
 #include <Rpg/core/RpgDialogMessage.h>
 
 #include <Rpg/com/RpgSound.h>
+
+#include <QTextEdit>
+
+void MainWindow::closeEvent(QCloseEvent *event){
+	if(!this->canClose){
+		int result = QMessageBox::question(this, qApp->applicationDisplayName(), tr("Do you really want to quit the game?\nThe progress not saved will be lost."), QMessageBox::Yes | QMessageBox::Cancel);
+		if(result != QMessageBox::Yes){
+			event->ignore();
+			return;
+		}
+	}
+	event->accept();
+	qApp->quit();
+	return;
+}
 
 void MainWindow::testModel()
 {
@@ -24,9 +42,9 @@ void MainWindow::testModel()
 
 	RpgSpecLocationChopingDialog base("skin");
 
-//	RpgDialogItem dialog(&base);
+	//	RpgDialogItem dialog(&base);
 
-//	dialog.setDialogAlign(Rpg::AlignBottom);
+	//	dialog.setDialogAlign(Rpg::AlignBottom);
 
 //	dialog.appendMessage("This is a text");
 //	dialog.appendMessage("This is another text");
@@ -88,8 +106,46 @@ void MainWindow::testModel()
 	int res = dialog.waitForComplete();
 	rDebug() << "RES:" << res;
 
+	QTextEdit *edit = new QTextEdit(nullptr);
+	edit->resize(200, 150);
+	QGraphicsProxyWidget *editProxy = scene->addWidget(edit);
+	editProxy->setPos(50, 50);
+	editProxy->setZValue(Rpg::ZValueFront);
 
 	this->canClose = true;
+}
+
+void MainWindow::setupMenus(){
+
+}
+
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
+	//this->widget = new RpgWidget(this);
+	//this->setCentralWidget(this->widget);
+	RpgView *view = RpgView::instance(this);
+	this->setCentralWidget(view);
+
+	//			this->setWindowFlag(Qt::MSWindowsFixedSizeDialogHint, true);
+	this->setMinimumSize(ScreenWidth + 2, ScreenHeight + 2);
+
+	//this->setWindowOpacity(0.5);
+	setMouseTracking(false); // 设置是否响应鼠标移动时未按下按钮的事件发生
+	QSizePolicy policy = this->sizePolicy();{
+		policy.setHorizontalPolicy(QSizePolicy::Preferred);
+		policy.setVerticalPolicy(QSizePolicy::Preferred);
+		policy.setHeightForWidth(true);
+	};
+	this->setSizePolicy(policy);
+
+	//		RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, "title", QUrl::fromLocalFile("data/music/title.ogg"));
+	//		RpgMusic::instance()->playMusic("title");
+
+	QString initJsonFile = "initialize.json";
+	RpgPreload preload(initJsonFile);
+	RpgFileManager::instance()->dumpFiles();
+
+
+	QTimer::singleShot(1000, this, &MainWindow::testModel);
 }
 
 MainWindow::~MainWindow()
