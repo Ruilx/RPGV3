@@ -37,6 +37,7 @@ unix{
 }
 
 SOURCES += \
+    src/Rpg/com/RpgBanner.cpp \
     src/Rpg/com/RpgChoiceItem.cpp \
 	src/Rpg/com/RpgDialogItem.cpp \
     src/Rpg/core/RpgAutoTileRendererBase.cpp \
@@ -84,6 +85,7 @@ SOURCES += \
 
 HEADERS += \
     src/MainWindow.h \
+    src/Rpg/com/RpgBanner.h \
     src/Rpg/com/RpgChoiceItem.h \
 	src/Rpg/com/RpgDialogItem.h \
 	src/Rpg/core/RpgAutoTileRendererBase.h \

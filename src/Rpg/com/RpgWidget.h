@@ -35,75 +35,12 @@ class RpgWidget : public QWidget
 {
 	Q_OBJECT
 
-	int timerId = -1;
-
-	bool _canClose = false;
-protected:
-
-//	void mouseDoubleClickEvent(QMouseEvent *event){
-//		qDebug() << CodePath << "Mouse pos:" << event->pos();
-//	}
-
-//	void mouseMoveEvent(QMouseEvent *event){
-//		qDebug() << (event->button());
-//	}
-
-//	void keyPressEvent(QKeyEvent *event){
-//		int key = event->key();
-//		Qt::KeyboardModifiers mod = event->modifiers();
-//		qDebug() << CodePath << tr("Receive Key Press ▼: ") + RpgUtils::keysToString((Qt::Key)key, mod);
-//		emit this->receiveKeyPressSignal(key, mod);
-//		if(RpgView::instance()->scene() != nullptr){
-//			RpgState::instance()->receiveKeyPress(key, mod, RpgView::instance()->scene());
-//		}
-//		event->accept();
-//	}
-
-//	void keyReleaseEvent(QKeyEvent *event){
-//		int key = event->key();
-//		Qt::KeyboardModifiers mod = event->modifiers();
-//		qDebug() << CodePath << tr("Receive Key Release ▲: ") + RpgUtils::keysToString((Qt::Key)key, mod);
-//		emit this->receiveKeyReleaseSignal(key, mod);
-//		if(RpgView::instance()->scene() != nullptr){
-//			RpgState::instance()->receiveKeyRelease(key, mod, RpgView::instance()->scene());
-//		}
-//		event->accept();
-//	}
-
-//	void closeEvent(QCloseEvent *){}
-
 public:
-	RpgWidget(QWidget *parent = nullptr): QWidget(parent){
-		RpgView::instance(this);
-
-		QVBoxLayout *mainLay = new QVBoxLayout;
-		this->setLayout(mainLay);
-		mainLay->addWidget(RpgView::instance());
-		mainLay->setMargin(0);
-
-		//RpgView::instance()->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
-
-		QTimer::singleShot(1000, this, &RpgWidget::ready);
-	}
-
-	inline bool canClose() const{
-		return this->_canClose;
-	}
-
-	inline void setCanClose(bool e){
-		this->_canClose = e;
-	}
 
 signals:
-	//void receiveKeyPressSignal(int key, Qt::KeyboardModifiers mod);
-	//void receiveKeyReleaseSignal(int key, Qt::KeyboardModifiers mod);
-	void readyToClose();
+
 private slots:
-	void ready();
 public slots:
-	void doReadyToClose(){
-		emit this->readyToClose();
-	}
 };
 
 #endif // RPGWIDGET_H
