@@ -21,6 +21,13 @@
 #define DialogZValue 11
 #define FrontZValue 12
 
+#ifndef CODEPATH_SIMPLIFY_FILE_PATH
+#	define __CUR_FILE__ __FILE__
+#else
+#	include <QDir>
+#	define __CUR_FILE__ QDir(__FILE__).dirName()
+#endif
+
 #ifdef QT_DEBUG
 #	ifdef QT_USE_QSTRINGBUILDER
 #		define CodePath "[" __FILE__ ":" % QString::number(__LINE__) % "] " % Q_FUNC_INFO % ":"

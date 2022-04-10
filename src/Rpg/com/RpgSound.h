@@ -40,19 +40,7 @@ public:
 		this->playingSounds.clear();
 	}
 
-	~RpgSound(){
-		for(auto i: this->playingSounds){
-			if(i != nullptr){
-				i->stop();
-				i->deleteLater();
-			}
-		}
-		for(auto i: this->cachedSounds){
-			if(i != nullptr){
-				i->deleteLater();
-			}
-		}
-	}
+	~RpgSound();
 
 signals:
 	void started(const QString &soundName);

@@ -81,6 +81,20 @@ RpgSound *RpgSound::_instance = nullptr;
 //	qDebug() << CodePath << "Sound changed cannot be stopped manmully.";
 //}
 
+RpgSound::~RpgSound(){
+	for(auto i: this->playingSounds){
+		if(i != nullptr){
+			i->stop();
+			i->deleteLater();
+		}
+	}
+	for(auto i: this->cachedSounds){
+		if(i != nullptr){
+			i->deleteLater();
+		}
+	}
+}
+
 qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
 	static qint64 autoIncrementIndex = 0;
 	QUrl url = rpgFileManager->getFile(RpgFileManager::SoundEffectFile, soundName);
@@ -103,7 +117,7 @@ qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
 	}
 	if(sound == nullptr){
 		sound = new QSoundEffect(this);
-		rDebug() << "Sound:" << sound << "CREATED.";
+		//rDebug() << "Sound:" << sound << "CREATED.";
 		sound->setSource(url);
 		sound->setProperty("name", soundName);
 		this->connect(sound, &QSoundEffect::playingChanged, [this, sound, soundName](){
@@ -129,12 +143,12 @@ qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
 					}
 				}
 			}
-			rDebug() << "Cached:" << this->cachedSounds;
+			//rDebug() << "Cached:" << this->cachedSounds;
 		});
 
-		this->connect(sound, &QSoundEffect::destroyed, [](QObject *obj){
-			rDebug() << "Sound:" << obj << "DESTROYED.";
-		});
+//		this->connect(sound, &QSoundEffect::destroyed, [](QObject *obj){
+//			rDebug() << "Sound:" << obj << "DESTROYED.";
+//		});
 	}
 	sound->setLoopCount(times);
 	sound->setVolume(volume);
