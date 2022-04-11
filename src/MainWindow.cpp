@@ -11,6 +11,7 @@
 #include <Rpg/com/RpgChoiceItem.h>
 #include <Rpg/com/RpgMusic.h>
 #include <Rpg/core/RpgDialogMessage.h>
+#include <Rpg/com/RpgBanner.h>
 
 #include <Rpg/com/RpgSound.h>
 
@@ -80,6 +81,26 @@ void MainWindow::testModel()
 //		rpgSound->play("select");
 //		RpgUtils::msleep(1);
 //	}
+
+	RpgBanner banner(10000);
+	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
+	text->setFont(rpgFont->getFont("dialog", 36));
+	text->setDefaultTextColor(Qt::white);
+	text->setPos(50, 50);
+
+	banner.addItem("text", text);
+	banner.setTimeLineTimestampCb(100, [](){
+		rDebug() << "100MS!";
+	});
+	banner.setTimeLineTimestampCb(500, [](){
+		rDebug() << "500MS!";
+	});
+	banner.setTimeLineFrameCb(150, [](){
+		rDebug() << "150 FRAMES!";
+	});
+
+	banner.run();
+	banner.waitForComplete();
 
 	RpgDialogItem msg(&base);
 	msg.setDialogAlign(Rpg::AlignBottom);

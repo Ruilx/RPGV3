@@ -8,6 +8,7 @@
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgItemProperties.h>
 
+
 class RpgBanner : public RpgObject
 {
 	Q_OBJECT
@@ -20,13 +21,12 @@ class RpgBanner : public RpgObject
 
 	QTimeLine *timeLine = nullptr; // constructing by construct function
 
-	int timerId = -1;
+	bool canSkip = false;
+	bool willWaitKey = false;
 
-	void timerEvent(QTimerEvent *event);
-
+	void keyReleaseEvent(QKeyEvent *event);
 public:
 	typedef void(*frameCb)();
-
 private:
 	QMap<int, frameCb> frameCbs;
 	QMap<int, frameCb>::ConstIterator frameCbI;
@@ -35,7 +35,7 @@ private:
 	void setTimeLineProps(int durationMs, int fps);
 
 public:
-	explicit RpgBanner(int durationMs, int fps = 24, QGraphicsObject *parentObject = nullptr);
+	RpgBanner(int durationMs, int fps = 24, QGraphicsObject *parentObject = nullptr);
 	//explicit RpgBanner(int frames, qreal interval, QGraphicsObject *parentObject = nullptr);
 	~RpgBanner();
 
@@ -56,6 +56,12 @@ public:
 		}
 		return this->items.value(name);
 	}
+
+	inline void setCanSkip(bool canSkip){ this->canSkip = canSkip; }
+	inline bool getCanSkip() const { return this->canSkip; }
+
+	inline void setWillWaitKey(bool willWaitKey){ this->willWaitKey = willWaitKey; }
+	inline bool getWillWaitKey() const { return this->willWaitKey; }
 
 	void run() override;
 	int waitForComplete();

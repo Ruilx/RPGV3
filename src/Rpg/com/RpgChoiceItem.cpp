@@ -29,7 +29,7 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 		return;
 	}
 	if(!this->isRunning()){
-		qWarning() << "RpgChoiceItem not running.";
+		rWarning() << "RpgChoiceItem not running.";
 		return;
 	}
 	if(event->modifiers() != Qt::NoModifier){

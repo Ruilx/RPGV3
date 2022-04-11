@@ -5,8 +5,31 @@
 
 #include <Rpg/exception/RpgNullPointerException.h>
 
-void RpgBanner::timerEvent(QTimerEvent *event){
 
+void RpgBanner::keyReleaseEvent(QKeyEvent *event){
+	if(event->isAutoRepeat()){
+		return;
+	}
+	if(!this->isRunning()){
+		rWarning() << "RpgBanner is not running.";
+		return;
+	}
+	if(event->modifiers() != Qt::NoModifier){
+		return;
+	}
+	int key = event->key();
+	if(key == Qt::Key_Return || key == Qt::Key_Space){
+		if(this->timeLine->state() == QTimeLine::Running){
+			if(!this->canSkip){
+				rInfo() << "Key will be ignored because of canSkip == false.";
+				return;
+			}else{
+				this->timeLine->stop();
+			}
+		}else{
+			this->hideBanner();
+		}
+	}
 }
 
 void RpgBanner::setup(){
@@ -27,12 +50,32 @@ void RpgBanner::setup(){
 	this->exitAnimation->setEndValue(0.0f);
 
 	this->connect(this->timeLine, &QTimeLine::frameChanged, [this](int frame){
+		if(this->frameCbI == this->frameCbs.constEnd()){
+			return;
+		}
 		if(*this->frameCbI == nullptr){
-			rError() << "Map frameCbs' iterator is nullptr.";
-			throw RpgNullPointerException("RpgBanner=>frameCbs::ConstIterator");
+			rError() << "Map frameCbs' iterator value is nullptr.";
+			throw RpgNullPointerException("RpgBanner=>frameCbs::ConstIterator.value()");
 		}
 		// TODO: continue...
+		for(;this->frameCbI != this->frameCbs.constEnd() && frame >= this->frameCbI.key(); this->frameCbI++){
+			frameCb cbFunction = (*this->frameCbI);
+			if(cbFunction == nullptr){
+				rError() << "Map frameCbs' iterator value is nullptr.";
+				throw RpgNullPointerException("RpgBanner=>frameCbs::ConstIterator.value()");
+			}
+			cbFunction(); // callback
+		}
 	});
+
+	this->connect(this->timeLine, &QTimeLine::finished, [this](){
+		rDebug() << "Timeline finished.";
+		if(!this->willWaitKey){
+			this->hideBanner();
+		}
+	});
+
+	this->setZValue(Rpg::ZValueFront);
 
 	this->hide();
 
@@ -68,7 +111,11 @@ RpgBanner::~RpgBanner(){
 	rpgState->unregisterRpgObject(this, RpgState::AutoMode);
 }
 
-void RpgBanner::setTimeLineFrameCb(int frame, RpgBanner::frameCb cb){
+void RpgBanner::setTimeLineFrameCb(int frame, frameCb cb){
+	if(this->isRunning()){
+		rError() << "RpgBanner is running, cannot set timeline callback";
+		return;
+	}
 	if(this->frameCbs.contains(frame)){
 		rWarning() << "Frame already has callback function, will update 'No." << frame << "' callback function.";
 		this->removeTimeLineFrameCb(frame);
@@ -76,7 +123,7 @@ void RpgBanner::setTimeLineFrameCb(int frame, RpgBanner::frameCb cb){
 	this->frameCbs.insert(frame, cb);
 }
 
-int RpgBanner::setTimeLineTimestampCb(int timestampMs, RpgBanner::frameCb cb){
+int RpgBanner::setTimeLineTimestampCb(int timestampMs, frameCb cb){
 	int frame = this->timeLine->frameForTime(timestampMs);
 	this->setTimeLineFrameCb(frame, cb);
 	return frame;
@@ -126,7 +173,7 @@ void RpgBanner::addItem(const QString &name, QGraphicsItem *item){
 			this->items.insert(name, item);
 		}
 	}else{
-		this->setParentItem(this);
+		item->setParentItem(this);
 		this->items.insert(name, item);
 	}
 }
@@ -155,10 +202,22 @@ int RpgBanner::waitForComplete(){
 		rError() << "RpgBanner not running.";
 		return -1;
 	}
+	QEventLoop eventLoop;
+	QObject::connect(this->timeLine, &QTimeLine::finished, &eventLoop, &QEventLoop::quit);
+	if(this->timeLine->state() != QTimeLine::Running){
+		rError() << "RpgBanner timeline not running.";
+		return -1;
+	}
+	if(this->timeLine->state() == QTimeLine::Running){
+		eventLoop.exec();
+	}
+	return 0;
 }
 
 void RpgBanner::end(){
+	emit this->exitAutoMode();
 
+	RpgObject::end();
 }
 
 void RpgBanner::showBanner(){
@@ -167,5 +226,36 @@ void RpgBanner::showBanner(){
 	if(this->timeLine->state() != QTimeLine::NotRunning){
 		rWarning() << "RpgBanner timeline is running, will restart timeline";
 	}
+	QEventLoop eventLoop;
+	QObject::connect(this->enterAnimation, &QPropertyAnimation::finished, &eventLoop, &QEventLoop::quit);
+	if(this->enterAnimation->state() == QPropertyAnimation::Stopped){
+		this->enterAnimation->start();
+	}
+	if(this->enterAnimation->state() == QPropertyAnimation::Running){
+		eventLoop.exec();
+	}
+
 	this->timeLine->start();
+}
+
+void RpgBanner::hideBanner(){
+	// hideBanner 由timeLine::finished()信号激活的slot函数调用.
+	if(this->timeLine->state() != QTimeLine::NotRunning){
+		this->timeLine->stop();
+	}
+	QEventLoop eventLoop;
+	QObject::connect(this->exitAnimation, &QPropertyAnimation::finished, &eventLoop, &QEventLoop::quit);
+	if(this->exitAnimation->state() == QPropertyAnimation::Stopped){
+		this->exitAnimation->start();
+	}
+	if(this->exitAnimation->state() == QPropertyAnimation::Running){
+		eventLoop.exec();
+	}
+
+	if(rpgState->getTop() == RpgState::AutoMode){
+		rpgState->popState();
+	}else{
+		rDebug() << "RpgState stack top is not AutoMode.";
+	}
+	this->end();
 }
