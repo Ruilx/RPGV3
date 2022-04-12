@@ -54,18 +54,18 @@ void RpgView::wheelEvent(QWheelEvent *event){
 }
 
 void RpgView::keyPressEvent(QKeyEvent *event){
-	//		int key = event->key();
-	//		Qt::KeyboardModifiers mod = event->modifiers();
-	//rDebug() << "Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+	if(this->ignoreKeyAutoRepeat && event->isAutoRepeat()){
+		return;
+	}
 	if(this->scene() != nullptr){
 		RpgState::instance()->keyPressEvent(event, this->scene());
 	}
 }
 
 void RpgView::keyReleaseEvent(QKeyEvent *event){
-	//		int key = event->key();
-	//		Qt::KeyboardModifiers mod = event->modifiers();
-	//rDebug() << "Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+	if(this->ignoreKeyAutoRepeat && event->isAutoRepeat()){
+		return;
+	}
 	if(this->scene() != nullptr){
 		RpgState::instance()->keyReleaseEvent(event, this->scene());
 	}

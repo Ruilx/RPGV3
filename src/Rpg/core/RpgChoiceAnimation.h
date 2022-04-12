@@ -12,7 +12,12 @@
 #include <Rpg/exception/RpgNullPointerException.h>
 #include <Rpg/exception/RpgRuntimeException.h>
 
-class RpgChoiceAnimation
+/**
+ * @brief The RpgChoiceAnimation class
+ *
+ * @deprecated Choice Animation 和 DialogAnimation合并, ChoiceAnimation已废弃
+ */
+class Q_DECL_DEPRECATED RpgChoiceAnimation
 {
 	int duration = 300;
 	QEasingCurve::Type easingCurveType = QEasingCurve::OutQuad;

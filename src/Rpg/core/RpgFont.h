@@ -8,85 +8,48 @@
 
 #include <Rpg/core/RpgFileManager.h>
 
+/**
+ * @brief The RpgFont class
+ * RpgFont 字体管理类
+ * 存储并维护所用RPG的TTF/TTC/OTF字体, 可从文件中提取字体而不用提前安装指定字体
+ *
+ * @date 2022-04-12 整理逻辑内容至CPP
+ */
 class RpgFont
 {
 	static RpgFont *_instance;
 
 	QHash<QString, int> fontMap;
 
-	void setupFontInFileManager(const QString &name, const QString &fileManagerName){
-		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::FontFile, fileManagerName);
-		int fontId = QFontDatabase::addApplicationFont(filename);
-		if(fontId == -1){
-			rDebug() << CodePath << "The name of font:" << fileManagerName << "is not valid from font database.";
-			return;
-		}
-		this->fontMap.insert(name, fontId);
-	}
+	void setupFontInFileManager(const QString &name, const QString &fileManagerName);
+
+protected:
+	explicit RpgFont();
+	~RpgFont();
+
 public:
-	RpgFont(){
-		this->fontMap.clear();
-	}
-
-	~RpgFont(){
-		if(RpgFont::_instance != nullptr){
-			delete RpgFont::_instance;
-		}
-	}
-
-	static RpgFont *instance(){
-		if(_instance == nullptr){
-			_instance = new RpgFont();
-		}
-		return _instance;
-	}
-
-	static void setFallbackFont(const QString &fontName, const QString &fallbackFontName){
-		const QString setupFont = RpgFont::instance()->getDefaultFontIndex(fontName);
-		const QString setupFallbackFont = RpgFont::instance()->getDefaultFontIndex(fallbackFontName);
-		QFont::insertSubstitution(setupFont, setupFallbackFont);
-	}
-
-	const QString getDefaultFontIndex(const QString &name){
-		if(!this->fontMap.contains(name)){
-			this->setupFontInFileManager(name, name);
-			if(!this->fontMap.contains(name)){
-				throw RpgMapKeyNotFoundException(name);
-			}
-		}
-		QStringList fontList = QFontDatabase::applicationFontFamilies(this->fontMap.value(name));
-		//rDebug() << "Detected font:" << name << "with:" << fontList;
-		if(fontList.length() >= 1){
-			return fontList.at(0);
-		}else{
-			return QString();
-		}
-	}
-
-	const QFont getDefaultFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false){
-		const QString internalFontName = this->getDefaultFontIndex(name);
-		if(internalFontName.isEmpty()){
-			throw RpgMapKeyNotFoundException(name);
-		}
-		return QFont(internalFontName, pointSize, weight, italic);
-	}
+	static RpgFont *instance();
 
 	/**
-	 * @brief getFont
-	 * @param name
-	 * @param pointSize
-	 * @param weight
-	 * @param italic
-	 * @return
+	 * @brief setFallbackFont 设置兜底字体
+	 * @param fontName 目标字体名
+	 * @param fallbackFontName 兜底字体名
+	 * 设置兜底字体, 如果目标字体没有该字形, 则从兜底字体中取得, 兜底字体选用时尽量选择字库大的字体
+	 */
+	static void setFallbackFont(const QString &fontName, const QString &fallbackFontName);
+	const QString getDefaultFontIndex(const QString &name);
+	const QFont getDefaultFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
+
+	/**
+	 * @brief getFont 获取字体在文件中或系统中
+	 * @param name 设置的字体名或系统中字体名
+	 * @param pointSize 字体大小
+	 * @param weight 是否加粗
+	 * @param italic 是否倾斜
+	 * @return QFont非修改实例
 	 * 寻找字体, 如果在选项中, 返回选项中的字体, 如果没有, 返回对应系统字体
 	 */
-	const QFont getFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false){
-		try{
-			return this->getDefaultFont(name, pointSize, weight, italic);
-		}catch(RpgMapKeyNotFoundException e){
-			return QFont(name, pointSize, weight, italic);
-		}
-	}
+	const QFont getFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
 
 	void _dumpFonts(){
 		for(QHash<QString, int>::ConstIterator i = this->fontMap.constBegin(); i != this->fontMap.constEnd(); i++){

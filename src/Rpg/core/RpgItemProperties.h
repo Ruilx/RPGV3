@@ -24,21 +24,10 @@ public:
 		this->target = target;
 	}
 
-	inline qreal opacity() const{
-		return this->target->opacity();
-	}
-
-	inline void setOpacity(qreal opacity){
-		this->target->setOpacity(opacity);
-	}
-
-	inline QPointF pos() const{
-		return this->target->pos();
-	}
-
-	inline void setPos(const QPointF &pos){
-		this->target->setPos(pos);
-	}
+	inline qreal opacity() const{ return this->target->opacity(); }
+	inline void setOpacity(qreal opacity){ this->target->setOpacity(opacity); }
+	inline QPointF pos() const{ return this->target->pos(); }
+	inline void setPos(const QPointF &pos){ this->target->setPos(pos); }
 
 signals:
 	void opacityChanged(qreal opacity);

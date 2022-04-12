@@ -109,7 +109,7 @@ RpgDialogItem::RpgDialogItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 	this->skin = static_cast<RpgDialogBase*>(dialogBase);
 
 	this->messageBox->document()->setDefaultStyleSheet(Rpg::getDefaultCss());
-	rDebug() << "Dialog CSS:" << this->messageBox->document()->defaultStyleSheet();
+	//rDebug() << "Dialog CSS:" << this->messageBox->document()->defaultStyleSheet();
 	this->messageBox->document()->setUndoRedoEnabled(false);
 	QTextOption messageTextOption = this->messageBox->document()->defaultTextOption();{
 		messageTextOption.setWrapMode(QTextOption::WrapAnywhere);
