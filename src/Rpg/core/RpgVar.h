@@ -29,9 +29,9 @@ typedef QHash<QString, QVariant> RpgVarHash;
  * Group/Profile的作用是分隔如每个进度的存储栏目, Group/Profile是空的位置可存储游戏系统跨进度的一些信息.
  * 存储信息暂未加密保存
  *
- * 20210916 RpgVar从com目录迁移到core目录, 去掉QObject继承
- * 20210917 RpgVar增加group功能, 可以选择var的profile, 比如Rpg的20个存储框
- * 20210919 RpgVar增加从RpgFileManager取出指定位置数据
+ * @date 20210916 RpgVar从com目录迁移到core目录, 去掉QObject继承
+ * @date 20210917 RpgVar增加group功能, 可以选择var的profile, 比如Rpg的20个存储框
+ * @date 20210919 RpgVar增加从RpgFileManager取出指定位置数据
  */
 class RpgVar
 {

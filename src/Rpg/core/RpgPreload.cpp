@@ -1,6 +1,5 @@
 #include "RpgPreload.h"
 
-
 const QMap<QString, QUrl> RpgPreload::parseDict(const QJsonObject &object){
 	QMap<QString, QUrl> dict;
 	QStringList keys = object.keys();
