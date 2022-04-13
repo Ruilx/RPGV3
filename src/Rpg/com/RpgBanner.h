@@ -4,6 +4,8 @@
 #include <QGraphicsItem>
 #include <QTimeLine>
 
+#include <functional>
+
 #include <Rpg/Rpg.h>
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgItemProperties.h>
@@ -26,7 +28,8 @@ class RpgBanner : public RpgObject
 
 	void keyReleaseEvent(QKeyEvent *event);
 public:
-	typedef void(*frameCb)();
+	//typedef void(*frameCb)();
+	typedef std::function<void()> frameCb;
 private:
 	QMap<int, frameCb> frameCbs;
 	QMap<int, frameCb>::ConstIterator frameCbI;

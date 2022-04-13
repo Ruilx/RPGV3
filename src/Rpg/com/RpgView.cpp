@@ -18,12 +18,10 @@ void RpgView::mousePressEvent(QMouseEvent *event){
 		this->lastPos = event->pos();
 		return;
 	}
-	QGraphicsView::mousePressEvent(event);
 }
 
 void RpgView::mouseReleaseEvent(QMouseEvent *event){
 	this->mouseMovePressed = false;
-	QGraphicsView::mouseReleaseEvent(event);
 }
 
 void RpgView::mouseMoveEvent(QMouseEvent *event){
@@ -40,7 +38,6 @@ void RpgView::mouseMoveEvent(QMouseEvent *event){
 
 		this->lastPos = pos;
 	}
-	QGraphicsView::mouseMoveEvent(event);
 }
 
 void RpgView::wheelEvent(QWheelEvent *event){
@@ -50,7 +47,6 @@ void RpgView::wheelEvent(QWheelEvent *event){
 		factor = 1 / factor;
 	}
 	this->scale(factor, factor);
-	QGraphicsView::wheelEvent(event);
 }
 
 void RpgView::keyPressEvent(QKeyEvent *event){

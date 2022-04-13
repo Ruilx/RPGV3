@@ -90,6 +90,7 @@ class RpgChoiceItem : public RpgObject
 
 	// 返回结果
 	int chosenIndex = 0;
+
 public:
 	// 消息框内部间距
 	const int MessageMarginH = 10;
@@ -98,6 +99,13 @@ public:
 	// 消息使用内部字体名
 	const char *FontName = "dialog";
 	const QColor bannedColor = QColor(Qt::darkGray);
+
+	enum SoundEffect{
+		SoundEffect_Select = 1,
+		SoundEffect_Banned,
+		SoundEffect_Accept,
+	};
+
 private:
 	// 选择列表
 	QList<RpgChoiceMessage> choices;
@@ -112,6 +120,13 @@ private:
 
 	// 上下箭头三角形 时间轴
 	QTimeLine *arrowSymbolsTimeLine = new QTimeLine(1000, this);
+
+	// 记录soundEffects对应的声音名称
+	QHash<SoundEffect, QString> soundEffects = QHash<SoundEffect, QString>({
+		{SoundEffect_Select, "select"},
+		{SoundEffect_Banned, "banned"},
+		{SoundEffect_Accept, "accepted"},
+	});
 
 	//inline void setChoiceTextWidth(qreal width){ this->textWidth = width; }
 	void clearTextItems();
@@ -150,6 +165,10 @@ public:
 	// 窗口位置
 	void setDialogAlign(Rpg::BlockAlign align){ this->dialogAlign = align; }
 	inline Rpg::BlockAlign getDialogAlign() const { return this->dialogAlign; }
+
+	// 设置音效
+	void setSoundEffect(SoundEffect soundEffect, const QString &name){ this->soundEffects.insert(soundEffect, name); }
+	const QString getSoundEffect(SoundEffect soundEffect) const { return this->soundEffects.value(soundEffect); }
 
 	// 构造
 	RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr);

@@ -6,6 +6,7 @@
 #include <Rpg/Global.h>
 
 #include <QPen>
+#include <QMouseEvent>
 
 /**
  * @brief The RpgScene class

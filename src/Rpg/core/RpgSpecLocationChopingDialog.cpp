@@ -88,7 +88,7 @@ void RpgSpecLocationChopingDialog::renderDialog(const QSize &dialogSize) NoThrow
 }
 
 void RpgSpecLocationChopingDialog::renderSelectBar(const QSize &selectBarSize) NoThrow{
-	QPixmap selectBarImage = QPixmap(RpgDialogBase::selectBarSize());
+	QPixmap selectBarImage = QPixmap(selectBarSize);
 	selectBarImage.fill(Qt::transparent);
 	QPainter p(&selectBarImage);{
 		int width = selectBarSize.width();

@@ -223,7 +223,7 @@ RpgChoiceItem::RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 
 	this->upArrowSymbol->setZValue(0.3);
 	this->downArrowSymbol->setZValue(0.3);
-	this->selectBar->setZValue(0.4);
+	this->selectBar->setZValue(0.1);
 
 	//this->setMessageTextWidth(this->dialogSize.width() - (2.0 * MessageMarginH));
 
@@ -271,8 +271,12 @@ void RpgChoiceItem::run(){
 	rDebug() << "Dialog Height:" << this->dialogSize.height();
 	int innerDialogHeight = this->dialogSize.height() - (RpgDialogBase::PaddingV * 2);
 	rDebug() << "InnerDialogHeight:" << innerDialogHeight;
+#if 0
 	QFontMetrics fontMetrics(this->font);
 	this->selectBarHeight = fontMetrics.height() + (RpgDialogBase::PaddingV * 2); //this->skin->selectBarSize().height();
+#else
+	this->selectBarHeight = 35;
+#endif
 	rDebug() << "selectBarHeight:" << selectBarHeight;
 	qreal fRatio = qreal(innerDialogHeight) / selectBarHeight;
 	int iRatio = innerDialogHeight / selectBarHeight; // 选择项目数
@@ -338,6 +342,12 @@ void RpgChoiceItem::run(){
 		item->setGraphicsEffect(itemEffect);
 		this->textItems.append(item);
 
+		// 测试
+//		QGraphicsRectItem *ii = new QGraphicsRectItem(this->box);
+//		ii->setPos(item->pos());
+//		ii->setRect(item->boundingRect());
+//		ii->setPen(QPen(QBrush(Qt::yellow), 1, Qt::DashLine));
+
 		curHeight += this->selectBarHeight + this->innerPaddingV;
 	}
 
@@ -348,11 +358,17 @@ void RpgChoiceItem::run(){
 	this->box->setPos(dialogPos);
 
 	// selectBar
-	this->selectBar->setPixmap(this->skin->getSelectBarImage(QSize(this->dialogSize.width() - (2 * RpgDialogBase::PaddingH), this->skin->selectBarSize().height())));
+	//this->selectBar->setPixmap(this->skin->getSelectBarImage(QSize(this->dialogSize.width() - (2 * RpgDialogBase::PaddingH), this->skin->selectBarSize().height())));
 	this->selectBar->setVisible(false);
 
 	this->upArrowSymbol->setVisible(false);
 	this->downArrowSymbol->setVisible(false);
+
+	for(auto i: this->textItems){
+		i->setFlag(QGraphicsItem::ItemIsSelectable);
+		i->setFlag(QGraphicsItem::ItemIsMovable);
+		i->setSelected(true);
+	}
 
 	this->showDialog();
 
@@ -495,12 +511,15 @@ void RpgChoiceItem::setChoicesText(int from, bool withSpeed){
 }
 
 void RpgChoiceItem::setSelectBarIndex(int index){
-	if(index < 0 || index >= qMin(this->textItems.length(), this->choices.length() - index)){
-		rDebug() << "Index is out of range: '" << index << "' not in range [0," << qMin(this->textItems.length(), this->choices.length() - index) << ")";
+	if(index < 0 || index >= qMin(this->textItems.length(), this->choices.length())){
+		rDebug() << "Index is out of range: '" << index << "' not in range [0," << qMin(this->textItems.length(), this->choices.length()) << ")";
+		rDebug() << "this->textItems.length() ==" << this->textItems.length() << ", this->choices.length() ==" << this->choices.length() << ", index ==" << index;
 		return;
 	}
-	this->selectBar->setPos(RpgDialogBase::PaddingH, (this->selectBarHeight + this->innerPaddingV) * this->selectingIndex + RpgDialogBase::PaddingV + RpgDialogBase::PaddingV + this->addingPaddingV);
-	rDebug() << "SELECT BAR POS:" << this->selectBar->pos();
+	//this->selectBar->setPos(RpgDialogBase::PaddingH, (this->selectBarHeight + this->innerPaddingV) * this->selectingIndex + RpgDialogBase::PaddingV + this->addingPaddingV);
+	QGraphicsTextItem *textItem = this->textItems.at(index);
+	this->selectBar->setPos(textItem->pos());
+	this->selectBar->setPixmap(this->skin->getSelectBarImage(textItem->boundingRect().size().toSize()));
 }
 
 

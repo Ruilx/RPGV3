@@ -155,6 +155,7 @@ RpgDialogItem::RpgDialogItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 	this->hide();
 
 	rpgState->registerRpgObject(this, RpgState::DialogMode);
+
 }
 
 RpgDialogItem::~RpgDialogItem(){
@@ -198,6 +199,12 @@ void RpgDialogItem::run(){
 
 	// 设置lastDialogMessage为空, 在showMessage中切换至message::constBegin
 	this->lastDialogMessage = this->emptyMessage.constBegin();
+
+	// 测试
+//	QGraphicsRectItem *i = new QGraphicsRectItem(this->box);
+//	i->setPos(this->messageBox->pos());
+//	i->setRect(this->messageBox->boundingRect());
+//	i->setPen(QPen(QBrush(Qt::yellow), 1, Qt::DashLine));
 
 	this->continueSymbol->setVisible(false);
 	this->showDialog();

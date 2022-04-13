@@ -82,25 +82,25 @@ void MainWindow::testModel()
 //		RpgUtils::msleep(1);
 //	}
 
-	RpgBanner banner(10000);
-	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
-	text->setFont(rpgFont->getFont("dialog", 36));
-	text->setDefaultTextColor(Qt::white);
-	text->setPos(50, 50);
+//	RpgBanner banner(10000);
+//	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
+//	text->setFont(rpgFont->getFont("dialog", 36));
+//	text->setDefaultTextColor(Qt::white);
+//	text->setPos(50, 50);
 
-	banner.addItem("text", text);
-	banner.setTimeLineTimestampCb(100, [](){
-		rDebug() << "100MS!";
-	});
-	banner.setTimeLineTimestampCb(500, [](){
-		rDebug() << "500MS!";
-	});
-	banner.setTimeLineFrameCb(150, [](){
-		rDebug() << "150 FRAMES!";
-	});
+//	banner.addItem("text", text);
+//	banner.setTimeLineTimestampCb(100, [this](){
+//		rDebug() << "100MS!";
+//	});
+//	banner.setTimeLineTimestampCb(500, [this](){
+//		rDebug() << "500MS!";
+//	});
+//	banner.setTimeLineFrameCb(150, [this](){
+//		rDebug() << "150 FRAMES!";
+//	});
 
-	banner.run();
-	banner.waitForComplete();
+//	banner.run();
+//	banner.waitForComplete();
 
 	RpgDialogItem msg(&base);
 	msg.setDialogAlign(Rpg::AlignBottom);
@@ -110,7 +110,7 @@ void MainWindow::testModel()
 
 	RpgChoiceItem dialog(&base);
 	dialog.setDialogAlign(Rpg::AlignBottom);
-	//dialog.setDialogSize(QSize(150, 180));
+	dialog.setDialogSize(QSize(150, 300));
 	dialog.appendChoice("Choice 1");
 	dialog.appendChoice("Choice 2", false);
 	dialog.appendChoice("Choice 3");
