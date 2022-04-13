@@ -46,9 +46,6 @@ public:
 	int setTimeLineTimestampCb(int timestampMs, frameCb cb);
 	void removeTimeLineFrameCb(int frame);
 
-	template<typename T, typename Class>
-	void setTimeLineFrameCb1(int frame, const Class *object, T (Class::*fn)());
-
 	void removeItem(const QString &name);
 	void addItem(const QString &name, QGraphicsItem *item);
 
@@ -58,7 +55,6 @@ public:
 			return nullptr;
 		}
 		return this->items.value(name);
-		connect(1)
 	}
 
 	inline void setCanSkip(bool canSkip){ this->canSkip = canSkip; }

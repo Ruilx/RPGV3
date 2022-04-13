@@ -258,8 +258,3 @@ void RpgBanner::hideBanner(){
 	}
 	this->end();
 }
-
-template<typename T, typename Class>
-void RpgBanner::setTimeLineFrameCb1<T, Class>(int frame, const RpgBanner::Class *object, RpgBanner::T (Class::*fn)()){
-
-}
