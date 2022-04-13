@@ -52,12 +52,12 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 					this->killTimer(this->timerId);
 					this->timerId = -1;
 				}
-				rpgSound->play("accepted");
+				this->playSound(SoundEffect_Accept);
 				this->hideDialog();
 				return;
 			}else{
 				// 选中项目不可执行
-				rpgSound->play("banned");
+				this->playSound(SoundEffect_Banned);
 				rDebug() << "Choice is not enabled.";
 				return;
 			}
@@ -79,7 +79,7 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 							// 光标不在第一个 (可以往上了)
 							this->selectingIndex--;
 							this->setSelectBarIndex(this->selectingIndex);
-							rpgSound->play("select");
+							this->playSound(SoundEffect_Select);
 						}
 					}else{
 						// 正在显示1项以上 (不在第一个)
@@ -88,12 +88,12 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 							// 向上滚动一行显示的内容, 光标位置不变
 							this->fromIndex--;
 							this->setChoicesText(this->fromIndex);
-							rpgSound->play("select");
+							this->playSound(SoundEffect_Select);
 						}else{
 							// 光标不在第一个 (可以往上了)
 							this->selectingIndex--;
 							this->setSelectBarIndex(this->selectingIndex);
-							rpgSound->play("select");
+							this->playSound(SoundEffect_Select);
 						}
 					}
 				}
@@ -120,7 +120,7 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 							}
 							this->selectingIndex++;
 							this->setSelectBarIndex(this->selectingIndex);
-							rpgSound->play("select");
+							this->playSound(SoundEffect_Select);
 						}
 					}else{
 						// 正在显示 非后N项 (不在最后几个)
@@ -129,12 +129,12 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 							// 向下滚动一行显示的内容, 光标位置不变
 							this->fromIndex++;
 							this->setChoicesText(this->fromIndex);
-							rpgSound->play("select");
+							this->playSound(SoundEffect_Select);
 						}else{
 							// 光标不在最后一个选项上 (可以往下了)
 							this->selectingIndex++;
 							this->setSelectBarIndex(this->selectingIndex);
-							rpgSound->play("select");
+							this->playSound(SoundEffect_Select);
 						}
 					}
 				}
@@ -150,6 +150,15 @@ void RpgChoiceItem::clearTextItems(){
 		}
 	}
 	this->textItems.clear();
+}
+
+void RpgChoiceItem::playSound(SoundEffect soundEffect, qreal volume, int times){
+	const QString name = this->soundEffects.value(soundEffect);
+	if(name.isEmpty()){
+		rError() << "Try to play a 'Empty name' sound.";
+		return;
+	}
+	rpgSound->play(name, volume, times);
 }
 
 void RpgChoiceItem::appendChoice(const RpgChoiceMessage &choice){

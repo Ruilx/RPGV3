@@ -110,16 +110,11 @@ void MainWindow::testModel()
 
 	RpgChoiceItem dialog(&base);
 	dialog.setDialogAlign(Rpg::AlignBottom);
-	dialog.setDialogSize(QSize(150, 300));
-	dialog.appendChoice("Choice 1");
-	dialog.appendChoice("Choice 2", false);
-	dialog.appendChoice("Choice 3");
-	dialog.appendChoice("Choice 4", false);
-	dialog.appendChoice("Choice 5");
-	dialog.appendChoice("Choice 6", false);
-	dialog.appendChoice("Choice 7");
-	dialog.appendChoice("Choice 8", false);
-	dialog.appendChoice("Choice 9");
+	dialog.setDialogSize(QSize(180, 160));
+	dialog.appendChoice("はじめから");
+	dialog.appendChoice("つづきから", false);
+	dialog.appendChoice("オプション");
+	dialog.appendChoice("お わ り");
 	dialog.setDefaultChoice(0);
 	//dialog.setTimeout(5000);
 
@@ -127,11 +122,16 @@ void MainWindow::testModel()
 	int res = dialog.waitForComplete();
 	rDebug() << "RES:" << res;
 
-	QTextEdit *edit = new QTextEdit(nullptr);
-	edit->resize(200, 150);
-	QGraphicsProxyWidget *editProxy = scene->addWidget(edit);
-	editProxy->setPos(50, 50);
-	editProxy->setZValue(Rpg::ZValueFront);
+	if(res == 3){
+		this->canClose = true;
+		this->close();
+	}
+
+//	QTextEdit *edit = new QTextEdit(nullptr);
+//	edit->resize(200, 150);
+//	QGraphicsProxyWidget *editProxy = scene->addWidget(edit);
+//	editProxy->setPos(50, 50);
+//	editProxy->setZValue(Rpg::ZValueFront);
 
 	this->canClose = true;
 }

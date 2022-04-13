@@ -130,6 +130,8 @@ private:
 
 	//inline void setChoiceTextWidth(qreal width){ this->textWidth = width; }
 	void clearTextItems();
+
+	void playSound(SoundEffect soundEffect, qreal volume = 1.0f, int times = 1);
 public:
 	// 文字颜色(不含CSS标签颜色)
 	inline void setTextColor(const QColor &color){ this->textColor = color; }
