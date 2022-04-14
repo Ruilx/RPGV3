@@ -259,6 +259,7 @@ RpgChoiceItem::RpgChoiceItem(RpgDialogBase *dialogBase, QGraphicsObject *parent)
 }
 
 RpgChoiceItem::~RpgChoiceItem(){
+	this->clearChoices();
 	rpgState->unregisterRpgObject(this, RpgState::DialogMode);
 }
 
@@ -439,7 +440,6 @@ void RpgChoiceItem::hideDialog(){
 
 	this->hide();
 	this->clearTextItems();
-	this->clearChoices();
 
 	if(rpgState->getTop() == RpgState::DialogMode){
 		rpgState->popState();

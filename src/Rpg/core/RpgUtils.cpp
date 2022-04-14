@@ -283,7 +283,7 @@ QPointF RpgUtils::getBlockPos(Rpg::BlockAlign align, const QSizeF &blockSize, co
 	}
 }
 
-QPointF RpgUtils::getDialogPos(Rpg::BlockAlign align, const QSize &dialogSize, int marginW, int marginH){
+QPointF RpgUtils::getDialogPos(Rpg::BlockAlign align, const QSizeF &dialogSize, int marginW, int marginH){
 	return RpgUtils::getBlockPos(align, dialogSize, QSizeF(marginW, marginH), QSizeF(ScreenWidth, ScreenHeight));
 }
 

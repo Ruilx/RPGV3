@@ -35,15 +35,16 @@
  * 0.4f - 0.49f ZValue值表示精灵位置, 其中主角位置为0.49f, 其他角色均小于这个值
  * 0.5f - 0.99f ZValue值比较高的显示在玩家前面
  */
-class RpgMapBlock : public QGraphicsPixmapItem, public QObject
+class RpgMapBlock : public QGraphicsPixmapItem
 {
 public:
 	enum Direction{
-		DirUp = 0,
-		DirDown,
-		DirLeft,
-		DirRight,
+		DirUp    = 0b01000000,
+		DirRight = 0b00010000,
+		DirDown  = 0b00000100,
+		DirLeft  = 0b00000001,
 	};
+	Q_DECLARE_FLAGS(Directions, Direction)
 private:
 	/**
 	 * @brief mapPixmapList
@@ -55,8 +56,10 @@ private:
 	/**
 	 * @brief pass
 	 * 能够按照相应方式通过设置
+	 * Directions Flag
 	 */
-	QHash<Direction, bool> pass = {{DirUp, false}, {DirDown, false}, {DirLeft, false}, {DirRight, false}};
+	//QHash<Direction, bool> pass = {{DirUp, false}, {DirDown, false}, {DirLeft, false}, {DirRight, false}};
+	Directions pass;
 
 	/**
 	 * @brief timeLine
@@ -123,15 +126,15 @@ public:
 	}
 
 	void setPass(Direction dir, bool enable){
-		this->pass[dir] = enable;
+		this->pass.setFlag(dir, enable);
 	}
 
 	bool getPass(Direction dir) const {
-		return this->pass.value(dir);
+		return this->pass.testFlag(dir);
 	}
 
-	const QHash<Direction, bool> getPass() const{
-		return this->pass;
+	QFlags<Direction>::Int getPass() const{
+		return int(this->pass);
 	}
 
 	void showPixmapNext(){

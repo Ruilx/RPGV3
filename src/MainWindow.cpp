@@ -82,31 +82,25 @@ void MainWindow::testModel()
 //		RpgUtils::msleep(1);
 //	}
 
-//	RpgBanner banner(10000);
-//	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
-//	text->setFont(rpgFont->getFont("dialog", 36));
-//	text->setDefaultTextColor(Qt::white);
-//	text->setPos(50, 50);
+	RpgBanner banner(5000);
+	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
+	text->setFont(rpgFont->getFont("dialog", 36));
+	text->setDefaultTextColor(Qt::white);
+	text->setPos(RpgUtils::getDialogPos(Rpg::AlignCenter, text->boundingRect().size()));
 
-//	banner.addItem("text", text);
-//	banner.setTimeLineTimestampCb(100, [this](){
-//		rDebug() << "100MS!";
-//	});
-//	banner.setTimeLineTimestampCb(500, [this](){
-//		rDebug() << "500MS!";
-//	});
-//	banner.setTimeLineFrameCb(150, [this](){
-//		rDebug() << "150 FRAMES!";
-//	});
+	banner.addItem("text", text);
+	banner.setTimeLineTimestampCb(100, [this](){
+		rDebug() << "100MS!";
+	});
+	banner.setTimeLineTimestampCb(500, [this](){
+		rDebug() << "500MS!";
+	});
+	banner.setTimeLineFrameCb(150, [this](){
+		rDebug() << "150 FRAMES!";
+	});
 
-//	banner.run();
-//	banner.waitForComplete();
-
-	RpgDialogItem msg(&base);
-	msg.setDialogAlign(Rpg::AlignBottom);
-	msg.appendMessage("Choice 1<br>Choice 2<br>Choice 3");
-	msg.run();
-	msg.waitForComplete();
+	banner.run();
+	banner.waitForComplete();
 
 	RpgChoiceItem dialog(&base);
 	dialog.setDialogAlign(Rpg::AlignBottom);
@@ -121,6 +115,12 @@ void MainWindow::testModel()
 	dialog.run();
 	int res = dialog.waitForComplete();
 	rDebug() << "RES:" << res;
+
+	RpgDialogItem msg(&base);
+	msg.setDialogAlign(Rpg::AlignBottom);
+	msg.appendMessage(QString("你选择了第%1项, 值为:%2").arg(res).arg(dialog.getValue()));
+	msg.run();
+	msg.waitForComplete();
 
 	if(res == 3){
 		this->canClose = true;

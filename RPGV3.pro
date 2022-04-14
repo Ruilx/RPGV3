@@ -45,6 +45,7 @@ SOURCES += \
     src/Rpg/core/RpgAutoTileRendererBase.cpp \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.cpp \
 	src/Rpg/com/RpgItem/RpgAxisItem.cpp \
+    src/Rpg/core/RpgSprite.cpp \
 	src/Rpg/core/RpgVar.cpp \
     src/main.cpp \
     src/MainWindow.cpp \
@@ -81,8 +82,7 @@ SOURCES += \
     src/Rpg/core/RpgDialogAnimation.cpp \
     src/Rpg/core/RpgItemProperties.cpp \
     src/Rpg/com/RpgChoice.cpp \
-    src/Rpg/core/RpgChoiceMessage.cpp \
-    src/Rpg/core/RpgChoiceAnimation.cpp
+    src/Rpg/core/RpgChoiceMessage.cpp
 
 
 HEADERS += \
@@ -93,6 +93,7 @@ HEADERS += \
 	src/Rpg/core/RpgAutoTileRendererBase.h \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.h \
 	src/Rpg/com/RpgItem/RpgAxisItem.h \
+    src/Rpg/core/RpgSprite.h \
 	src/Rpg/core/RpgVar.h \
     src/Rpg/exception/RpgException.h \
     src/Rpg/exception/RpgFileCannotOpenException.h \
@@ -128,8 +129,7 @@ HEADERS += \
     src/Rpg/core/RpgDialogAnimation.h \
     src/Rpg/core/RpgItemProperties.h \
     src/Rpg/com/RpgChoice.h \
-    src/Rpg/core/RpgChoiceMessage.h \
-    src/Rpg/core/RpgChoiceAnimation.h
+    src/Rpg/core/RpgChoiceMessage.h
 
 
 DISTFILES += \

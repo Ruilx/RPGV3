@@ -75,9 +75,6 @@ public:
 signals:
 	void enterAutoMode();
 	void exitAutoMode();
-
-
-
 };
 
 #endif // RPGBANNER_H
