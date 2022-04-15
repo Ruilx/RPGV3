@@ -45,6 +45,7 @@ SOURCES += \
     src/Rpg/core/RpgAutoTileRendererBase.cpp \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.cpp \
 	src/Rpg/com/RpgItem/RpgAxisItem.cpp \
+    src/Rpg/core/RpgMap.cpp \
     src/Rpg/core/RpgSprite.cpp \
 	src/Rpg/core/RpgVar.cpp \
     src/main.cpp \
@@ -93,6 +94,7 @@ HEADERS += \
 	src/Rpg/core/RpgAutoTileRendererBase.h \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.h \
 	src/Rpg/com/RpgItem/RpgAxisItem.h \
+    src/Rpg/core/RpgMap.h \
     src/Rpg/core/RpgSprite.h \
 	src/Rpg/core/RpgVar.h \
     src/Rpg/exception/RpgException.h \

@@ -42,6 +42,8 @@ private:
 	// TODO: setMapPos ...
 	// TODO: setMap ...
 
+	// TODO: RpgSpriteEffect ...
+
 public:
 	// 角色名称
 	inline void setName(const QString &name){ this->name = name; }
@@ -59,13 +61,10 @@ public:
 	const MotionPixmapList *getMotionPixmaps(const QString &motion) const;
 	int getMotionPixmapCount(const QString &motion) const;
 
-	void run();
-	void end();
-
-
 	RpgSprite(const QString &name, QGraphicsObject *parent = nullptr);
 
-
+	void run();
+	void end();
 };
 
 #endif // RPGSPRITE_H

@@ -74,6 +74,11 @@ int RpgSprite::getMotionPixmapCount(const QString &motion) const{
 	}
 }
 
+RpgSprite::RpgSprite(const QString &name, QGraphicsObject *parent): RpgObject(parent){
+	this->setName(name);
+	this->motions.insert("idle", new MotionPixmapList());
+}
+
 void RpgSprite::run(){
 	if(this->timerId > 0){
 		rWarning() << "Timer is running when run called.";
@@ -91,9 +96,4 @@ void RpgSprite::end(){
 		this->timerId = -1;
 	}
 	RpgObject::end();
-}
-
-RpgSprite::RpgSprite(const QString &name, QGraphicsObject *parent): RpgObject(parent){
-	this->setName(name);
-	this->motions.insert("idle", new MotionPixmapList());
 }
