@@ -155,7 +155,8 @@ void RpgChoiceItem::clearTextItems(){
 void RpgChoiceItem::playSound(SoundEffect soundEffect, qreal volume, int times){
 	const QString name = this->soundEffects.value(soundEffect);
 	if(name.isEmpty()){
-		rError() << "Try to play a 'Empty name' sound.";
+		// 如果不设置声音, 就不播放声音
+		//rError() << "Try to play a 'Empty name' sound.";
 		return;
 	}
 	rpgSound->play(name, volume, times);
@@ -467,6 +468,13 @@ void RpgChoiceItem::setChoicesText(int from, bool withSpeed){
 			}else{
 				this->textItems.at(i)->setDefaultTextColor(this->bannedColor);
 			}
+			QTextOption defaultTextOption = this->textItems.at(i)->document()->defaultTextOption();{
+				Qt::Alignment /*Rpg::TextAlign*/ textAlign = (Qt::Alignment)this->choices.at(from + i).getTextAlign();
+				if(defaultTextOption.alignment() != textAlign){
+					defaultTextOption.setAlignment(textAlign);
+					this->textItems.at(i)->document()->setDefaultTextOption(defaultTextOption);
+				}
+			}
 		}
 		for(int i = this->choices.length() - from; i < this->textItems.length(); i++){
 			this->textItems.at(i)->document()->clear();
@@ -483,6 +491,13 @@ void RpgChoiceItem::setChoicesText(int from, bool withSpeed){
 					this->textItems.at(i)->setDefaultTextColor(this->textColor);
 				}else{
 					this->textItems.at(i)->setDefaultTextColor(this->bannedColor);
+				}
+				QTextOption defaultTextOption = this->textItems.at(i)->document()->defaultTextOption();{
+					Qt::Alignment /*Rpg::TextAlign*/ textAlign = (Qt::Alignment)this->choices.at(from + i).getTextAlign();
+					if(defaultTextOption.alignment() != textAlign){
+						defaultTextOption.setAlignment(textAlign);
+						this->textItems.at(i)->document()->setDefaultTextOption(defaultTextOption);
+					}
 				}
 				RpgHtmlSplit htmlSplit(this->choices.at(from + i).getText());
 				while(htmlSplit.hasNext()){

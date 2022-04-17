@@ -9,7 +9,8 @@
     },
     "image": {
         "skin": "data/images/skin/blackAlpha.png",
-	"blueSkin": "data/images/skin/blueAlpha.png"
+		"blueSkin": "data/images/skin/blueAlpha.png",
+		"clearSkin": "data/images/skin/clearAlpha.png"
     },
     "music": {
         "moonLight": "data/music/月光（オルゴール）.mp3",
@@ -19,7 +20,7 @@
         
     },
     "se": {
-            "king": "data/music/King.wav",
+		"king": "data/music/King.wav",
 	    "banned": "data/se/banned.wav",
 	    "select": "data/se/select.wav",
 	    "accepted": "data/se/accepted.wav"

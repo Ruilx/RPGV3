@@ -1,34 +1,36 @@
 #ifndef RPGTILESETBASE_H
 #define RPGTILESETBASE_H
 
-#include <QtCore>
-#include <QImage>
-#include <QPixmap>
-#include <Rpg/Global.h>
+#include <Rpg/Rpg.h>
 
-#include <Rpg/exception/RpgNullPointerException.h>
-#include <Rpg/exception/RpgMapKeyNotFoundException.h>
+#include <QPixmap>
+
+inline uint qHash(const QPoint &p, uint seed)
+Q_DECL_NOEXCEPT_EXPR(noexcept(qHash(p.x(), seed) && noexcept(qHash(p.y(), seed)))) {
+	uint h1 = qHash(p.x(), seed);
+	uint h2 = qHash(p.y(), seed);
+	return ((h1 << 16) | (h1 >> 16)) ^ h2 ^ seed;
+}
 
 class RpgTileSetBase
 {
-	int rows = 0;
-	int cols = 0;
+	QString name;
+	QPixmap oriTile;
+
+	QSize tileSize;
+	QHash<QPoint, QList<QPixmap> > tiles;
+
+	const QPixmap nullPixmap;
+
+	void readOriTile();
+
 protected:
-	QMap<quint64, QImage*> imageList;
+	virtual void renderTile(const QPoint &loc) Pure;
 
-	void readHandle(const QString &filename);
-	inline quint64 loc2Index(const QPoint &loc) const{ return (quint64)(loc.x()) << 32 | (quint64)(loc.y()); }
 public:
-	RpgTileSetBase(const QString &filename = QString());
+	RpgTileSetBase(const QString &name);
 
-	QImage *getRpgTile(int x, int y) const{ return this->getRpgTile(QPoint(x, y)); }
-	QImage *getRpgTile(const QPoint &loc) const;
-
-	QPixmap getRpgTilePixmap(int x, int y) const;
-	QPixmap getRpgTilePixmap(const QPoint &loc) const;
-
-	inline int getRows() const{ return this->rows; }
-	inline int getCols() const{ return this->cols; }
+	const QPixmap &getTilePixmap(const QPoint &loc, int index);
 };
 
 #endif // RPGTILESETBASE_H

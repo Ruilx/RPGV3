@@ -51,7 +51,7 @@ public:
 
 	// 定时器间隔设置
 	inline void setTimerInterval(int ms){ this->timerInterval = ms; }
-	inline int getTimerInterval(int ms){ return this->timerInterval; }
+	inline int getTimerInterval() const { return this->timerInterval; }
 
 	// 动作设置
 	void setMotion(const QString &motion);

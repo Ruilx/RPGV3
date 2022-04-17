@@ -32,7 +32,7 @@ public:
 		SoundEffectFile,// 音效文件(SE)
 		AvatarFile,		// 头像文件
 		CharacterFile,	// 角色文件
-		MapBlockFile,	// 地图块文件
+		TileSetFile,	// 地图块文件
 		MapFile,		// 地图文件
 		DataFile,		// 数据文件(Variables)
 		AutoTileFile,   // 自动瓦片文件

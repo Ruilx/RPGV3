@@ -63,6 +63,12 @@ public:
 
 	// 消息使用内部字体名
 	const char *FontName = "dialog";
+
+	enum SoundEffect{
+		SoundEffect_Continuous = 1,
+		SoundEffect_Close,
+	};
+
 private:
 
 	// 消息列表
@@ -84,6 +90,13 @@ private:
 	// 继续三角形 时间轴
 	QTimeLine *continueSymbolTimeLine = new QTimeLine(1000, this);
 
+	// 记录soundEffect对应的声音名称
+	QHash<SoundEffect, QString> soundEffects = QHash<SoundEffect, QString>({
+		{SoundEffect_Continuous, ""},
+		{SoundEffect_Close, ""},
+	});
+
+	void playSound(SoundEffect soundEffect, qreal volume = 1.0f, int times = 1);
 
 	inline void setMessageTextWidth(qreal width){ this->messageBox->setTextWidth(width); }
 

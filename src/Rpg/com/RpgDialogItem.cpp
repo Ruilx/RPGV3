@@ -4,7 +4,7 @@
 #include <QTextCursor>
 
 #include <Rpg/com/RpgView.h>
-
+#include <Rpg/com/RpgSound.h>
 #include <Rpg/core/RpgState.h>
 #include <Rpg/core/RpgFont.h>
 #include <Rpg/core/RpgAvatar.h>
@@ -49,6 +49,15 @@ void RpgDialogItem::keyReleaseEvent(QKeyEvent *event){
 			this->showNextMessage();
 		}
 	}
+}
+
+void RpgDialogItem::playSound(RpgDialogItem::SoundEffect soundEffect, qreal volume, int times){
+	const QString name = this->soundEffects.value(soundEffect);
+	if(name.isEmpty()){
+		// 如果不设置声音, 就不播放声音
+		return;
+	}
+	rpgSound->play(name, volume, times);
 }
 
 void RpgDialogItem::appendMessage(const RpgDialogMessage &message){
@@ -262,11 +271,13 @@ void RpgDialogItem::showNextMessage(){
 	this->messageIndex++;
 	if(this->messageIndex >= this->messages.length()){
 		// 会话全部完成
+		this->playSound(SoundEffect_Close);
 		this->hideDialog();
 		this->messageIndex = 0;
 		this->lastDialogMessage = this->messages.constBegin();
 		return;
 	}else{
+		this->playSound(SoundEffect_Continuous);
 		this->showMessage(this->messageIndex);
 
 		// 设置超时时间

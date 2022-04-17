@@ -24,7 +24,7 @@ RpgFileManager::RpgFileManager(){
 	this->files.insert(SoundEffectFile, new QHash<QString, QUrl>());
 	this->files.insert(AvatarFile, new QHash<QString, QUrl>());
 	this->files.insert(CharacterFile, new QHash<QString, QUrl>());
-	this->files.insert(MapBlockFile, new QHash<QString, QUrl>());
+	this->files.insert(TileSetFile, new QHash<QString, QUrl>());
 	this->files.insert(MapFile, new QHash<QString, QUrl>());
 	this->files.insert(DataFile, new QHash<QString, QUrl>());
 	this->files.insert(AutoTileFile, new QHash<QString, QUrl>());
@@ -40,7 +40,7 @@ RpgFileManager::RpgFileManager(){
 	this->fileTypeName.insert(SoundEffectFile, "SoundEffectFile");
 	this->fileTypeName.insert(AvatarFile, "AvatarFile");
 	this->fileTypeName.insert(CharacterFile, "CharacterFile");
-	this->fileTypeName.insert(MapBlockFile, "MapBlockFile");
+	this->fileTypeName.insert(TileSetFile, "MapBlockFile");
 	this->fileTypeName.insert(MapFile, "MapFile");
 	this->fileTypeName.insert(DataFile, "DataFile");
 	this->fileTypeName.insert(AutoTileFile, "AutoTileFile");

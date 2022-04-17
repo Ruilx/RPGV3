@@ -5,7 +5,7 @@
 #include <QTimeLine>
 #include <QtCore>
 #include <Rpg/Global.h>
-#include <Rpg/core/RpgTileSetBase.h>
+#include <Rpg/core/RpgTileSet1.h>
 #include <Rpg/exception/RpgValueOutOfRangeException.h>
 
 /**
@@ -36,7 +36,7 @@
  * 0.4f - 0.49f ZValue值表示精灵位置, 其中主角位置为0.49f, 其他角色均小于这个值
  * 0.5f - 0.99f ZValue值比较高的显示在玩家前面
  */
-class RpgMapBlock : public QGraphicsPixmapItem
+class RpgMapBlock : public QGraphicsPixmapItem, public QObject
 {
 public:
 	enum Direction{

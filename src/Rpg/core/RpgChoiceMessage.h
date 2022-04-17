@@ -9,13 +9,11 @@ class RpgChoiceMessage
 	bool enabled = true;
 	qreal lineHeight = 35;
 	QString value;
+	Rpg::TextAlign textAlign = Rpg::AlignLeft;
 	//bool selected = false;
 public:
-	RpgChoiceMessage(const QString &text, bool enabled = true, const QString &value = QString()){
-		this->text = text;
-		this->enabled = enabled;
-		this->value = value.isEmpty() ? text : value;
-	}
+	RpgChoiceMessage(const QString &text, bool enabled = true, const QString &value = QString());
+	RpgChoiceMessage(std::initializer_list<std::pair<QString, QVariant>> params);
 
 	inline void setText(const QString &text){ this->text = text; }
 	inline const QString &getText() const{ return this->text; }
@@ -27,6 +25,8 @@ public:
 //	inline bool getSelected() const { return this->selected; }
 	inline void setLineHeight(qreal lineHeight){ this->lineHeight = lineHeight; }
 	inline qreal getLineHeight() const{ return this->lineHeight; }
+	inline void setTextAlign(Rpg::TextAlign textAlign){ this->textAlign = textAlign; }
+	inline Rpg::TextAlign getTextAlign() const { return this->textAlign; }
 };
 
 #endif // RPGCHOICEMESSAGE_H

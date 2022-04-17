@@ -287,24 +287,24 @@ QPointF RpgUtils::getDialogPos(Rpg::BlockAlign align, const QSizeF &dialogSize, 
 	return RpgUtils::getBlockPos(align, dialogSize, QSizeF(marginW, marginH), QSizeF(ScreenWidth, ScreenHeight));
 }
 
+template<typename T>
+QString RpgUtils::toString(const T &from, const T &to, bool includeFrom, bool includeTo){
+	return (includeFrom ? "[" : "(") % QString::number(from) % ", " % QString::number(to) % (includeTo ? "]": ")");
+}
 
+QString RpgUtils::toString(const QSize &size){
+	return "(" % QString::number(size.width()) % ", " % QString::number(size.height()) % ")";
+}
 
+QString RpgUtils::toString(const QSizeF &sizef, int prec){
+	return "(" % QString::number(sizef.width(), 'g', prec) % ", " % QString::number(sizef.height(), 'g', prec) % ")";
+}
 
+QString RpgUtils::toString(const QPoint &point){
+	return "(" % QString::number(point.x()) % ", " % QString::number(point.y()) % ")";
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+QString RpgUtils::toString(const QPointF &pointf, int prec){
+	return "(" % QString::number(pointf.x(), 'g', prec) % ", " % QString::number(pointf.y(), 'g', prec) % ")";
+}
 

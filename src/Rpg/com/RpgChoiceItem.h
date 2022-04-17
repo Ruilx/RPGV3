@@ -137,8 +137,8 @@ public:
 	inline void setTextColor(const QColor &color){ this->textColor = color; }
 	inline void setTextColor(Qt::GlobalColor color){ this->textColor = QColor(color); }
 
-	inline void appendChoice(const RpgChoiceMessage &choice);
-	inline void appendChoice(const QList<RpgChoiceMessage> &choices);
+	void appendChoice(const RpgChoiceMessage &choice);
+	void appendChoice(const QList<RpgChoiceMessage> &choices);
 	inline void appendChoice(const QString &text, bool enabled = true){
 		this->choices.append(RpgChoiceMessage(text, enabled));
 	}

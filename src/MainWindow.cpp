@@ -42,6 +42,7 @@ void MainWindow::testModel()
 	scene->addItem(item);
 
 	RpgSpecLocationChopingDialog base("skin");
+	RpgSpecLocationChopingDialog clear("clearSkin");
 
 	//	RpgDialogItem dialog(&base);
 
@@ -102,13 +103,34 @@ void MainWindow::testModel()
 	banner.run();
 	banner.waitForComplete();
 
+	RpgDialogItem d(&clear);
+	d.setDialogAlign(Rpg::AlignCenter);
+	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
+	msg1.setSpeed(Rpg::SingleWordSpeedSlow);
+	d.appendMessage(msg1);
+	d.run();
+	d.waitForComplete();
+
 	RpgChoiceItem dialog(&base);
 	dialog.setDialogAlign(Rpg::AlignBottom);
 	dialog.setDialogSize(QSize(180, 160));
-	dialog.appendChoice("はじめから");
-	dialog.appendChoice("つづきから", false);
-	dialog.appendChoice("オプション");
-	dialog.appendChoice("お わ り");
+	dialog.appendChoice(RpgChoiceMessage({
+		{"text", "はじめから"},
+		{"align", Rpg::AlignCenter},
+	}));
+	dialog.appendChoice(RpgChoiceMessage({
+		{"text", "つづきから"},
+		{"enabled", false},
+		{"align", Rpg::AlignCenter},
+	}));
+	dialog.appendChoice(RpgChoiceMessage({
+		{"text", "オプション"},
+		{"align", Rpg::AlignCenter},
+	}));
+	dialog.appendChoice(RpgChoiceMessage({
+		{"text", "お わ り"},
+		{"align", Rpg::AlignCenter},
+	}));
 	dialog.setDefaultChoice(0);
 	//dialog.setTimeout(5000);
 

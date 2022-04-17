@@ -47,6 +47,8 @@ SOURCES += \
 	src/Rpg/com/RpgItem/RpgAxisItem.cpp \
     src/Rpg/core/RpgMap.cpp \
     src/Rpg/core/RpgSprite.cpp \
+	src/Rpg/core/RpgTileSet1.cpp \
+	src/Rpg/core/RpgTileSetBase.cpp \
 	src/Rpg/core/RpgVar.cpp \
     src/main.cpp \
     src/MainWindow.cpp \
@@ -65,7 +67,6 @@ SOURCES += \
     src/Rpg/exception/RpgValueOutOfRangeException.cpp \
     src/Rpg/exception/RpgMusicInvalidMediaException.cpp \
     src/Rpg/com/RpgSound.cpp \
-    src/Rpg/core/RpgTileSetBase.cpp \
     src/Rpg/com/RpgLyric.cpp \
     src/Rpg/core/RpgObject.cpp \
     src/Rpg/core/RpgDialogBase.cpp \
@@ -96,6 +97,8 @@ HEADERS += \
 	src/Rpg/com/RpgItem/RpgAxisItem.h \
     src/Rpg/core/RpgMap.h \
     src/Rpg/core/RpgSprite.h \
+	src/Rpg/core/RpgTileSet1.h \
+	src/Rpg/core/RpgTileSetBase.h \
 	src/Rpg/core/RpgVar.h \
     src/Rpg/exception/RpgException.h \
     src/Rpg/exception/RpgFileCannotOpenException.h \
@@ -113,7 +116,6 @@ HEADERS += \
     src/Rpg/exception/RpgValueOutOfRangeException.h \
     src/Rpg/exception/RpgMusicInvalidMediaException.h \
     src/Rpg/com/RpgSound.h \
-    src/Rpg/core/RpgTileSetBase.h \
     src/Rpg/com/RpgLyric.h \
     src/Rpg/core/RpgObject.h \
     src/Rpg/core/RpgDialogBase.h \

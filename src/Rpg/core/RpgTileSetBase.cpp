@@ -1,60 +1,54 @@
 #include "RpgTileSetBase.h"
 
-void RpgTileSetBase::readHandle(const QString &filename){
-	qDebug() << "[INFOR]" << CodePath << "Reading image path:" << filename;
-	QImage fileImage(filename);
-	if(fileImage.isNull()){
+#include <Rpg/core/RpgFileManager.h>
+#include <Rpg/core/RpgUtils.h>
+
+void RpgTileSetBase::readOriTile(){
+	QString filename = rpgFileManager->getFileString(RpgFileManager::TileSetFile, this->name);
+	if(filename.isEmpty()){
+		rError() << "Tileset name:" << name << "not found in rpgFileManager.";
 		return;
 	}
-	int width = fileImage.width();
-	int height = fileImage.height();
-	if(width % int(MapTileWidth) != 0){
-		qDebug() << "[WARNI]" << CodePath << "Source image's width not grid by " << MapTileWidth << "px, may cause mapblocks dislocated.";
-	}
-	if(height % int(MapTileHeight) != 0){
-		qDebug() << "[WARNI]" << CodePath << "Source image's height not grid by " << MapTileHeight << "px, may cause mapblocks dislocated.";
-	}
-	this->rows = width / MapTileWidth;
-	this->cols = width / MapTileHeight;
-
-	for(int i = 0; i < this->rows; i++){
-		for(int j = 0; j < this->cols; j++){
-			QImage *p = new QImage(fileImage.copy(j * MapTileHeight, i * MapTileWidth, MapTileWidth, MapTileHeight));
-			this->imageList.insert((quint64)(j) << 32 | (quint64)(i), p);
-		}
+	if(!this->oriTile.load(filename)){
+		rError() << "Cannot load pixmap: '" << filename << "' as oriTile";
+		return;
 	}
 }
 
-RpgTileSetBase::RpgTileSetBase(const QString &filename){
-	if(!filename.isEmpty()){
-		this->readHandle(filename);
+RpgTileSetBase::RpgTileSetBase(const QString &name){
+	if(name.isEmpty()){
+		rError() << "Given name:" << name << "is empty, cannot readOriTile.";
 	}
+	this->name = name;
+	this->tiles.clear();
+	this->readOriTile();
 }
 
-QImage *RpgTileSetBase::getRpgTile(const QPoint &loc) const{
-	quint64 index = this->loc2Index(loc);
-	if(!this->imageList.contains(index)){
-		throw RpgMapKeyNotFoundException(QString::number(index));
+const QPixmap &RpgTileSetBase::getTilePixmap(const QPoint &loc, int index){
+	if(loc.x() < 0 || loc.x() >= this->tileSize.width()){
+		rError() << "Given loc.x() == '" << loc.x() << "' out of oriTile width: [0," << this->tileSize.width() << ").";
+		return this->nullPixmap;
 	}
-	QImage *image = this->imageList.value(index, new QImage());
-	if(image == nullptr){
-		throw RpgNullPointerException(QObject::tr("this->imageList.value(%1)").arg(index));
+	if(loc.y() < 0 || loc.y() >= this->tileSize.height()){
+		rError() << "Given loc.y() == '" << loc.y() << "' out of oriTile height: [0," << this->tileSize.height() << ").";
+		return this->nullPixmap;
 	}
-	return image;
-}
-
-QPixmap RpgTileSetBase::getRpgTilePixmap(int x, int y) const{
-	QImage *image = getRpgTile(x, y);
-	if(image == nullptr){
-		throw RpgNullPointerException("image");
+	if(!this->tiles.contains(loc)){
+		rDebug() << "Given loc not in tiles yet. will rander loc: " << loc << " position.";
+		this->renderTile(loc);
 	}
-	return QPixmap::fromImage(*image);
-}
-
-QPixmap RpgTileSetBase::getRpgTilePixmap(const QPoint &loc) const{
-	QImage *image = getRpgTile(loc);
-	if(image == nullptr){
-		throw RpgNullPointerException("image");
+	if(!this->tiles.contains(loc)){
+		rError() << "Given loc still not in tiles even rendered. Please check randerTile() registered correct pixmap at specified location. loc:" << loc << ", will throw not found error.";
+		throw RpgMapKeyNotFoundException(RpgUtils::toString(loc));
 	}
-	return QPixmap::fromImage(*image);
+	QList<QPixmap> tile = this->tiles.value(loc);
+	if(tile.length() <= 0){
+		rError() << "Given tile loc:" << loc << "has no valid pixmaps.";
+		return this->nullPixmap;
+	}
+	if(index >= tile.length()){
+		rError() << "Given tile loc:" << loc << "has not longer index:" << index << "at range [0," << tile.length() << ").";
+		return this->nullPixmap;
+	}
+	return tile.at(index);
 }

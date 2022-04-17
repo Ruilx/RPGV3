@@ -62,16 +62,21 @@ public:
 	};
 
 	enum BlockAlign{
-		AlignTopLeft = 0,
-		AlignTop = 1,
-		AlignTopRight = 2,
-		AlignLeft = 3,
-		AlignCenter = 4,
-		AlignRight = 5,
-		AlignBottomLeft = 6,
-		AlignBottom = 7,
-		AlignBottomRight = 8,
+		AlignTopLeft     = Qt::AlignTop | Qt::AlignLeft,
+		AlignTop         = Qt::AlignTop | Qt::AlignHCenter,
+		AlignTopRight    = Qt::AlignTop | Qt::AlignRight,
+		AlignLeft        = Qt::AlignLeft | Qt::AlignVCenter,
+		AlignCenter      = Qt::AlignCenter,
+		AlignRight       = Qt::AlignRight | Qt::AlignVCenter,
+		AlignBottomLeft  = Qt::AlignBottom | Qt::AlignLeft,
+		AlignBottom      = Qt::AlignBottom | Qt::AlignHCenter,
+		AlignBottomRight = Qt::AlignBottom | Qt::AlignRight,
+		AlignAbsolute    = Qt::AlignAbsolute,
 	};
+
+	// TextAlign沿用BlockAlign中的AlignLeft, AlignCenter, AlignRight
+	// 因为命名可能会一样, 所以索性不新增了
+	typedef BlockAlign TextAlign;
 
 	enum AutoTileBlockType{
 		None						= 0x00,

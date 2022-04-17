@@ -38,17 +38,17 @@ bool RpgPreload::parseValueToDict(const QJsonValue &value, void (*cb)(const QMap
 
 bool RpgPreload::handlePreload(const QByteArray &loadingJson){
 	if(loadingJson.isEmpty()){
-		rDebug() << "Initialization file is Empty.";
+		rError() << "Initialization file is Empty.";
 		return false;
 	}
 	QJsonParseError error;
 	QJsonDocument initDoc = QJsonDocument::fromJson(loadingJson, &error);
 	if(error.error != QJsonParseError::NoError){
-		rDebug() << "Initialization configure json parse error: " << error.errorString();
+		rError() << "Initialization configure json parse error: " << error.errorString();
 		return false;
 	}
 	if(!initDoc.isObject()){
-		rDebug() << "Root object must be object, " << RpgUtils::detectJsonValue(initDoc) << " found.";
+		rError() << "Root object must be object, " << RpgUtils::detectJsonValue(initDoc) << " found.";
 		return false;
 	}
 	QJsonObject root = initDoc.object();
@@ -184,7 +184,7 @@ bool RpgPreload::parseCharacters(const QJsonValue &value){
 
 bool RpgPreload::parseMapBlocks(const QJsonValue &value){
 	return this->parseValueToDict(value, [](const QMap<QString, QUrl> &dict){
-		rpgFileManager->addFile(RpgFileManager::MapBlockFile, dict);
+		rpgFileManager->addFile(RpgFileManager::TileSetFile, dict);
 	});
 }
 

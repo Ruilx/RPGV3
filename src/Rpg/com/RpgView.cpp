@@ -21,6 +21,7 @@ void RpgView::mousePressEvent(QMouseEvent *event){
 }
 
 void RpgView::mouseReleaseEvent(QMouseEvent *event){
+	Q_UNUSED(event);
 	this->mouseMovePressed = false;
 }
 

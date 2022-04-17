@@ -22,6 +22,12 @@ public:
 	static QPointF getBlockPos(Rpg::BlockAlign align, const QSizeF &blockSize, const QSizeF &margin = QSizeF(0, 0), const QSizeF &parentSize = Rpg::ScreenSize);
 	static QPointF getDialogPos(Rpg::BlockAlign align, const QSizeF &dialogSize, int marginW = 0, int marginH = 0);
 
+	template <typename T>
+	static QString toString(const T &from, const T &to, bool includeFrom = true, bool includeTo = true);
+	static QString toString(const QSize &size);
+	static QString toString(const QSizeF &sizef, int prec = 6);
+	static QString toString(const QPoint &point);
+	static QString toString(const QPointF &pointf, int prec = 6);
 };
 
 #endif // RPGUTILS_H

@@ -4,6 +4,7 @@
 #include <Rpg/Rpg.h>
 
 #include <Rpg/core/RpgObject.h>
+#include <Rpg/core/RpgTileSetBase.h>
 
 #define RpgMapWidthPrealloc 64
 #define RpgMapHeightPrealloc 64
@@ -12,9 +13,8 @@ class RpgMap : public RpgObject
 {
 	Q_OBJECT
 
-	QVarLengthArray<QVarLengthArray<QGraphicsPixmapItem, RpgMapWidthPrealloc> , RpgMapHeightPrealloc> map;
+	QVarLengthArray<QVarLengthArray<RpgTileSetBase*, RpgMapWidthPrealloc> , RpgMapHeightPrealloc> map;
 
-	QGraphicsPixmapItem nullItem;
 public:
 	RpgMap(const QSize &size, RpgObject *parent = nullptr): RpgObject(parent){
 		this->setSize(size);
@@ -26,7 +26,7 @@ public:
 			return;
 		}
 		if(map.length() != 0){
-			QVarLengthArray<QGraphicsPixmapItem> mapRow = map.at(0);
+			QVarLengthArray<RpgTileSetBase*, RpgMapWidthPrealloc> mapRow = map.at(0);
 			QSize currentSize = QSize(this->map.length(), mapRow.length());
 			if(currentSize == size){
 				rWarning() << "New map size == current map size, ignored.";
@@ -39,7 +39,7 @@ public:
 		}
 		int width = size.width();
 		if(width != this->map.at(0).length()){
-			for(QVarLengthArray<QGraphicsPixmapItem, RpgMapWidthPrealloc> &i: this->map){
+			for(QVarLengthArray<RpgTileSetBase*, RpgMapWidthPrealloc> &i: this->map){
 				i.resize(width);
 			}
 		}
@@ -49,21 +49,20 @@ public:
 		return QSize(this->map.length() > 0 ? this->map.at(0).length() : 0, this->map.length());
 	}
 
-	const QGraphicsPixmapItem &getMapTile(const QPoint &pos) const{
+	const RpgTileSetBase *getMapTile(const QPoint &pos) const{
 		QSize mapSize = this->getSize();
 		if(mapSize.width() <= pos.x()){
 			rError() << "Given pos:" << pos << "out of map width. Map size:" << mapSize;
-			return this->nullItem;
+			return nullptr;
 		}
 		if(mapSize.height() <= pos.y()){
 			rError() << "Given pos:" << pos << "out of map height. Map size:" << mapSize;
-			return this->nullItem;
+			return nullptr;
 		}
-		map.a;
 		return this->map.at(pos.y()).at(pos.x());
 	}
 
-	quint8 getMapTileNeghbor
+	quint8 getMapTileNeghbor(){ return 0; }
 
 };
 
