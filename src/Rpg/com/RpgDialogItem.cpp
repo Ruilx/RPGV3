@@ -535,13 +535,13 @@ void RpgDialogItem::showMessage(int index){
 	}
 	rDebug() << "Animations:" << animations;
 	this->dialogAnimation->runDialogAvatarAnimations(mode, (*this->lastDialogMessage).getAvatarMode(), animations);
-	this->showText(current.getText(), current.getSpeed(), current.getPointSize(), current.getName(), current.getLineHeight());
+	this->showText(current.getText(), current.getSpeed(), current.getPointSize(), current.getName(), current.getLineHeight(), current.getTextAlign());
 	if(index != 0){
 		this->lastDialogMessage++;
 	}
 }
 
-void RpgDialogItem::showText(const QString &text, int speed, int pointSize, const QString &name, qreal lineHeight){
+void RpgDialogItem::showText(const QString &text, int speed, int pointSize, const QString &name, qreal lineHeight, Rpg::TextAlign textAlign){
 	if(text.isEmpty()){
 		return;
 	}
@@ -553,6 +553,13 @@ void RpgDialogItem::showText(const QString &text, int speed, int pointSize, cons
 		QFont font = this->messageBox->font();
 		font.setPointSize(pointSize);
 		this->messageBox->setFont(font);
+	}
+	// 设定text align
+	QTextOption textOption = this->messageBox->document()->defaultTextOption();{
+		if(textOption.alignment() != (Qt::Alignment)textAlign){
+			textOption.setAlignment((Qt::Alignment)textAlign);
+			this->messageBox->document()->setDefaultTextOption(textOption);
+		}
 	}
 	if(speed > 0){
 		this->quickShowFlag = false;

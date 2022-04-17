@@ -67,6 +67,12 @@ RpgDialogMessage::RpgDialogMessage(std::initializer_list<std::pair<QString, QVar
 				return;
 			}
 			this->setLineHeight(param.second.toDouble());
+		}else if(param.first == "textAlign" || param.first == "align"){
+			if(!param.second.canConvert(QVariant::Int)){
+				rError() << "Cannot convert 'textAlign' from" << QMetaType::typeName(param.second.type()) << "to Int.";
+				return;
+			}
+			this->setTextAlign((Rpg::TextAlign)param.second.toInt());
 		}else{
 			rError() << "Not a valid RpgDialogMessage key '" << param.first << "'";
 			return;

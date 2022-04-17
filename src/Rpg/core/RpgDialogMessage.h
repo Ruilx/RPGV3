@@ -30,6 +30,7 @@ class RpgDialogMessage
 	int speed = (int)Rpg::SingleWordSpeedFast; // 消息出字速度, 0表示立即出字
 	int waitTime = -1; // 出字之后自动等待时间, 0表示立即返回, -1表示永久等待用户输入并显示继续符号
 	qreal lineHeight = 35;
+	Rpg::TextAlign textAlign = Rpg::AlignLeft; // 文字对齐
 public:
 
 	RpgDialogMessage(const QString &text, const QString &name = QString());
@@ -55,6 +56,8 @@ public:
 	inline int getWaitTime() const{ return this->waitTime; }
 	inline void setLineHeight(qreal lineHeight){ this->lineHeight = lineHeight; }
 	inline qreal getLineHeight() const{ return this->lineHeight; }
+	inline void setTextAlign(Rpg::TextAlign textAlign){ this->textAlign = textAlign; }
+	inline Rpg::TextAlign getTextAlign() const { return this->textAlign; }
 };
 
 #endif // RPGDIALOGMESSAGE_H

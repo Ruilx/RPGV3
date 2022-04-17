@@ -142,7 +142,7 @@ private:
 
 	void showNextMessage();
 	void showMessage(int index);
-	void showText(const QString &text, int speed = 0, int pointSize = -1, const QString &name = QString(), qreal lineHeight = 35);
+	void showText(const QString &text, int speed = 0, int pointSize = -1, const QString &name = QString(), qreal lineHeight = 35, Rpg::TextAlign textAlign = Rpg::AlignLeft);
 signals:
 	void enterDialogMode();
 	void exitDialogMode();

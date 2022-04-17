@@ -106,7 +106,7 @@ void MainWindow::testModel()
 	RpgDialogItem d(&clear);
 	d.setDialogAlign(Rpg::AlignCenter);
 	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
-	msg1.setSpeed(Rpg::SingleWordSpeedSlow);
+	msg1.setSpeed(Rpg::SingleWordSpeedFast);
 	d.appendMessage(msg1);
 	d.run();
 	d.waitForComplete();
