@@ -69,7 +69,7 @@ void RpgBanner::setup(){
 
 	this->connect(this->timeLine, &QTimeLine::finished, [this](){
 		rDebug() << "Timeline finished.";
-		if(!this->willWaitKey){
+		if(!this->willWaitKeyPress){
 			this->hideBanner();
 		}
 	});

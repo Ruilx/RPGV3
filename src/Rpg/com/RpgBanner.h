@@ -24,7 +24,7 @@ class RpgBanner : public RpgObject
 	QTimeLine *timeLine = nullptr; // constructing by construct function
 
 	bool canSkip = false;
-	bool willWaitKey = false;
+	bool willWaitKeyPress = false;
 
 	void keyReleaseEvent(QKeyEvent *event);
 public:
@@ -52,7 +52,7 @@ public:
 	void removeItem(const QString &name);
 	void addItem(const QString &name, QGraphicsItem *item);
 
-	const QGraphicsItem *getItem(const QString &name) const{
+	inline const QGraphicsItem *getItem(const QString &name) const{
 		if(!this->items.contains(name)){
 			rWarning() << "Giving name '" << name << "' found no items.";
 			return nullptr;
@@ -63,8 +63,8 @@ public:
 	inline void setCanSkip(bool canSkip){ this->canSkip = canSkip; }
 	inline bool getCanSkip() const { return this->canSkip; }
 
-	inline void setWillWaitKey(bool willWaitKey){ this->willWaitKey = willWaitKey; }
-	inline bool getWillWaitKey() const { return this->willWaitKey; }
+	inline void setWillWaitKeyPress(bool willWaitKey);
+	inline bool getWillWaitKeyPress() const { return this->willWaitKeyPress; }
 
 	void run() override;
 	int waitForComplete();

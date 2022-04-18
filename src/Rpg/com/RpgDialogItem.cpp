@@ -2,6 +2,7 @@
 
 #include <QTextDocument>
 #include <QTextCursor>
+#include <QTextBlock>
 
 #include <Rpg/com/RpgView.h>
 #include <Rpg/com/RpgSound.h>

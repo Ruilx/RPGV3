@@ -4,8 +4,6 @@
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsPixmapItem>
 
-#include <QTextBlockFormat>
-
 #include <Rpg/Rpg.h>
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgUtils.h>

@@ -1,32 +1,32 @@
 {
-    "map": {},
-    "file": {},
-    "font": {
-        "dialogFont": "data/font/A-OTF-FolkPro-Medium.otf",
+	"map": {},
+	"file": {},
+	"font": {
+		"dialogFont": "data/font/A-OTF-FolkPro-Medium.otf",
 		"dialog": "data/font/HarmonyOS_Sans_SC_Medium.ttf",
-        "applicationFont": "data/font/msyh.ttc",
-        "simplifyChineseCharactersSupport": "data/font/msyhl.ttc"
-    },
-    "image": {
-        "skin": "data/images/skin/blackAlpha.png",
+		"applicationFont": "data/font/msyh.ttc",
+		"simplifyChineseCharactersSupport": "data/font/msyhl.ttc"
+	},
+	"image": {
+		"skin": "data/images/skin/blackAlpha.png",
 		"blueSkin": "data/images/skin/blueAlpha.png",
-		"clearSkin": "data/images/skin/clearAlpha.png"
-    },
-    "music": {
-        "moonLight": "data/music/月光（オルゴール）.mp3",
-	"title": "data/music/title.ogg"
-    },
-    "lyric": {
-        
-    },
-    "se": {
+		"clearSkin": "data/images/skin/blue.png"
+	},
+	"music": {
+		"moonLight": "data/music/月光（オルゴール）.mp3",
+		"title": "data/music/title.ogg"
+	},
+	"lyric": {
+
+	},
+	"se": {
 		"king": "data/music/King.wav",
-	    "banned": "data/se/banned.wav",
-	    "select": "data/se/select.wav",
-	    "accepted": "data/se/accepted.wav"
-    },
-    "avatar": {
-        "002": "data/images/avatar/002.png",
-        "002_head": "data/images/avatar/002_head.png"
-    }
+		"banned": "data/se/banned.wav",
+		"select": "data/se/select.wav",
+		"accepted": "data/se/accepted.wav"
+	},
+	"avatar": {
+		"002": "data/images/avatar/002.png",
+		"002_head": "data/images/avatar/002_head.png"
+	}
 }

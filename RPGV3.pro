@@ -42,6 +42,7 @@ SOURCES += \
     src/Rpg/com/RpgBanner.cpp \
     src/Rpg/com/RpgChoiceItem.cpp \
 	src/Rpg/com/RpgDialogItem.cpp \
+	src/Rpg/com/RpgItem/RpgSpinItem.cpp \
     src/Rpg/core/RpgAutoTileRendererBase.cpp \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.cpp \
 	src/Rpg/com/RpgItem/RpgAxisItem.cpp \
@@ -92,6 +93,7 @@ HEADERS += \
     src/Rpg/com/RpgBanner.h \
     src/Rpg/com/RpgChoiceItem.h \
 	src/Rpg/com/RpgDialogItem.h \
+	src/Rpg/com/RpgItem/RpgSpinItem.h \
 	src/Rpg/core/RpgAutoTileRendererBase.h \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.h \
 	src/Rpg/com/RpgItem/RpgAxisItem.h \

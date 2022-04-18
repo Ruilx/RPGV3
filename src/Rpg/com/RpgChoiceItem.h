@@ -61,7 +61,7 @@ class RpgChoiceItem : public RpgObject
 	Rpg::BlockAlign dialogAlign = Rpg::AlignBottom;
 
 	// timer
-	void timerEvent(QTimerEvent *event);
+	void timerEvent(QTimerEvent *event) override;
 	int timerId = -1;
 	bool timerProcessing = false;
 
