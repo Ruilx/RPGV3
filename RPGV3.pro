@@ -47,6 +47,7 @@ SOURCES += \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.cpp \
 	src/Rpg/com/RpgItem/RpgAxisItem.cpp \
     src/Rpg/core/RpgMap.cpp \
+	src/Rpg/core/RpgSpinValue.cpp \
     src/Rpg/core/RpgSprite.cpp \
 	src/Rpg/core/RpgTileSet1.cpp \
 	src/Rpg/core/RpgTileSetBase.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
 	src/Rpg/core/RpgAutoTileRendererSpecLocation.h \
 	src/Rpg/com/RpgItem/RpgAxisItem.h \
     src/Rpg/core/RpgMap.h \
+	src/Rpg/core/RpgSpinValue.h \
     src/Rpg/core/RpgSprite.h \
 	src/Rpg/core/RpgTileSet1.h \
 	src/Rpg/core/RpgTileSetBase.h \

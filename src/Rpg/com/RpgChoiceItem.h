@@ -34,9 +34,10 @@
 class RpgChoiceItem : public RpgObject
 {
 	Q_OBJECT
-
+	// 皮肤
 	RpgDialogBase *skin = nullptr;
 
+	// 构成
 	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);
 	QList<QGraphicsTextItem *> textItems;
 

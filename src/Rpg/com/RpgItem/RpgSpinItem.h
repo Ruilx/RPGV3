@@ -4,21 +4,23 @@
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsPixmapItem>
 
+#include <QComboBox>
+
 #include <Rpg/Rpg.h>
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgUtils.h>
 #include <Rpg/core/RpgDialogBase.h>
 #include <Rpg/core/RpgDialogAnimation.h>
-#include <Rpg/core/RpgDialogMessage.h>
+#include <Rpg/core/RpgSpinValue.h>
 #include <Rpg/core/RpgItemProperties.h>
 
 class RpgSpinItem : public RpgObject
 {
 	Q_OBJECT
-	//
+	// 皮肤
 	RpgDialogBase *skin = nullptr;
 
-	//
+	// 构成
 	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);
 	QGraphicsTextItem *messageBox = new QGraphicsTextItem(this->box);
 
@@ -29,7 +31,8 @@ class RpgSpinItem : public RpgObject
 	RpgItemProperties *selectItemProperties = new RpgItemProperties(this->selectBar);
 	QPropertyAnimation *selectBarAnimation = new QPropertyAnimation(this->selectItemProperties, "opacity", this);
 
-
+	// effect的配置, 给message和spins文本增加shadow effect
+	// @see RpgChoiceItem.h:51
 	QColor textShadowEffectColor = QColor(Qt::black);
 	qreal textShadowEffectColor = 5;
 	QPointF textShadowEffectOffect = QPointF(2, 2);
@@ -79,7 +82,12 @@ public:
 
 private:
 	// 选择列表
-	QList<>
+	QList<RpgSpinValue> spinValues;
+
+	// 默认选中的index
+	int defaultSpinIndex = 0;
+
+
 
 	RpgSpinItem(const RpgDialogBase *skin, QGraphicsItem *parent): RpgObject(parent){
 

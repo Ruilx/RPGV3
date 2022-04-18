@@ -1,14 +1,9 @@
 #include "RpgChoiceMessage.h"
 
 RpgChoiceMessage::RpgChoiceMessage(const QString &text, bool enabled, const QString &value){
-	if(text.isEmpty()){
-		rWarning() << "Given RpgChoiceMessage text is empty.";
-		this->text = QString("<undefined>");
-	}else{
-		this->text = text;
-	}
-	this->enabled = enabled;
-	this->value = value.isEmpty() ? this->text : value;
+	this->setText(text);
+	this->setEnabled(enabled);
+	this->setValue(value);
 }
 
 RpgChoiceMessage::RpgChoiceMessage(std::initializer_list<std::pair<QString, QVariant> > params){
@@ -48,11 +43,4 @@ RpgChoiceMessage::RpgChoiceMessage(std::initializer_list<std::pair<QString, QVar
 			return;
 		}
 	});
-	if(this->getText().isEmpty()){
-		rError() << "This RpgChoiceMessage has no valid text.";
-		this->setText("<undefined>");
-	}
-	if(this->getValue().isEmpty()){
-		this->setValue(this->getText());
-	}
 }
