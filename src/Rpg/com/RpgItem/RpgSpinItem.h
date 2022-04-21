@@ -23,7 +23,7 @@ class RpgSpinItem : public RpgObject
 	// 构成
 	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);
 	QGraphicsTextItem *messageBox = new QGraphicsTextItem(this->box);
-	QList<QGraphicsTextItem *> textItems;
+	QList<QGraphicsTextItem *> spinItems;
 
 	QGraphicsPixmapItem *selectBar = new QGraphicsPixmapItem(this->box);
 	RpgItemProperties *selectItemProperties = new RpgItemProperties(this->selectBar);
@@ -108,20 +108,25 @@ public:
 	inline void setTextColor(const QColor &color){ this->messageBox->setDefaultTextColor(color); this->textColor = color; }
 	inline void setTextColor(Qt::GlobalColor color){ this->messageBox->setDefaultTextColor(QColor(color)); this->textColor = QColor(color); }
 
+	// 选项
 	void appendSpinValue(const RpgSpinValue &value){ this->spinValues.append(value); }
 	void appendSpinValue(const Qlist<RpgSpinValue> &values){ this->spinValues.append(values); }
 	void getRpgSpinValueCount() const { return this->spinValues.length(); }
 
 	void clearSpinValues() { this->spinValues.clear(); }
 
+	// 超时时间
 	inline void setTimeout(int timeout){ this->timeout = timeout; }
 	inline int getTimeout() const { return this->timeout; }
 
+	// 出字速度
 	inline void setSpeed(int speed){ this->speed = speed; }
 	inline int getSpeed() const { return this->speed; }
 
+	// 字体
 	inline void setFont(const QFont &font){ this->font = QFont(font); }
-	inline void getFont() const { return this->font; }
+	void setFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
+	inline QFont getFont() const { return this->font; }
 
 	void setDialogSize(const QSize &size);
 	inline const QSize getDialogSize() const { return this->dialogSize; }

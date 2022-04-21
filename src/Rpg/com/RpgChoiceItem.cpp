@@ -268,7 +268,7 @@ void RpgChoiceItem::run(){
 	RpgObject::run();
 	// 重新设定其Scene
 	if(rpgView->scene() == nullptr){
-		rDebug() << "RpgView not loaded any scene yet.";
+		rError() << "RpgView not loaded any scene yet.";
 		this->end();
 		throw RpgNullPointerException("RpgView::instance()->scene()");
 	}else{

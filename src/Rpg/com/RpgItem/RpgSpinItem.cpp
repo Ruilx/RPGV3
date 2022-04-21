@@ -1,5 +1,8 @@
 #include "RpgSpinItem.h"
 
+#include <Rpg/com/RpgSound.h>
+#include <Rpg/com/RpgView.h>
+
 #include <Rpg/core/RpgFont.h>
 #include <Rpg/core/RpgState.h>
 
@@ -14,9 +17,41 @@ void RpgSpinItem::keyReleaseEvent(QKeyEvent *event){
 }
 
 void RpgSpinItem::clearSpinItems(){
-	for(QGraphicsTextItem *i: this->textItems){
-
+	for(QGraphicsTextItem *i: this->spinItems){
+		if(i != nullptr){
+			i->deleteLater();
+		}
 	}
+	this->spinItems.clear();
+}
+
+void RpgSpinItem::playSound(SoundEffect soundEffect, qreal volume, int times){
+	const QString name = this->soundEffects.value(soundEffect);
+	if(name.isEmpty()){
+		// 如果不设置声音, 就不播放声音
+		//rError() << "Try to play a 'Empty name' sound.";
+		return;
+	}
+	rpgSound->play(name, volume, times);
+}
+
+void RpgSpinItem::setFont(const QString &name, int pointSize, int weight, bool italic){
+	this->font = rpgFont->getFont(name, pointSize, weight, italic);
+}
+
+void RpgSpinItem::setDialogSize(const QSize &size){
+	int width = size.width();
+	int height = size.height();
+	if(width < RpgDialogBase::MinDialogWidth || width > RpgDialogBase::maxDialogSize().width()){
+		rDebug() << "Given width:" << width << "is out of range: (" << RpgDialogBase::MinDialogWidth << "," << RpgDialogBase::maxDialogSize().width() << ").";
+		return;
+	}
+	if(height < RpgDialogBase::MinDialogHeight || height > RpgDialogBase::maxDialogSize().height()){
+		rDebug() << "Given height:" << height << "is out of range: (" << RpgDialogBase::MinDialogHeight << "," << RpgDialogBase::maxDialogSize().height() << ").";
+		return;
+	}
+	this->dialogSize.setWidth(width);
+	this->dialogSize.setHeight(height);
 }
 
 RpgSpinItem::RpgSpinItem(const RpgDialogBase *skin, QGraphicsItem *parent): RpgObject(parent){
@@ -31,10 +66,13 @@ RpgSpinItem::RpgSpinItem(const RpgDialogBase *skin, QGraphicsItem *parent): RpgO
 	this->arrowSymbolsTimeLine->setLoopCount(Rpg::Infinity);
 	this->connect(this->arrowSymbolsTimeLine, &QTimeLine::frameChanged, [this](int frame){
 		if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageCount()){
+			const QRect selectBarBoundingRect = this->selectBar->boundingRect();
 			const QPixmap upArrowPixmap = this->skin->getUpArrowSymbolImage(frame);
 			this->upArrowSymbol->setPixmap(upArrowPixmap);
+			this->upArrowSymbol->setPos((selectBarBoundingRect.width() - upArrowPixmap.width()) / 2.0, -10);
 			const QPixmap downArrowSymbol = this->skin->getDownArrowSymbolImage(frame);
 			this->downArrowSymbol->setPixmap(downArrowPixmap);
+			this->downArrowSymbol->setPos((selectBarBoundingRect.width() - downArrowSymbol.width()) / 2.0, selectBarBoundingRect.height() + 10);
 		}
 	});
 
@@ -77,6 +115,35 @@ RpgSpinItem::~RpgSpinItem(){
 }
 
 void RpgSpinItem::run(){
+	RpgObject::run();
+
+	// 重新设定其Scene
+	if(rpgView->scene() == nullptr){
+		rError() << "RpgView not loaded scene yet.";
+		this->end();
+		throw RpgNullPointerException("RpgView::instance()->scene()");
+	}else{
+		rpgView->scene()->addItem(this);
+	}
+
+	qreal maxWidth = this->dialogSize.width() - (2 * RpgDialogBase::PaddingH);
+
+	this->selectBarHeight = 35;
+
+	if(!this->spinItems.isEmpty()){
+		rError() << "Run while spinItems wasn't emptied, will damage when append new choices.";
+		rError() << "It usually caused by 'hide' method not cleared the textItems list items.";
+		this->end();
+		return;
+	}
+
+	int currentX = 0;
+	int paddingH = RpgDialogBase::PaddingH;
+	int count = 0;
+	while(currentX < maxWidth){
+		if()
+		this->spinValues.at(count);
+	}
 
 }
 
