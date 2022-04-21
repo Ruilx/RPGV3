@@ -35,6 +35,10 @@ void RpgSpinItem::playSound(SoundEffect soundEffect, qreal volume, int times){
 	rpgSound->play(name, volume, times);
 }
 
+int RpgSpinItem::calSpinValueMaxWidth(const RpgSpinValue &value){
+
+}
+
 void RpgSpinItem::setFont(const QString &name, int pointSize, int weight, bool italic){
 	this->font = rpgFont->getFont(name, pointSize, weight, italic);
 }
@@ -140,9 +144,9 @@ void RpgSpinItem::run(){
 	int currentX = 0;
 	int paddingH = RpgDialogBase::PaddingH;
 	int count = 0;
-	while(currentX < maxWidth){
-		if()
-		this->spinValues.at(count);
+	while(currentX < maxWidth && count < this->spinValues.length()){
+		RpgSpinValue currentValue = this->spinValues.at(count);
+
 	}
 
 }

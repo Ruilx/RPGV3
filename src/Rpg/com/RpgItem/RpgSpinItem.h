@@ -103,6 +103,9 @@ private:
 
 	void playSound(SoundEffect soundEffect, qreal volume = 1.0f, int times = 1);
 
+	// 计算SpinValue最长的文本的宽度
+	int calSpinValueMaxWidth(const RpgSpinValue &value);
+
 public:
 	// 文字颜色
 	inline void setTextColor(const QColor &color){ this->messageBox->setDefaultTextColor(color); this->textColor = color; }
