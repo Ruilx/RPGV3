@@ -375,14 +375,7 @@ void RpgChoiceItem::run(){
 	this->upArrowSymbol->setVisible(false);
 	this->downArrowSymbol->setVisible(false);
 
-	for(auto i: this->textItems){
-		i->setFlag(QGraphicsItem::ItemIsSelectable);
-		i->setFlag(QGraphicsItem::ItemIsMovable);
-		i->setSelected(true);
-	}
-
 	this->showDialog();
-
 }
 
 int RpgChoiceItem::waitForComplete(){

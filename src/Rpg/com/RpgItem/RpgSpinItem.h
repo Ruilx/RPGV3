@@ -23,6 +23,7 @@ class RpgSpinItem : public RpgObject
 	// 构成
 	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);
 	QGraphicsTextItem *messageBox = new QGraphicsTextItem(this->box);
+	QString message;
 	QList<QGraphicsTextItem *> spinItems;
 
 	QGraphicsPixmapItem *selectBar = new QGraphicsPixmapItem(this->box);
@@ -63,6 +64,9 @@ class RpgSpinItem : public RpgObject
 	qreal addingPaddingH = 0;
 	// 计算选项上的select bar的高度
 	int selectBarHeight = RpgDialogBase::selectBarSize().height();
+
+	// 计算出的spin距离dialog top的距离
+	int spinItemHeight = 0;
 
 	int speed = Rpg::SingleWordSpeedFast;
 
@@ -106,7 +110,14 @@ private:
 	// 计算SpinValue最长的文本的宽度
 	int calSpinValueMaxWidth(const RpgSpinValue &value);
 
+	// 调整GraphicsItem spinItems
+	void adjustSpinItems(int from);
+
 public:
+	// 提示文本
+	inline void setMessage(const QString &message){ this->message = message; }
+	inline const QString &getMessage() const{ return this->message; }
+
 	// 文字颜色
 	inline void setTextColor(const QColor &color){ this->messageBox->setDefaultTextColor(color); this->textColor = color; }
 	inline void setTextColor(Qt::GlobalColor color){ this->messageBox->setDefaultTextColor(QColor(color)); this->textColor = QColor(color); }
