@@ -45,6 +45,7 @@ class RpgSpinItem : public RpgObject
 	QSize dialogSize = RpgDialogBase::dialogSize();
 
 	Rpg::BlockAlign dialogAlign = Rpg::AlignBottom;
+	Rpg::TextAlign messageAlign = Rpg::AlignLeft;
 
 	// timer
 	void timerEvent(QTimerEvent *event) override;
@@ -57,6 +58,7 @@ class RpgSpinItem : public RpgObject
 	void keyReleaseEvent(QKeyEvent *event) override;
 
 	QColor textColor = QColor(Qt::white);
+	QColor bannedColor = QColor(Qt::darkGray);
 	QFont font;
 	// 计算出选项与选项之间的间距(由run计算出来)
 	qreal innerPaddingH = 0;
@@ -162,6 +164,8 @@ public:
 private:
 	void showDialog();
 	void hideDialog();
+
+	void showMessage();
 
 	void setSpinsText(int from);
 	void setSelectBarIndex(int index);

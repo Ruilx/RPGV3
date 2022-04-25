@@ -8,6 +8,7 @@
 
 #include <Rpg/core/RpgFont.h>
 #include <Rpg/core/RpgState.h>
+#include <Rpg/core/RpgHtmlSplit.h>
 
 #include <Rpg/exception/RpgNullPointerException.h>
 
@@ -273,8 +274,46 @@ void RpgSpinItem::showDialog(){
 	if(this->arrowSymbolsTimeLine->state() != QTimeLine::Running){
 		this->arrowSymbolsTimeLine->start();
 	}
+	this->adjustSpinItems(0);
+	this->showMessage();
 	this->setSpinsText(0);
 	// todo...
+}
+
+void RpgSpinItem::showMessage(){
+	if(this->message.isEmpty()){
+		return;
+	}
+	this->showTextInProgressFlag = true;
+	this->messageBox->document()->clear();
+	// 设定textalign
+	QTextOption textOption = this->messageBox->document()->defaultTextOption();{
+		if(textOption.alignment() != (Qt::Alignment)this->messageAlign){
+			textOption.setAlignment((Qt::Alignment)this->messageAlign);
+			this->messageBox->document()->setDefaultTextOption(textOption);
+		}
+	}
+
+	if(this->speed > 0){
+		this->quickShowFlag = false;
+		RpgHtmlSplit htmlSplit(this->message);
+		while(htmlSplit.hasNext()){
+			QString wordLeft = htmlSplit.chopLeft();
+			this->messageBox->setHtml(wordLeft);
+			//this->setLineHeight();
+			RpgUtils::msleep(this->speed);
+			if(this->quickShowFlag == true){
+				this->messageBox->setHtml(text);
+				//this->setLineHeight();
+			}
+			this->quickShowFlag = false;
+			break;
+		}
+	}else{
+		this->messageBox->setHtml(this->message);
+		//this->setLineHeight();
+	}
+
 }
 
 void RpgSpinItem::setSpinsText(int from){
@@ -287,7 +326,28 @@ void RpgSpinItem::setSpinsText(int from){
 		spinIter++;
 	}
 
-	for(int i = 0; i < qMin(this->))
+	for(int i = 0; i < qMin(this->spinItems.length(), this->spinValues.length() - from); i++){
+		this->spinItems.at(i)->setHtml(this->spinValues.at(from + i).at(0));
+		if(this->spinValues.at(from + i).at(0).getEnable()){
+			this->spinItems.at(i)->setDefaultTextColor(this->textColor);
+		}else{
+			this->spinItems.at(i)->setDefaultTextColor(this->bannedColor);
+		}
+	}
+	for(int i = this->spinItems.length() - from; i < this->spinValues.length(); i++){
+		this->spinItems.at(i)->document()->clear();
+	}
+}
+
+void RpgSpinItem::setSelectBarIndex(int index){
+	if(index < 0 || index >= qMin(this->spinItems.length(), this->spinValues.length())){
+		rDebug() << "Index is out of range: '" << index << "' not in range [0," << qMin(this->spinItems.length(), this->spinValues.length()) << ")";
+		rDebug() << "this->spinItems.length() ==" << this->spinItems.length() << ", this->spinValues.length() ==" << this->spinValues.length() << ", index ==" << index;
+		return;
+	}
+	QGraphicsTextItem *textItem = this->spinItems.at(index);
+	this->selectBar->setPos(textItem->pos());
+	this->selectBar->setPixmap(this->skin->getSelectBarImage(textItem->boundingRect().size().toSize()));
 }
 
 
