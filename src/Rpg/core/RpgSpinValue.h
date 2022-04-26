@@ -62,6 +62,16 @@ public:
 		this->currentChoiceIndex = i;
 	}
 
+	inline int getCurrentChoiceIndex() const { return this->currentChoiceIndex; }
+
+	inline const RpgSpinValueItem &getCurrentSpinValueItem() const {
+		if(this->currentChoiceIndex < 0 || this->currentChoiceIndex >= this->choices.length()){
+			rError() << "this->currentChoiceIndex:" << this->currentChoiceIndex << "is out of range: [0," << this->choices.length() << ").";
+			return this->nullItem;
+		}
+		return this->choices.at(this->currentChoiceIndex);
+	}
+
 	const RpgSpinValueItem &next(bool *ok = nullptr) const{
 		if(ok){
 			*ok = false;

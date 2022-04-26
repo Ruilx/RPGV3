@@ -13,11 +13,158 @@
 #include <Rpg/exception/RpgNullPointerException.h>
 
 void RpgSpinItem::timerEvent(QTimerEvent *event){
-
+	this->timerProcessing = true;
+	if(event->timerId() == this->timerId){
+		rDebug() << "Killing timer:" << this->timerId;
+		this->killTimer(this->timerId);
+		this->timerId = -1;
+	}
+	this->hideDialog();
+	this->timerProcessing = false;
 }
 
 void RpgSpinItem::keyReleaseEvent(QKeyEvent *event){
-
+	if(event->isAutoRepeat()){
+		return;
+	}
+	if(this->timerProcessing){
+		rDebug() << "TimerEvent is processing spins. this key ignored.";
+		return;
+	}
+	if(!this->isRunning()){
+		rWarning() << "RpgSpinItem not running.";
+		return;
+	}
+	if(event->modifiers() != Qt::NoModifier){
+		return;
+	}
+	Qt::Key key = (Qt::Key)event->key();
+	const QList<Qt::Key> okKeys = QList<Qt::Key>({Qt::Key_Return, Qt::Key_Space});
+	const QList<Qt::Key> upKeys = QList<Qt::Key>({Qt::Key_W, Qt::Key_Up});
+	const QList<Qt::Key> downKeys = QList<Qt::Key>({Qt::Key_S, Qt::Key_Down});
+	const QList<Qt::Key> leftKeys = QList<Qt::Key>({Qt::Key_A, Qt::Key_Left});
+	const QList<Qt::Key> rightKeys = QList<Qt::Key>({Qt::Key_D, Qt::Key_Right});
+	if(okKeys.contains(key) || upKeys.contains(key) || downKeys.contains(key) ||
+			leftKeys.contains(key) || rightKeys.contains(key)){
+		if(this->showTextInProgressFlag == true){
+			this->quickShowFlag = true;
+			return;
+		}
+	}
+	int currentIndex = this->selectingIndex + this->fromIndex;
+	if(currentIndex < 0 || currentIndex >= this->spinValues.length()){
+		rError() << "CurrentIndex:" << currentIndex << "=" << this->selectingIndex << "(selectingIndex)+" << this->fromIndex << "(fromIndex) is out of spinValues length:" << this->spinValues.length() << ".";
+		return;
+	}
+	if(this->selectingIndex < 0 || this->selectingIndex >= this->spinItems.length()){
+		rError() << "SelectingIndex:" << this->selectingIndex << "is out of range [0," << this->spinItems.length() << ").";
+		return;
+	}
+	if(okKeys.contains(key)){
+		for(const RpgSpinValue &value: this->spinValues){
+			if(!value.getCurrentSpinValueItem().getEnable()){
+				// 有项目不可执行
+				rWarning() << "RpgSpinItem:" << value.getCurrentSpinValueItem().getValue() << "is not enabled.";
+				this->playSound(SoundEffect_Banned);
+				return;
+			}
+		}
+		this->playSound(SoundEffect_Accept);
+		this->hideDialog();
+		return;
+	}else if(upKeys.contains(key)){
+		// 选中上一个选项
+		const RpgSpinValueItem valueItem = this->spinValues.at(currentIndex).prev();
+		const QGraphicsTextItem *item = this->spinItems.at(this->selectingIndex);
+		item->setHtml(valueItem.getText());
+		item->setDefaultTextColor(valueItem.getEnable() ? this->textColor : this->bannedColor);
+	}else if(downKeys.contains(key)){
+		// 选中下一个选项
+		const RpgSpinValueItem valueItem = this->spinValues.at(currentIndex).next();
+		const QGraphicsTextItem *item = this->spinItems.at(this->selectingIndex);
+		item->setHtml(valueItem.getText());
+		item->setDefaultTextColor(valueItem.getEnable() ? this->textColor : this->bannedColor);
+	}else if(leftKeys.contains(key)){
+		// 选择上一个value
+		if(this->spinValues.length() == 1){
+			// 如果列表中只有一个spinvalue, 啥也不做
+			return;
+		}else{
+			// 大于一个选项
+			if(this->fromIndex == 0){
+				// 正在显示 0-N 项
+				if(this->selectingIndex == 0){
+					// 光标已经在第一个了, 不能再往左了
+					rDebug() << "First choose first, cannot up.";
+					return;
+				}else{
+					// 光标不在第一个 (可以往上了)
+					this->selectingIndex--;
+					this->setSelectBarIndex(this->selectingIndex);
+					this->playSound(SoundEffect_Select);
+				}
+			}else{
+				// 正在显示1项以上 (不在第一个)
+				if(this->selectingIndex == 0){
+					// 光标在第一个 (光标不能往左了, 但From还可以往左)
+					// 向上滚动1行显示的内容, 光标需要重绘调整
+					this->fromIndex--;
+					this->adjustSpinItems(this->fromIndex);
+					this->setSpinsText(this->fromIndex);
+					this->setSelectBarIndex(this->selectingIndex);
+					this->playSound(SoundEffect_Select);
+				}else{
+					// 光标不在第一个 (可以往上了)
+					this->selectingIndex--;
+					this->setSelectBarIndex(this->selectingIndex);
+					this->playSound(SoundEffect_Select);
+				}
+			}
+		}
+	}else if(rightKeys.contains(key)){
+		// 选择下一个value
+		if(this->spinValues.length() == 1){
+			// 如果列表中只有一个spinvalue, 啥也不做
+			return;
+		}else{
+			// 大于一个选项
+			int maxFromIndex = this->spinValues.length() - this->spinItems.length();
+			if(this->fromIndex >= (maxFromIndex <= 0 ? 0 : maxFromIndex)){
+				// 正在显示后N项
+				if(this->selectingIndex == qMin(this->spinItems.length() -1, this->spinValues.length() -1)){
+					// 光标在最后一个了 (光标和列表不能再往右了)
+					rDebug() << "Last choose last, cannot right.";
+					return;
+				}else{
+					// 光标不在最后一个 (需要判断是否处于选项的后几个)
+					if(this->fromIndex + this->selectingIndex >= this->spinValues.length() -1){
+						// 如果已经到了选项的最下面, 光标不能再往右了
+						rDebug() << "Last choice but cursor not at end, (maybe start position too high), cursor cannot moving downward.";
+						return;
+					}
+					this->selectingIndex++;
+					this->setSelectBarIndex(this->selectingIndex);
+					this->playSound(SoundEffect_Select);
+				}
+			}else{
+				// 正在显示 非后N项 (不在最后几个)
+				if(this->selectingIndex == qMin(this->spinItems.length() -1, this->spinValues.length() -1)){
+					// 光标不能往右了 (但From还能往右)
+					// 向右滚动一行显示的内容, 光标位置需要重绘
+					this->fromIndex++;
+					this->adjustSpinItems(this->fromIndex);
+					this->setSpinsText(this->fromIndex);
+					this->setSelectBarIndex(this->selectingIndex);
+					this->playSound(SoundEffect_Select);
+				}else{
+					// 光标不在最后一个选项上 (可以往下了)
+					this->selectingIndex++;
+					this->setSelectBarIndex(this->selectingIndex);
+					this->playSound(SoundEffect_Select);
+				}
+			}
+		}
+	}
 }
 
 void RpgSpinItem::clearSpinItems(){
@@ -74,28 +221,52 @@ void RpgSpinItem::adjustSpinItems(int from){
 		currentX += maxWidth + paddingH;
 	}
 
-	for(const QPair<int, int> &i: positions){
-		QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
-		item->setFont(this->font);
-		item->setPos(i.first, this->spinItemHeight);
-		rDebug() << "Item pos:" << item->pos();
-		item->setZValue(0.2);
-		item->setTextWidth(i.second);
-		item->setDefaultTextColor(this->textColor);
-		item->document()->setUndoRedoEnabled(false);
-		QTextOption spinTextOption = item->document()->defaultTextOption();{
-			spinTextOption.setWrapMode(QTextOption::NoWrap);
-			item->document()->setDefaultTextOption(spinTextOption);
+	int difference = positions.length() - this->spinItems.length();
+	if(difference > 0){
+		for(int i = 0; i < difference; i++){
+			QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
+			item->setFont(this->font);
+			//item->setPos(i.first, this->spinItemHeight); //下面循环时再设置位置
+			rDebug() << "Item pos:" << item->pos();
+			item->setZValue(0.2);
+			//item->setTextWidth(i.second); //下面循环时再设置位置
+			item->setDefaultTextColor(this->textColor);
+			item->document()->setUndoRedoEnabled(false);
+			QTextOption spinTextOption = item->document()->defaultTextOption();{
+				spinTextOption.setWrapMode(QTextOption::NoWrap);
+				item->document()->setDefaultTextOption(spinTextOption);
+			}
+			QGraphicsDropShadowEffect *itemEffect = new QGraphicsDropShadowEffect(this);
+			itemEffect->setColor(this->textShadowEffectColor);
+			itemEffect->setBlurRadius(this->textShadowEffectBlurRadius);
+			itemEffect->setOffset(this->textShadowEffectOffect);
+			// item会得到effect的控制权, 会在item销毁时帮助销毁effect, 也可以将setGraphicsEffect参数设置为nullptr删除当前设定的effect
+			item->setGraphicsEffect(itemEffect);
+			this->spinItems.append(item);
 		}
-		QGraphicsDropShadowEffect *itemEffect = new QGraphicsDropShadowEffect(this);
-		itemEffect->setColor(this->textShadowEffectColor);
-		itemEffect->setBlurRadius(this->textShadowEffectBlurRadius);
-		itemEffect->setOffset(this->textShadowEffectOffect);
-		// item会得到effect的控制权, 会在item销毁时帮助销毁effect, 也可以将setGraphicsEffect参数设置为nullptr删除当前设定的effect
-		item->setGraphicsEffect(itemEffect);
-		this->spinItems.append(item);
+	}else if(difference < 0){
+		// 选项多了
+		for(int i = 0; i > difference; i--){
+			QGraphicsTextItem *item = this->spinItems.takeLast();
+			if(item != nullptr){
+				item->deleteLater();
+			}
+		}
+	}
+	if(this->spinItems.length() != positions.length()){
+		rWarning() << "spinItems.length:" << this->spinItems.length() << "!= positions.length()" << positions.length();
 	}
 
+	for(int i = 0; i < positions.length(); i++){
+		QPair<int, int> pos = positions.at(i);
+		if(i >= this->spinItems.length()){
+			rError() << "i:" << i << "is out of this->spinItems.length():" << this->spinItems.length();
+			break;
+		}
+		QGraphicsTextItem *item = this->spinItems.at(i);
+		item->setPos(pos.first, this->spinItemHeight);
+		item->setTextWidth(pos.second);
+	}
 }
 
 void RpgSpinItem::setFont(const QString &name, int pointSize, int weight, bool italic){

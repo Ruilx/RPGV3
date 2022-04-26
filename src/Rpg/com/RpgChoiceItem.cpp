@@ -73,7 +73,7 @@ void RpgChoiceItem::keyReleaseEvent(QKeyEvent *event){
 						// 正在显示0-2项
 						if(this->selectingIndex == 0){
 							// 光标已经在第一个了 (不能再往上了)
-							qDebug() << "First choose first, cannot up.";
+							rDebug() << "First choose first, cannot up.";
 							return;
 						}else{
 							// 光标不在第一个 (可以往上了)

@@ -74,6 +74,8 @@ class RpgSpinItem : public RpgObject
 
 	// 选择框在屏幕上的位置
 	int selectingIndex = 0;
+	// 展示第一个选项在列表中的哪一个
+	int fromIndex = 0;
 
 public:
 	// 消息内部间距
@@ -86,6 +88,7 @@ public:
 	enum SoundEffect{
 		SoundEffect_Select = 1,
 		SoundEffect_Accept,
+		SoundEffect_Banned,
 	};
 
 private:
@@ -103,6 +106,7 @@ private:
 	QHash<SoundEffect, QString> soundEffects = QHash<SoundEffect, QString>({
 		{SoundEffect_Select, "select"},
 		{SoundEffect_Accept, "accept"},
+		{SoundEffect_Banned, "banned"},
 	});
 
 	void clearSpinItems();
