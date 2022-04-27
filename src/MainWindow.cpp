@@ -152,15 +152,36 @@ void MainWindow::testModel()
 
 	RpgSpinItem spinItem(&base);
 	spinItem.setMessage("请输入密码:");
-	spinItem.appendSpinValue(RpgSpinValue({
-											  {
-												  {"text", "0"}
-											  },{
-												  {"text", "1"}
-											  },{
-												  {"text", "2"}
-											  }
-										  }));
+	spinItem.appendSpinValue(RpgSpinValue("UUID;MD5;SHA1;SHA256;SHA384;SHA512"));
+	spinItem.appendSpinValue(RpgSpinValue({{{"text", "("}, {"enable", false}}}));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue({{{"text", "-"}, {"enable", false}}}));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue({{{"text", "-"}, {"enable", false}}}));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue({{{"text", "-"}, {"enable", false}}}));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue({{{"text", ")"}, {"enable", false}}}));
 	spinItem.run();
 	spinItem.waitForComplete();
 	QStringList result = spinItem.getValue();

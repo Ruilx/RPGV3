@@ -190,7 +190,11 @@ void RpgSpinItem::playSound(SoundEffect soundEffect, qreal volume, int times){
 		//rError() << "Try to play a 'Empty name' sound.";
 		return;
 	}
-	rpgSound->play(name, volume, times);
+	try{
+		rpgSound->play(name, volume, times);
+	}catch(RpgRuntimeException exception){
+		rError() << "Cannot play sound:" << name;
+	}
 }
 
 int RpgSpinItem::calSpinValueMaxWidth(const RpgSpinValue &value){
@@ -202,7 +206,9 @@ int RpgSpinItem::calSpinValueMaxWidth(const RpgSpinValue &value){
 	}
 	for(int i = 0; i < value.getChoicesCount(); i++){
 		const RpgSpinValueItem item = value.at(i);
-		int currentWidth = fm.boundingRect(item.getText()).width();
+		int currentWidth = fm.boundingRect(item.getText()).width() + 10;
+		//int currentWidth = fm.horizontalAdvance(item.getText());
+		//int currentWidth = fm.size(Qt::TextSingleLine, item.getText()).width();
 		if(currentWidth > maxLength){
 			maxLength = currentWidth;
 		}
@@ -308,17 +314,7 @@ RpgSpinItem::RpgSpinItem(RpgDialogBase *skin, QGraphicsObject *parent): RpgObjec
 
 	this->arrowSymbolsTimeLine->setFrameRange(0, this->skin->getContinueSymbolImageCount());
 	this->arrowSymbolsTimeLine->setLoopCount(Rpg::Infinity);
-	this->connect(this->arrowSymbolsTimeLine, &QTimeLine::frameChanged, [this](int frameIndex){
-		if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageCount()){
-			const QRectF selectBarBoundingRect = this->selectBar->boundingRect();
-			const QPixmap upArrowPixmap = this->skin->getUpArrowSymbolImage(frameIndex);
-			this->upArrowSymbol->setPixmap(upArrowPixmap);
-			this->upArrowSymbol->setPos((selectBarBoundingRect.width() - upArrowPixmap.width()) / 2.0, -10);
-			const QPixmap downArrowPixmap = this->skin->getDownArrowSymbolImage(frameIndex);
-			this->downArrowSymbol->setPixmap(downArrowPixmap);
-			this->downArrowSymbol->setPos((selectBarBoundingRect.width() - downArrowPixmap.width()) / 2.0, selectBarBoundingRect.height() + 10);
-		}
-	});
+	this->connect(this->arrowSymbolsTimeLine, &QTimeLine::frameChanged, this, &RpgSpinItem::arrowSymbolsTimeLineFrameChangedSlot);
 
 	this->setFont(rpgFont->getFont(FontName, 16));
 	rDebug() << "Dialog using font:" << this->font.family();
@@ -446,8 +442,8 @@ void RpgSpinItem::run(){
 	// selectBar
 	this->selectBar->hide();
 
-	this->upArrowSymbol->hide();
-	this->downArrowSymbol->hide();
+	//this->upArrowSymbol->hide();
+	//this->downArrowSymbol->hide();
 
 	this->showDialog();
 }
@@ -482,9 +478,7 @@ void RpgSpinItem::showDialog(){
 	rpgState->pushState(RpgState::DialogMode);
 	this->dialogAnimation->runDialogAnimations(RpgDialogAnimation::Animations(RpgDialogAnimation::AnimationDialogShow));
 	this->dialogAnimation->waitAnimationFinish();
-	if(this->arrowSymbolsTimeLine->state() != QTimeLine::Running){
-		this->arrowSymbolsTimeLine->start();
-	}
+
 	this->showMessage();
 	this->adjustSpinItems(0);
 	this->setSpinsText(0);
@@ -493,6 +487,10 @@ void RpgSpinItem::showDialog(){
 	this->selectBar->setVisible(true);
 	if(this->selectBarAnimation->state() != QPropertyAnimation::Running){
 		this->selectBarAnimation->start();
+	}
+
+	if(this->arrowSymbolsTimeLine->state() != QTimeLine::Running){
+		this->arrowSymbolsTimeLine->start();
 	}
 
 	if(this->timeout > 0){
@@ -571,14 +569,19 @@ void RpgSpinItem::setSpinsText(int from){
 	}
 
 	for(int i = 0; i < qMin(this->spinItems.length(), this->spinValues.length() - from); i++){
-		this->spinItems.at(i)->setHtml(this->spinValues.at(from + i)->at(0).getText());
+		this->spinItems.at(i)->setHtml(this->spinValues.at(from + i)->getCurrentSpinValueItem().getText());
 		if(this->spinValues.at(from + i)->at(0).getEnable()){
 			this->spinItems.at(i)->setDefaultTextColor(this->textColor);
 		}else{
 			this->spinItems.at(i)->setDefaultTextColor(this->bannedColor);
 		}
+		QTextOption textOption = this->spinItems.at(i)->document()->defaultTextOption();
+		if(textOption.alignment() != (Qt::Alignment)this->spinValues.at(from + i)->getCurrentSpinValueItem().getTextAlign()){
+			textOption.setAlignment((Qt::Alignment)this->spinValues.at(from + i)->getCurrentSpinValueItem().getTextAlign());
+			this->spinItems.at(i)->document()->setDefaultTextOption(textOption);
+		}
 	}
-	for(int i = this->spinItems.length() - from; i < this->spinValues.length(); i++){
+	for(int i = this->spinItems.length() - from; i < this->spinItems.length(); i++){
 		this->spinItems.at(i)->document()->clear();
 	}
 }
@@ -590,8 +593,23 @@ void RpgSpinItem::setSelectBarIndex(int index){
 		return;
 	}
 	QGraphicsTextItem *textItem = this->spinItems.at(index);
+	rDebug() << "textItem->boundingRect().size() ==" << textItem->boundingRect().size().toSize();
 	this->selectBar->setPos(textItem->pos());
 	this->selectBar->setPixmap(this->skin->getSelectBarImage(textItem->boundingRect().size().toSize()));
+
+	this->arrowSymbolsTimeLineFrameChangedSlot(this->arrowSymbolsTimeLine->currentFrame());
+}
+
+void RpgSpinItem::arrowSymbolsTimeLineFrameChangedSlot(int frameIndex){
+	if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageCount()){
+		const QRectF selectBarBoundingRect = this->selectBar->boundingRect();
+		const QPixmap upArrowPixmap = this->skin->getUpArrowSymbolImage(frameIndex);
+		this->upArrowSymbol->setPixmap(upArrowPixmap);
+		this->upArrowSymbol->setPos((selectBarBoundingRect.width() - upArrowPixmap.width()) / 2.0, - upArrowPixmap.size().height());
+		const QPixmap downArrowPixmap = this->skin->getDownArrowSymbolImage(frameIndex);
+		this->downArrowSymbol->setPixmap(downArrowPixmap);
+		this->downArrowSymbol->setPos((selectBarBoundingRect.width() - downArrowPixmap.width()) / 2.0, selectBarBoundingRect.height());
+	}
 }
 
 

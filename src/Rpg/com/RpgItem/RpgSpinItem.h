@@ -176,6 +176,9 @@ private:
 signals:
 	void enterDialogMode();
 	void exitDialogMode();
+
+private slots:
+	void arrowSymbolsTimeLineFrameChangedSlot(int frameIndex);
 };
 
 #endif // RPGSPINITEM_H

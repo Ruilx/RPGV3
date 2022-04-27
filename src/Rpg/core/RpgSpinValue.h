@@ -8,6 +8,7 @@ class RpgSpinValueItem
 	QString text;
 	QString value;
 	bool enable = true;
+	Rpg::TextAlign textAlign = Rpg::AlignCenter;
 
 public:
 	explicit RpgSpinValueItem(const QString &text, bool enable = true, const QString &value = QString());
@@ -23,6 +24,8 @@ public:
 	inline bool getEnable() const { return this->enable; }
 	inline void setValue(const QString &value){ this->value = value.isEmpty() ? this->getText() : value; }
 	inline const QString getValue() const { return this->value; }
+	inline void setTextAlign(Rpg::TextAlign textAlign){ this->textAlign = textAlign; }
+	inline Rpg::TextAlign getTextAlign() const { return this->textAlign; }
 };
 
 class RpgSpinValue{
@@ -45,6 +48,24 @@ public:
 			this->appendChoice(RpgSpinValueItem(param));
 		});
 	}
+
+	RpgSpinValue(const QStringList &choices){
+		if(choices.isEmpty()){
+			rError() << "choices string has no valid choices.";
+			return;
+		}
+		for(const QString &c: choices){
+			this->appendChoice(c);
+		}
+	}
+
+	/*
+	 * @brief RpgSpinValue
+	 * @param choices
+	 * 使用choices的描述来创建RpgSpinValueItems
+	 * 使用分号分隔每个选项, 每个选项的text和value相同, enable == true
+	 */
+	RpgSpinValue(const QString &choices): RpgSpinValue(choices.split(';', QString::SkipEmptyParts)){}
 
 	inline void appendChoice(const QString &text, bool enable = true, const QString &value = QString()){ this->appendChoice(RpgSpinValueItem(text, enable, value)); }
 	inline void appendChoice(const RpgSpinValueItem &item){ this->choices.append(item); }
