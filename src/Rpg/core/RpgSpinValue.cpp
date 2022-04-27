@@ -1,13 +1,13 @@
 #include "RpgSpinValue.h"
 
 
-RpgSpinValue::RpgSpinValue(const QString &text, bool enable, const QString &value){
+RpgSpinValueItem::RpgSpinValueItem(const QString &text, bool enable, const QString &value){
 	this->setText(text);
 	this->setEnable(enable);
 	this->setValue(value);
 }
 
-RpgSpinValue::RpgSpinValue(std::initializer_list<std::pair<QString, QVariant> > params){
+RpgSpinValueItem::RpgSpinValueItem(std::initializer_list<std::pair<QString, QVariant> > params){
 	std::for_each(params.begin(), params.end(), [this](const std::pair<QString, QVariant> &param){
 		if(param.first == "text"){
 			if(!param.second.canConvert(QVariant::String)){
@@ -32,4 +32,53 @@ RpgSpinValue::RpgSpinValue(std::initializer_list<std::pair<QString, QVariant> > 
 			return;
 		}
 	});
+	if(this->getValue().isEmpty()){
+		this->setValue(this->getText());
+	}
+}
+
+const RpgSpinValueItem &RpgSpinValue::next(bool *ok){
+	if(ok){
+		*ok = false;
+	}
+	if(this->choices.isEmpty()){
+		rError() << "Calling next when choicesList is empty.";
+		return this->nullItem;
+	}
+	this->currentChoiceIndex++;
+	rDebug() << "CurrentChoiceIndex:" << currentChoiceIndex;
+	if(this->currentChoiceIndex >= this->choices.length()){
+		if(this->indexCirculation == false){
+			return this->nullItem;
+		}
+		this->currentChoiceIndex = 0;
+	}
+	rDebug() << "CurrentChoiceIndex:" << currentChoiceIndex;
+	if(ok){
+		*ok = true;
+	}
+	return this->at(this->currentChoiceIndex);
+}
+
+const RpgSpinValueItem &RpgSpinValue::prev(bool *ok){
+	if(ok){
+		*ok = false;
+	}
+	if(this->choices.isEmpty()){
+		rError() << "Calling prev when choicesList is empty.";
+		return this->nullItem;
+	}
+	this->currentChoiceIndex--;
+	rDebug() << "CurrentChoiceIndex:" << currentChoiceIndex;
+	if(this->currentChoiceIndex < 0){
+		if(this->indexCirculation == false){
+			return this->nullItem;
+		}
+		this->currentChoiceIndex = this->choices.length() -1;
+	}
+	rDebug() << "CurrentChoiceIndex:" << currentChoiceIndex;
+	if(ok){
+		*ok = true;
+	}
+	return this->at(this->currentChoiceIndex);
 }

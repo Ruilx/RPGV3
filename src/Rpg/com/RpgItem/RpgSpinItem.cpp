@@ -61,27 +61,34 @@ void RpgSpinItem::keyReleaseEvent(QKeyEvent *event){
 		return;
 	}
 	if(okKeys.contains(key)){
-		for(const RpgSpinValue &value: this->spinValues){
-			if(!value.getCurrentSpinValueItem().getEnable()){
+		for(const RpgSpinValue *value: this->spinValues){
+			if(!value->getCurrentSpinValueItem().getEnable()){
 				// 有项目不可执行
-				rWarning() << "RpgSpinItem:" << value.getCurrentSpinValueItem().getValue() << "is not enabled.";
+				rWarning() << "RpgSpinItem:" << value->getCurrentSpinValueItem().getValue() << "is not enabled.";
 				this->playSound(SoundEffect_Banned);
 				return;
 			}
+		}
+		if(this->timerId > 0){
+			rDebug() << "Killing timer:" << this->timerId;
+			this->killTimer(this->timerId);
+			this->timerId = -1;
 		}
 		this->playSound(SoundEffect_Accept);
 		this->hideDialog();
 		return;
 	}else if(upKeys.contains(key)){
 		// 选中上一个选项
-		const RpgSpinValueItem valueItem = this->spinValues.at(currentIndex).prev();
-		const QGraphicsTextItem *item = this->spinItems.at(this->selectingIndex);
+		RpgSpinValue *value = this->spinValues.at(currentIndex);
+		const RpgSpinValueItem valueItem = value->prev();
+		QGraphicsTextItem *item = this->spinItems.at(this->selectingIndex);
 		item->setHtml(valueItem.getText());
 		item->setDefaultTextColor(valueItem.getEnable() ? this->textColor : this->bannedColor);
 	}else if(downKeys.contains(key)){
 		// 选中下一个选项
-		const RpgSpinValueItem valueItem = this->spinValues.at(currentIndex).next();
-		const QGraphicsTextItem *item = this->spinItems.at(this->selectingIndex);
+		RpgSpinValue *value = this->spinValues.at(currentIndex);
+		const RpgSpinValueItem valueItem = value->next();
+		QGraphicsTextItem *item = this->spinItems.at(this->selectingIndex);
 		item->setHtml(valueItem.getText());
 		item->setDefaultTextColor(valueItem.getEnable() ? this->textColor : this->bannedColor);
 	}else if(leftKeys.contains(key)){
@@ -157,7 +164,7 @@ void RpgSpinItem::keyReleaseEvent(QKeyEvent *event){
 					this->setSelectBarIndex(this->selectingIndex);
 					this->playSound(SoundEffect_Select);
 				}else{
-					// 光标不在最后一个选项上 (可以往下了)
+					// 光标不在最后一个选项上 (可以往右了)
 					this->selectingIndex++;
 					this->setSelectBarIndex(this->selectingIndex);
 					this->playSound(SoundEffect_Select);
@@ -205,13 +212,14 @@ int RpgSpinItem::calSpinValueMaxWidth(const RpgSpinValue &value){
 
 void RpgSpinItem::adjustSpinItems(int from){
 	int currentX = 0;
+	qreal maxWidth = this->dialogSize.width() - (2 * RpgDialogBase::PaddingH);
 	const int paddingH = RpgDialogBase::PaddingH;
 	// Pair.first == pos.x, Pair.second == width
 	QList<QPair<int, int>> positions;
 
 	while(currentX < maxWidth && positions.length() + from < this->spinValues.length()){
-		RpgSpinValue currentValue = this->spinValues.at(from + positions.length());
-		int maxWidth = this->calSpinValueMaxWidth(currentValue);
+		RpgSpinValue *currentValue = this->spinValues.at(from + positions.length());
+		int maxWidth = this->calSpinValueMaxWidth(*currentValue);
 		if(maxWidth <= 0){
 			rError() << "There has a spin value has no items.";
 			this->end();
@@ -227,10 +235,10 @@ void RpgSpinItem::adjustSpinItems(int from){
 			QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
 			item->setFont(this->font);
 			//item->setPos(i.first, this->spinItemHeight); //下面循环时再设置位置
-			rDebug() << "Item pos:" << item->pos();
 			item->setZValue(0.2);
 			//item->setTextWidth(i.second); //下面循环时再设置位置
 			item->setDefaultTextColor(this->textColor);
+			item->document()->setDefaultStyleSheet(Rpg::getDefaultCss());
 			item->document()->setUndoRedoEnabled(false);
 			QTextOption spinTextOption = item->document()->defaultTextOption();{
 				spinTextOption.setWrapMode(QTextOption::NoWrap);
@@ -264,8 +272,10 @@ void RpgSpinItem::adjustSpinItems(int from){
 			break;
 		}
 		QGraphicsTextItem *item = this->spinItems.at(i);
-		item->setPos(pos.first, this->spinItemHeight);
+		item->setPos(pos.first + RpgDialogBase::PaddingH, this->spinItemHeight);
+		rDebug() << "Item pos:" << item->pos();
 		item->setTextWidth(pos.second);
+		rDebug() << "Item width:" << item->textWidth();
 	}
 }
 
@@ -288,7 +298,7 @@ void RpgSpinItem::setDialogSize(const QSize &size){
 	this->dialogSize.setHeight(height);
 }
 
-RpgSpinItem::RpgSpinItem(const RpgDialogBase *skin, QGraphicsItem *parent): RpgObject(parent){
+RpgSpinItem::RpgSpinItem(RpgDialogBase *skin, QGraphicsObject *parent): RpgObject(parent){
 	this->setTextColor(Qt::white);
 
 	if(skin == nullptr){
@@ -298,17 +308,40 @@ RpgSpinItem::RpgSpinItem(const RpgDialogBase *skin, QGraphicsItem *parent): RpgO
 
 	this->arrowSymbolsTimeLine->setFrameRange(0, this->skin->getContinueSymbolImageCount());
 	this->arrowSymbolsTimeLine->setLoopCount(Rpg::Infinity);
-	this->connect(this->arrowSymbolsTimeLine, &QTimeLine::frameChanged, [this](int frame){
+	this->connect(this->arrowSymbolsTimeLine, &QTimeLine::frameChanged, [this](int frameIndex){
 		if(frameIndex >= 0 && frameIndex < this->skin->getContinueSymbolImageCount()){
-			const QRect selectBarBoundingRect = this->selectBar->boundingRect();
-			const QPixmap upArrowPixmap = this->skin->getUpArrowSymbolImage(frame);
+			const QRectF selectBarBoundingRect = this->selectBar->boundingRect();
+			const QPixmap upArrowPixmap = this->skin->getUpArrowSymbolImage(frameIndex);
 			this->upArrowSymbol->setPixmap(upArrowPixmap);
 			this->upArrowSymbol->setPos((selectBarBoundingRect.width() - upArrowPixmap.width()) / 2.0, -10);
-			const QPixmap downArrowSymbol = this->skin->getDownArrowSymbolImage(frame);
+			const QPixmap downArrowPixmap = this->skin->getDownArrowSymbolImage(frameIndex);
 			this->downArrowSymbol->setPixmap(downArrowPixmap);
-			this->downArrowSymbol->setPos((selectBarBoundingRect.width() - downArrowSymbol.width()) / 2.0, selectBarBoundingRect.height() + 10);
+			this->downArrowSymbol->setPos((selectBarBoundingRect.width() - downArrowPixmap.width()) / 2.0, selectBarBoundingRect.height() + 10);
 		}
 	});
+
+	this->setFont(rpgFont->getFont(FontName, 16));
+	rDebug() << "Dialog using font:" << this->font.family();
+
+	// MessageBox
+	this->messageBox->setFont(this->font);
+	this->messageBox->document()->setDefaultStyleSheet(Rpg::getDefaultCss());
+	this->messageBox->document()->setUndoRedoEnabled(false);
+	QTextOption messageTextOption = this->messageBox->document()->defaultTextOption();{
+		messageTextOption.setWrapMode(QTextOption::WrapAnywhere);
+		this->messageBox->document()->setDefaultTextOption(messageTextOption);
+	}
+
+	// 设置位置和大小
+	this->messageBox->setTextWidth(this->dialogSize.width() - (2 * MessageMarginH));
+	this->messageBox->setPos(MessageMarginH, MessageMarginV);
+
+	// 设置阴影
+	QGraphicsDropShadowEffect *messageBoxShadowEffect = new QGraphicsDropShadowEffect(this);
+	messageBoxShadowEffect->setColor(this->textShadowEffectColor);
+	messageBoxShadowEffect->setBlurRadius(this->textShadowEffectBlurRadius);
+	messageBoxShadowEffect->setOffset(this->textShadowEffectOffect);
+	this->messageBox->setGraphicsEffect(messageBoxShadowEffect);
 
 	// Z-Value
 	this->setZValue(Rpg::ZValueDialog);
@@ -334,9 +367,6 @@ RpgSpinItem::RpgSpinItem(const RpgDialogBase *skin, QGraphicsItem *parent): RpgO
 	this->selectBarAnimation->setDuration(1500);
 	this->selectBarAnimation->setLoopCount(Rpg::AnimationLoopInfinity);
 
-	this->setFont(rpgFont->getFont(FontName, 16));
-	rDebug() << "Dialog using font:" << this->font.family();
-
 	// 默认不可见
 	this->hide();
 
@@ -360,8 +390,6 @@ void RpgSpinItem::run(){
 		rpgView->scene()->addItem(this);
 	}
 
-	qreal maxWidth = this->dialogSize.width() - (2 * RpgDialogBase::PaddingH);
-
 	this->selectBarHeight = 35;
 
 	if(!this->spinItems.isEmpty()){
@@ -371,56 +399,43 @@ void RpgSpinItem::run(){
 		return;
 	}
 
-	int currentX = 0;
-	int paddingH = RpgDialogBase::PaddingH;
-	// Pair.first == pos.x, Pair.second == width
-	QList<QPair<int, int>> positions;
-	while(currentX < maxWidth && count < this->spinValues.length()){
-		RpgSpinValue currentValue = this->spinValues.at(count);
-		int maxWidth = this->calSpinValueMaxWidth(currentValue);
-		if(maxWidth <= 0){
-			rError() << "There has a spin value has no items.";
-			this->end();
-			return;
-		}
-		positions.append(QPair<int, int>(currentX, maxWidth));
-		currentX += maxWidth + paddingH;
-	}
-
 	this->spinItemHeight = (this->dialogSize.height() - this->selectBarHeight) / 2;
 	if(!this->message.isEmpty()){
 		QFontMetrics fm(this->font);
 		int messageHeight = fm.boundingRect(this->message).height();
-		if(this->dialogSize.height() - messageHeight < this->selectBarHeight){
+		if(this->dialogSize.height() - messageHeight - this->messageBox->pos().y() < this->selectBarHeight){
 			// 如果message把上面的空间都占满了, spin没地方显示就直接盖在上面
 			this->spinItemHeight = this->dialogSize.height() - RpgDialogBase::PaddingV - this->selectBarHeight;
+			rDebug() << "1!";
 		}else{
 			// 剩余空间的纵向中间
-			this->spinItemHeight = ((this->dialogSize.height() - messageHeight) - this->selectBarHeight) / 2;
+			this->spinItemHeight = ((this->dialogSize.height() - messageHeight - this->messageBox->pos().y()) - this->selectBarHeight) / 2 + messageHeight + this->messageBox->pos().y();
+			rDebug() << "2!";
 		}
+		rDebug() << "SpinHeight:" << this->spinItemHeight;
 	}
 
-	for(const QPair<int, int> &i: positions){
-		QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
-		item->setFont(this->font);
-		item->setPos(i.first, spinItemHeight);
-		rDebug() << "Item pos:" << item->pos();
-		item->setZValue(0.2);
-		item->setTextWidth(i.second);
-		item->setDefaultTextColor(this->textColor);
-		item->document()->setUndoRedoEnabled(false);
-		QTextOption spinTextOption = item->document()->defaultTextOption();{
-			spinTextOption.setWrapMode(QTextOption::NoWrap);
-			item->document()->setDefaultTextOption(spinTextOption);
-		}
-		QGraphicsDropShadowEffect *itemEffect = new QGraphicsDropShadowEffect(this);
-		itemEffect->setColor(this->textShadowEffectColor);
-		itemEffect->setBlurRadius(this->textShadowEffectBlurRadius);
-		itemEffect->setOffset(this->textShadowEffectOffect);
-		// item会得到effect的控制权, 会在item销毁时帮助销毁effect, 也可以将setGraphicsEffect参数设置为nullptr删除当前设定的effect
-		item->setGraphicsEffect(itemEffect);
-		this->spinItems.append(item);
-	}
+//	for(const QPair<int, int> &i: positions){
+//		QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
+//		item->setFont(this->font);
+//		item->setPos(i.first, spinItemHeight);
+//		rDebug() << "Item pos:" << item->pos();
+//		item->setZValue(0.2);
+//		item->setTextWidth(i.second);
+//		item->setDefaultTextColor(this->textColor);
+//		item->document()->setUndoRedoEnabled(false);
+//		QTextOption spinTextOption = item->document()->defaultTextOption();{
+//			spinTextOption.setWrapMode(QTextOption::NoWrap);
+//			item->document()->setDefaultTextOption(spinTextOption);
+//		}
+//		QGraphicsDropShadowEffect *itemEffect = new QGraphicsDropShadowEffect(this);
+//		itemEffect->setColor(this->textShadowEffectColor);
+//		itemEffect->setBlurRadius(this->textShadowEffectBlurRadius);
+//		itemEffect->setOffset(this->textShadowEffectOffect);
+//		// item会得到effect的控制权, 会在item销毁时帮助销毁effect, 也可以将setGraphicsEffect参数设置为nullptr删除当前设定的effect
+//		item->setGraphicsEffect(itemEffect);
+//		this->spinItems.append(item);
+//	}
 
 	// 计算对话框位置
 	QPointF dialogPos = RpgUtils::getDialogPos(this->dialogAlign, this->dialogSize, RpgDialogBase::MarginH, RpgDialogBase::MarginV);
@@ -437,6 +452,31 @@ void RpgSpinItem::run(){
 	this->showDialog();
 }
 
+int RpgSpinItem::waitForComplete(){
+	if(!this->isRunning()){
+		rDebug() << "RpgSpinItem not running.";
+		return -1;
+	}
+	QEventLoop eventLoop(this);
+	this->connect(this, &RpgSpinItem::exitDialogMode, &eventLoop, &QEventLoop::quit);
+	eventLoop.exec();
+	return 0;
+}
+
+void RpgSpinItem::end(){
+	emit this->exitDialogMode();
+	this->clearSpinItems();
+	RpgObject::end();
+}
+
+const QStringList RpgSpinItem::getValue(){
+	QStringList result;
+	for(const RpgSpinValue *i: this->spinValues){
+		result.append(i->getCurrentSpinValueItem().getValue());
+	}
+	return result;
+}
+
 void RpgSpinItem::showDialog(){
 	this->show();
 	rpgState->pushState(RpgState::DialogMode);
@@ -445,10 +485,41 @@ void RpgSpinItem::showDialog(){
 	if(this->arrowSymbolsTimeLine->state() != QTimeLine::Running){
 		this->arrowSymbolsTimeLine->start();
 	}
-	this->adjustSpinItems(0);
 	this->showMessage();
+	this->adjustSpinItems(0);
 	this->setSpinsText(0);
-	// todo...
+	this->setSelectBarIndex(0);
+
+	this->selectBar->setVisible(true);
+	if(this->selectBarAnimation->state() != QPropertyAnimation::Running){
+		this->selectBarAnimation->start();
+	}
+
+	if(this->timeout > 0){
+		if(this->timerId >= 0){
+			qWarning() << "Handle timerId not reset to -1:" << this->timerId;
+		}
+		this->timerId = this->startTimer(timeout);
+		rDebug() << "Timer started:" << this->timerId;
+	}
+}
+
+void RpgSpinItem::hideDialog(){
+	if(this->arrowSymbolsTimeLine->state() != QTimeLine::NotRunning){
+		this->arrowSymbolsTimeLine->stop();
+	}
+	this->dialogAnimation->runDialogAnimations(RpgDialogAnimation::Animations(RpgDialogAnimation::AnimationDialogHide));
+	this->dialogAnimation->waitAnimationFinish();
+
+	this->hide();
+	this->clearSpinItems();
+
+	if(rpgState->getTop() == RpgState::DialogMode){
+		rpgState->popState();
+	}else{
+		rDebug() << "RpgState stack top not DialogMode.";
+	}
+	this->end();
 }
 
 void RpgSpinItem::showMessage(){
@@ -474,32 +545,34 @@ void RpgSpinItem::showMessage(){
 			//this->setLineHeight();
 			RpgUtils::msleep(this->speed);
 			if(this->quickShowFlag == true){
-				this->messageBox->setHtml(text);
+				this->messageBox->setHtml(this->message);
 				//this->setLineHeight();
+				this->quickShowFlag = false;
+				break;
 			}
-			this->quickShowFlag = false;
-			break;
 		}
 	}else{
 		this->messageBox->setHtml(this->message);
 		//this->setLineHeight();
 	}
 
+	this->showTextInProgressFlag = false;
+
 }
 
 void RpgSpinItem::setSpinsText(int from){
 	if(from < 0 || from > this->spinValues.length()){
-		rError() >> "Index is out of range: '" << from << "' not in range [0," << this->spinValues.length() << ").";
+		rError() << "Index is out of range: '" << from << "' not in range [0," << this->spinValues.length() << ").";
 		return;
 	}
-	QList<RpgSpinValue>::ConstIterator spinIter = this->spinValues.constBegin();
+	QList<RpgSpinValue*>::ConstIterator spinIter = this->spinValues.constBegin();
 	for(int i = 0; i < from; i++){
 		spinIter++;
 	}
 
 	for(int i = 0; i < qMin(this->spinItems.length(), this->spinValues.length() - from); i++){
-		this->spinItems.at(i)->setHtml(this->spinValues.at(from + i).at(0));
-		if(this->spinValues.at(from + i).at(0).getEnable()){
+		this->spinItems.at(i)->setHtml(this->spinValues.at(from + i)->at(0).getText());
+		if(this->spinValues.at(from + i)->at(0).getEnable()){
 			this->spinItems.at(i)->setDefaultTextColor(this->textColor);
 		}else{
 			this->spinItems.at(i)->setDefaultTextColor(this->bannedColor);

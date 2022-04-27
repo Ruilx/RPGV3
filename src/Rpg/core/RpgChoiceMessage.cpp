@@ -43,4 +43,7 @@ RpgChoiceMessage::RpgChoiceMessage(std::initializer_list<std::pair<QString, QVar
 			return;
 		}
 	});
+	if(this->getValue().isEmpty()){
+		this->setValue(this->getText());
+	}
 }

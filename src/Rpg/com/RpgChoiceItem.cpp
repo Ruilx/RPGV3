@@ -339,6 +339,7 @@ void RpgChoiceItem::run(){
 		item->setZValue(0.2);
 		item->setTextWidth(textWidth);
 		item->setDefaultTextColor(this->textColor);
+		item->document()->setDefaultStyleSheet(Rpg::getDefaultCss());
 		item->document()->setUndoRedoEnabled(false);
 		QTextOption choiceTextOption = item->document()->defaultTextOption();{
 			choiceTextOption.setWrapMode(QTextOption::NoWrap);
@@ -392,12 +393,12 @@ int RpgChoiceItem::waitForComplete(){
 void RpgChoiceItem::end(){
 	emit this->exitDialogMode();
 	// 回收选项中新增的TextItem的内存
-	for(QGraphicsTextItem *i: this->textItems){
-		if(i != nullptr){
-			i->deleteLater();
-		}
-	}
-	this->textItems.clear();
+//	for(QGraphicsTextItem *i: this->textItems){
+//		if(i != nullptr){
+//			i->deleteLater();
+//		}
+//	}
+	this->clearTextItems();
 	RpgObject::end();
 }
 
@@ -441,6 +442,10 @@ void RpgChoiceItem::hideDialog(){
 		rDebug() << "RpgState stack top not DialogMode.";
 	}
 	this->end();
+	rDebug() << "This->chosenIndex:" << this->chosenIndex;
+	rDebug() << "This->choices.length():" << this->choices.length();
+	rDebug() << "This->choices.at(i).getText()" << this->choices.at(this->chosenIndex).getText();
+	rDebug() << "This->choices.at(i).getValue()" << this->choices.at(this->chosenIndex).getValue();
 }
 
 void RpgChoiceItem::setChoicesText(int from, bool withSpeed){

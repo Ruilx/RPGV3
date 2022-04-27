@@ -12,6 +12,7 @@
 #include <Rpg/com/RpgMusic.h>
 #include <Rpg/core/RpgDialogMessage.h>
 #include <Rpg/com/RpgBanner.h>
+#include <Rpg/com/RpgItem/RpgSpinItem.h>
 
 #include <Rpg/com/RpgSound.h>
 
@@ -83,71 +84,87 @@ void MainWindow::testModel()
 //		RpgUtils::msleep(1);
 //	}
 
-	RpgBanner banner(5000);
-	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
-	text->setFont(rpgFont->getFont("dialog", 36));
-	text->setDefaultTextColor(Qt::white);
-	text->setPos(RpgUtils::getDialogPos(Rpg::AlignCenter, text->boundingRect().size()));
+//	RpgBanner banner(5000);
+//	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
+//	text->setFont(rpgFont->getFont("dialog", 36));
+//	text->setDefaultTextColor(Qt::white);
+//	text->setPos(RpgUtils::getDialogPos(Rpg::AlignCenter, text->boundingRect().size()));
 
-	banner.addItem("text", text);
-	banner.setTimeLineTimestampCb(100, [this](){
-		rDebug() << "100MS!";
-	});
-	banner.setTimeLineTimestampCb(500, [this](){
-		rDebug() << "500MS!";
-	});
-	banner.setTimeLineFrameCb(150, [this](){
-		rDebug() << "150 FRAMES!";
-	});
+//	banner.addItem("text", text);
+//	banner.setTimeLineTimestampCb(100, [this](){
+//		rDebug() << "100MS!";
+//	});
+//	banner.setTimeLineTimestampCb(500, [this](){
+//		rDebug() << "500MS!";
+//	});
+//	banner.setTimeLineFrameCb(150, [this](){
+//		rDebug() << "150 FRAMES!";
+//	});
 
-	banner.run();
-	banner.waitForComplete();
+//	banner.run();
+//	banner.waitForComplete();
 
-	RpgDialogItem d(&clear);
-	d.setDialogAlign(Rpg::AlignCenter);
-	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
-	msg1.setSpeed(Rpg::SingleWordSpeedFast);
-	d.appendMessage(msg1);
-	d.run();
-	d.waitForComplete();
+//	RpgDialogItem d(&clear);
+//	d.setDialogAlign(Rpg::AlignCenter);
+//	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
+//	msg1.setSpeed(Rpg::SingleWordSpeedFast);
+//	d.appendMessage(msg1);
+//	d.run();
+//	d.waitForComplete();
 
-	RpgChoiceItem dialog(&base);
-	dialog.setDialogAlign(Rpg::AlignBottom);
-	dialog.setDialogSize(QSize(180, 160));
-	dialog.appendChoice(RpgChoiceMessage({
-		{"text", "はじめから"},
-		{"align", Rpg::AlignCenter},
-	}));
-	dialog.appendChoice(RpgChoiceMessage({
-		{"text", "つづきから"},
-		{"enabled", false},
-		{"align", Rpg::AlignCenter},
-	}));
-	dialog.appendChoice(RpgChoiceMessage({
-		{"text", "オプション"},
-		{"align", Rpg::AlignCenter},
-	}));
-	dialog.appendChoice(RpgChoiceMessage({
-		{"text", "お わ り"},
-		{"align", Rpg::AlignCenter},
-	}));
-	dialog.setDefaultChoice(0);
-	//dialog.setTimeout(5000);
+//	RpgChoiceItem dialog(&base);
+//	dialog.setDialogAlign(Rpg::AlignBottom);
+//	dialog.setDialogSize(QSize(180, 160));
+//	dialog.appendChoice(RpgChoiceMessage({
+//		{"text", "はじめから"},
+//		{"align", Rpg::AlignCenter},
+//	}));
+//	dialog.appendChoice(RpgChoiceMessage({
+//		{"text", "つづきから"},
+//		{"enabled", false},
+//		{"align", Rpg::AlignCenter},
+//	}));
+//	dialog.appendChoice(RpgChoiceMessage({
+//		{"text", "オプション"},
+//		{"align", Rpg::AlignCenter},
+//	}));
+//	dialog.appendChoice(RpgChoiceMessage({
+//		{"text", "お わ り"},
+//		{"align", Rpg::AlignCenter},
+//	}));
+//	dialog.setDefaultChoice(0);
+//	//dialog.setTimeout(5000);
 
-	dialog.run();
-	int res = dialog.waitForComplete();
-	rDebug() << "RES:" << res;
+//	dialog.run();
+//	int res = dialog.waitForComplete();
+//	rDebug() << "RES:" << res;
 
-	RpgDialogItem msg(&base);
-	msg.setDialogAlign(Rpg::AlignBottom);
-	msg.appendMessage(QString("你选择了第%1项, 值为:%2").arg(res).arg(dialog.getValue()));
-	msg.run();
-	msg.waitForComplete();
+//	RpgDialogItem msg(&base);
+//	msg.setDialogAlign(Rpg::AlignBottom);
+//	msg.appendMessage(QString("你选择了第%1项, 值为:%2").arg(res).arg(dialog.getValue()));
+//	msg.run();
+//	msg.waitForComplete();
 
-	if(res == 3){
-		this->canClose = true;
-		this->close();
-	}
+//	if(res == 3){
+//		this->canClose = true;
+//		this->close();
+//	}
+
+	RpgSpinItem spinItem(&base);
+	spinItem.setMessage("请输入密码:");
+	spinItem.appendSpinValue(RpgSpinValue({
+											  {
+												  {"text", "0"}
+											  },{
+												  {"text", "1"}
+											  },{
+												  {"text", "2"}
+											  }
+										  }));
+	spinItem.run();
+	spinItem.waitForComplete();
+	QStringList result = spinItem.getValue();
+	rDebug() << "Result:" << result;
 
 //	QTextEdit *edit = new QTextEdit(nullptr);
 //	edit->resize(200, 150);

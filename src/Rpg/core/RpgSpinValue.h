@@ -12,12 +12,16 @@ class RpgSpinValueItem
 public:
 	explicit RpgSpinValueItem(const QString &text, bool enable = true, const QString &value = QString());
 	RpgSpinValueItem(std::initializer_list<std::pair<QString, QVariant>> params);
+	RpgSpinValueItem(){
+		this->setText("");
+		this->setValue("");
+	}
 
-	inline setText(const QString &text){ this->text = text.isEmpty() ? "<nil>" : text; }
+	inline void setText(const QString &text){ this->text = text.isEmpty() ? "<nil>" : text; }
 	inline const QString &getText() const { return this->text; }
-	inline setEnable(bool enable){ this->enable = enable; }
+	inline void setEnable(bool enable){ this->enable = enable; }
 	inline bool getEnable() const { return this->enable; }
-	inline setValue(const QString &value){ this->value = value.isEmpty() ? this->getText() : value; }
+	inline void setValue(const QString &value){ this->value = value.isEmpty() ? this->getText() : value; }
 	inline const QString getValue() const { return this->value; }
 };
 
@@ -30,14 +34,16 @@ class RpgSpinValue{
 
 	bool indexCirculation = true;
 public:
-	RpgSpinValue(){}
 	RpgSpinValue(const QList<RpgSpinValueItem> &choices){
 		if(choices.length() > 0){
 			this->appendChoice(choices);
 		}
 	}
-	RpgSpinValue(std::initializer_list<std::pair<QString, QVariant>> params){
 
+	RpgSpinValue(std::initializer_list<std::initializer_list<std::pair<QString, QVariant>>> params){
+		std::for_each(params.begin(), params.end(), [this](const std::initializer_list<std::pair<QString, QVariant>> &param){
+			this->appendChoice(RpgSpinValueItem(param));
+		});
 	}
 
 	inline void appendChoice(const QString &text, bool enable = true, const QString &value = QString()){ this->appendChoice(RpgSpinValueItem(text, enable, value)); }
@@ -72,45 +78,8 @@ public:
 		return this->choices.at(this->currentChoiceIndex);
 	}
 
-	const RpgSpinValueItem &next(bool *ok = nullptr) const{
-		if(ok){
-			*ok = false;
-		}
-		if(this->choices.isEmpty()){
-			rError() << "Calling next when choicesList is empty.";
-			return this->nullItem;
-		}
-		if(this->currentChoiceIndex >= this->choices.length()){
-			if(this->indexCirculation == false){
-				return this->nullItem;
-			}
-			this->currentChoiceIndex = 0;
-		}
-		if(ok){
-			*ok = true;
-		}
-		return this->at(this->currentChoiceIndex++);
-	}
-
-	const RpgSpinValueItem &prev(bool *ok = nullptr) const{
-		if(ok){
-			*ok = false;
-		}
-		if(this->choices.isEmpty()){
-			rError() << "Calling prev when choicesList is empty.";
-			return this->nullItem;
-		}
-		if(this->currentChoiceIndex < 0){
-			if(this->indexCirculation == false){
-				return this->nullItem;
-			}
-			this->currentChoiceIndex = this->choices.length() -1;
-		}
-		if(ok){
-			*ok = true;
-		}
-		return this->at(this->currentChoiceIndex--);
-	}
+	const RpgSpinValueItem &next(bool *ok = nullptr);
+	const RpgSpinValueItem &prev(bool *ok = nullptr);
 };
 
 #endif // RPGSPINVALUE_H

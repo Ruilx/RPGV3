@@ -93,7 +93,7 @@ public:
 
 private:
 	// 选择列表
-	QList<RpgSpinValue> spinValues;
+	QList<RpgSpinValue*> spinValues;
 
 	// 默认选中的index
 	int defaultSpinIndex = 0;
@@ -129,9 +129,9 @@ public:
 	inline void setTextColor(Qt::GlobalColor color){ this->messageBox->setDefaultTextColor(QColor(color)); this->textColor = QColor(color); }
 
 	// 选项
-	void appendSpinValue(const RpgSpinValue &value){ this->spinValues.append(value); }
-	void appendSpinValue(const Qlist<RpgSpinValue> &values){ this->spinValues.append(values); }
-	void getRpgSpinValueCount() const { return this->spinValues.length(); }
+	void appendSpinValue(const RpgSpinValue &value){ this->spinValues.append(new RpgSpinValue(value)); }
+	void appendSpinValue(const QList<RpgSpinValue*> &values){ this->spinValues.append(values); }
+	int getRpgSpinValueCount() const { return this->spinValues.length(); }
 
 	void clearSpinValues() { this->spinValues.clear(); }
 
@@ -157,14 +157,14 @@ public:
 	void setSoundEffect(SoundEffect soundEffect, const QString &name){ this->soundEffects.insert(soundEffect, name); }
 	const QString getSoundEffect(SoundEffect soundEffect) const { return this->soundEffects.value(soundEffect); }
 
-	RpgSpinItem(const RpgDialogBase *skin, QGraphicsItem *parent);
+	RpgSpinItem(RpgDialogBase *skin, QGraphicsObject *parent = nullptr);
 	~RpgSpinItem();
 
 	void run() override;
 	int waitForComplete();
 	void end() override;
 
-	inline const QStringList getValue();
+	const QStringList getValue();
 private:
 	void showDialog();
 	void hideDialog();
