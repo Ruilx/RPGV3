@@ -102,7 +102,7 @@ void RpgSpinItem::keyReleaseEvent(QKeyEvent *event){
 				// 正在显示 0-N 项
 				if(this->selectingIndex == 0){
 					// 光标已经在第一个了, 不能再往左了
-					rDebug() << "First choose first, cannot up.";
+					rDebug() << "First choose first, cannot left.";
 					return;
 				}else{
 					// 光标不在第一个 (可以往上了)
@@ -157,10 +157,19 @@ void RpgSpinItem::keyReleaseEvent(QKeyEvent *event){
 				// 正在显示 非后N项 (不在最后几个)
 				if(this->selectingIndex == qMin(this->spinItems.length() -1, this->spinValues.length() -1)){
 					// 光标不能往右了 (但From还能往右)
-					// 向右滚动一行显示的内容, 光标位置需要重绘
+					// 向右滚动一行显示的内容, 光标位置需要重绘, spinItems的长度可能会发生变化,
+					// selectingIndex需要在改变后与指向spinItems长度-1判断, 大/等于则指向最后一项, 小则往后移动一位
 					this->fromIndex++;
 					this->adjustSpinItems(this->fromIndex);
 					this->setSpinsText(this->fromIndex);
+					if(this->selectingIndex + 2 >= this->spinItems.length()){
+						this->selectingIndex = this->spinItems.length() -1;
+					}else if(this->selectingIndex + 1 >= this->spinItems.length()){
+						;
+					}else{
+						this->selectingIndex++;
+					}
+					//this->selectingIndex = this->selectingIndex + 2 >= this->spinItems.length() ? this->spinItems.length() -1 : this->selectingIndex;
 					this->setSelectBarIndex(this->selectingIndex);
 					this->playSound(SoundEffect_Select);
 				}else{
@@ -192,7 +201,7 @@ void RpgSpinItem::playSound(SoundEffect soundEffect, qreal volume, int times){
 	}
 	try{
 		rpgSound->play(name, volume, times);
-	}catch(RpgRuntimeException exception){
+	}catch(const RpgRuntimeException &exception){
 		rError() << "Cannot play sound:" << name;
 	}
 }
@@ -225,14 +234,17 @@ void RpgSpinItem::adjustSpinItems(int from){
 
 	while(currentX < maxWidth && positions.length() + from < this->spinValues.length()){
 		RpgSpinValue *currentValue = this->spinValues.at(from + positions.length());
-		int maxWidth = this->calSpinValueMaxWidth(*currentValue);
-		if(maxWidth <= 0){
+		int maxTextWidth = this->calSpinValueMaxWidth(*currentValue);
+		if(maxTextWidth <= 0){
 			rError() << "There has a spin value has no items.";
 			this->end();
 			return;
 		}
-		positions.append(QPair<int, int>(currentX, maxWidth));
-		currentX += maxWidth + paddingH;
+		if(currentX + maxTextWidth + paddingH > maxWidth){
+			break;
+		}
+		positions.append(QPair<int, int>(currentX, maxTextWidth));
+		currentX += maxTextWidth + paddingH;
 	}
 
 	int difference = positions.length() - this->spinItems.length();
@@ -279,9 +291,9 @@ void RpgSpinItem::adjustSpinItems(int from){
 		}
 		QGraphicsTextItem *item = this->spinItems.at(i);
 		item->setPos(pos.first + RpgDialogBase::PaddingH, this->spinItemHeight);
-		rDebug() << "Item pos:" << item->pos();
+		//rDebug() << "Item pos:" << item->pos();
 		item->setTextWidth(pos.second);
-		rDebug() << "Item width:" << item->textWidth();
+		//rDebug() << "Item width:" << item->textWidth();
 	}
 }
 
@@ -402,13 +414,13 @@ void RpgSpinItem::run(){
 		if(this->dialogSize.height() - messageHeight - this->messageBox->pos().y() < this->selectBarHeight){
 			// 如果message把上面的空间都占满了, spin没地方显示就直接盖在上面
 			this->spinItemHeight = this->dialogSize.height() - RpgDialogBase::PaddingV - this->selectBarHeight;
-			rDebug() << "1!";
+			//rDebug() << "1!";
 		}else{
 			// 剩余空间的纵向中间
 			this->spinItemHeight = ((this->dialogSize.height() - messageHeight - this->messageBox->pos().y()) - this->selectBarHeight) / 2 + messageHeight + this->messageBox->pos().y();
-			rDebug() << "2!";
+			//rDebug() << "2!";
 		}
-		rDebug() << "SpinHeight:" << this->spinItemHeight;
+		//rDebug() << "SpinHeight:" << this->spinItemHeight;
 	}
 
 //	for(const QPair<int, int> &i: positions){
@@ -567,7 +579,8 @@ void RpgSpinItem::setSpinsText(int from){
 	for(int i = 0; i < from; i++){
 		spinIter++;
 	}
-
+	rDebug() << "spinItems.length() ==" << this->spinItems.length();
+	rDebug() << "spinValues.length() ==" << this->spinValues.length();
 	for(int i = 0; i < qMin(this->spinItems.length(), this->spinValues.length() - from); i++){
 		this->spinItems.at(i)->setHtml(this->spinValues.at(from + i)->getCurrentSpinValueItem().getText());
 		if(this->spinValues.at(from + i)->at(0).getEnable()){
@@ -581,7 +594,7 @@ void RpgSpinItem::setSpinsText(int from){
 			this->spinItems.at(i)->document()->setDefaultTextOption(textOption);
 		}
 	}
-	for(int i = this->spinItems.length() - from; i < this->spinItems.length(); i++){
+	for(int i = qMin(this->spinItems.length(), this->spinValues.length() - from); i < this->spinItems.length(); i++){
 		this->spinItems.at(i)->document()->clear();
 	}
 }
