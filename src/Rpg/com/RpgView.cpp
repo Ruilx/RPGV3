@@ -97,5 +97,5 @@ RpgView::RpgView(QWidget *parent): QGraphicsView(parent){
 	this->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 	this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 
-	this->setInteractive(false);
+	//this->setInteractive(false);
 }

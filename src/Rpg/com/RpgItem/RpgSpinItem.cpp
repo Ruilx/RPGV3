@@ -361,12 +361,6 @@ RpgSpinItem::RpgSpinItem(RpgDialogBase *skin, QGraphicsObject *parent): RpgObjec
 	this->upArrowSymbol->setZValue(0); // sence SelectBar ZValue
 	this->downArrowSymbol->setZValue(0); // scene SelectBar ZValue
 
-	// 阴影设置
-	QGraphicsDropShadowEffect *textShadowEffect = new QGraphicsDropShadowEffect(this->messageBox);
-	textShadowEffect->setColor(this->textShadowEffectColor);
-	textShadowEffect->setBlurRadius(this->textShadowEffectBlurRadius);
-	textShadowEffect->setOffset(this->textShadowEffectOffect);
-
 	// selectBar动画设置
 	this->selectBarAnimation->setEasingCurve(QEasingCurve::OutQuad);
 	this->selectBarAnimation->setStartValue(1);

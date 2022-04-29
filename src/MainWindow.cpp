@@ -16,7 +16,7 @@
 
 #include <Rpg/com/RpgSound.h>
 
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
 void MainWindow::closeEvent(QCloseEvent *event){
 	if(!this->canClose){
@@ -150,27 +150,28 @@ void MainWindow::testModel()
 //		this->close();
 //	}
 
-	RpgSpinItem spinItem(&base);
-	spinItem.setMessage("请输入密码:");
-	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-	spinItem.run();
-	spinItem.waitForComplete();
-	QStringList result = spinItem.getValue();
-	rDebug() << "Result:" << result;
+//	RpgSpinItem spinItem(&base);
+//	spinItem.setMessage("请输入密码:");
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+//	spinItem.run();
+//	spinItem.waitForComplete();
+//	QStringList result = spinItem.getValue();
+//	rDebug() << "Result:" << result;
 
-	RpgDialogItem dialogItem(&base);
-	dialogItem.appendMessage("您输入了: " % result.join(""));
-	dialogItem.run();
-	dialogItem.waitForComplete();
+//	RpgDialogItem dialogItem(&base);
+//	dialogItem.appendMessage("您输入了: " % result.join(""));
+//	dialogItem.run();
+//	dialogItem.waitForComplete();
 
 //	QTextEdit *edit = new QTextEdit(nullptr);
 //	edit->resize(200, 150);
 //	QGraphicsProxyWidget *editProxy = scene->addWidget(edit);
 //	editProxy->setPos(50, 50);
 //	editProxy->setZValue(Rpg::ZValueFront);
+
 
 	this->canClose = true;
 }
@@ -203,6 +204,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
 	QString initJsonFile = "initialize.json";
 	RpgPreload preload(initJsonFile);
 	RpgFileManager::instance()->dumpFiles();
+
+	//this->setupMenus();
 
 
 	QTimer::singleShot(1000, this, &MainWindow::testModel);

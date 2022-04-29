@@ -1,42 +1,31 @@
-#ifndef RPGSPINITEM_H
-#define RPGSPINITEM_H
-
-#include <QGraphicsDropShadowEffect>
-#include <QGraphicsPixmapItem>
+#ifndef RPGINPUTITEM_H
+#define RPGINPUTITEM_H
 
 #include <Rpg/Rpg.h>
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgUtils.h>
 #include <Rpg/core/RpgDialogBase.h>
 #include <Rpg/core/RpgDialogAnimation.h>
-#include <Rpg/core/RpgSpinValue.h>
-#include <Rpg/core/RpgItemProperties.h>
 
-class RpgSpinItem : public RpgObject
+#include <QGraphicsProxyWidget>
+#include <QLineEdit>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsDropShadowEffect>
+
+class RpgInputItem : public RpgObject
 {
 	Q_OBJECT
-	// 皮肤
+
 	RpgDialogBase *skin = nullptr;
 
-	// 构成
 	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);
 	QGraphicsTextItem *messageBox = new QGraphicsTextItem(this->box);
 	QString message;
-	QList<QGraphicsTextItem *> spinItems;
 
-	QGraphicsPixmapItem *selectBar = new QGraphicsPixmapItem(this->box);
-	RpgItemProperties *selectItemProperties = new RpgItemProperties(this->selectBar);
-	QPropertyAnimation *selectBarAnimation = new QPropertyAnimation(this->selectItemProperties, "opacity", this);
+	QGraphicsDropShadowEffect *textShadowEffect = new QGraphicsDropShadowEffect(this);
 
-	// 因为上下箭头是跟着selectBar移动的, 所以将parent设置成selectBar
-	QGraphicsPixmapItem *upArrowSymbol = new QGraphicsPixmapItem(this->selectBar);
-	QGraphicsPixmapItem *downArrowSymbol = new QGraphicsPixmapItem(this->selectBar);
-
-	// effect的配置, 给message和spins文本增加shadow effect
-	// @see RpgChoiceItem.h:51
-	QColor textShadowEffectColor = QColor(Qt::black);
-	qreal textShadowEffectBlurRadius = 5;
-	QPointF textShadowEffectOffect = QPointF(2, 2);
+	QLineEdit *input = new QLineEdit();
+	QGraphicsProxyWidget *inputItem = new QGraphicsProxyWidget(this->box);
 
 	RpgDialogAnimation *dialogAnimation = new RpgDialogAnimation(this->box, nullptr, nullptr, 300, QEasingCurve::OutQuad, this);
 
@@ -53,28 +42,14 @@ class RpgSpinItem : public RpgObject
 	int timeout = 0;
 
 	// 按键
+	void keyPressEvent(QKeyEvent *event) override;
 	void keyReleaseEvent(QKeyEvent *event) override;
 
 	QColor textColor = QColor(Qt::white);
-	QColor bannedColor = QColor(Qt::darkGray);
-	QFont font;
-	// 计算出选项与选项之间的间距(由run计算出来)
-	qreal innerPaddingH = 0;
-	// 计算出第一个选项距离左边的距离(由run计算出来)
-	qreal addingPaddingH = 0;
-	// 计算选项上的select bar的高度
-	int selectBarHeight = RpgDialogBase::selectBarSize().height();
 
-	// 计算出的spin距离dialog top的距离
-	int spinItemTop = 0;
+	int inputItemTop = 0;
 
 	int speed = Rpg::SingleWordSpeedFast;
-
-	// 选择框在屏幕上的位置
-	int selectingIndex = 0;
-	// 展示第一个选项在列表中的哪一个
-	int fromIndex = 0;
-
 public:
 	// 消息内部间距
 	const int MessageMarginH = 10;
@@ -84,38 +59,22 @@ public:
 	const char *FontName = "dialog";
 
 	enum SoundEffect{
-		SoundEffect_Select = 1,
-		SoundEffect_Accept,
+		SoundEffect_Accept = 1,
 		SoundEffect_Banned,
 	};
 
 private:
-	// 选择列表
-	QList<RpgSpinValue*> spinValues;
-
-	// 默认选中的index
-	int defaultSpinIndex = 0;
-
+	//
 	bool showTextInProgressFlag = false;
 	bool quickShowFlag = false;
 
-	QTimeLine *arrowSymbolsTimeLine = new QTimeLine(1000, this);
-
+	//
 	QHash<SoundEffect, QString> soundEffects = QHash<SoundEffect, QString>({
-		{SoundEffect_Select, "select"},
 		{SoundEffect_Accept, "accept"},
 		{SoundEffect_Banned, "banned"},
 	});
 
-	void clearSpinItems();
-
 	void playSound(SoundEffect soundEffect, qreal volume = 1.0f, int times = 1);
-
-	// 计算SpinValue最长的文本的宽度
-	int calSpinValueMaxWidth(const RpgSpinValue &value);
-
-	// 调整GraphicsItem spinItems
-	void adjustSpinItems(int from);
 
 public:
 	// 提示文本
@@ -126,12 +85,9 @@ public:
 	inline void setTextColor(const QColor &color){ this->messageBox->setDefaultTextColor(color); this->textColor = color; }
 	inline void setTextColor(Qt::GlobalColor color){ this->messageBox->setDefaultTextColor(QColor(color)); this->textColor = QColor(color); }
 
-	// 选项
-	void appendSpinValue(const RpgSpinValue &value){ this->spinValues.append(new RpgSpinValue(value)); }
-	void appendSpinValue(const QList<RpgSpinValue*> &values){ this->spinValues.append(values); }
-	int getRpgSpinValueCount() const { return this->spinValues.length(); }
-
-	void clearSpinValues() { this->spinValues.clear(); }
+	// 输入框文本
+	inline void setInputText(const QString &text){ this->input->setText(text); }
+	inline QString getInputText() const { return this->input->text(); }
 
 	// 超时时间
 	inline void setTimeout(int timeout){ this->timeout = timeout; }
@@ -142,9 +98,9 @@ public:
 	inline int getSpeed() const { return this->speed; }
 
 	// 字体
-	inline void setFont(const QFont &font){ this->font = QFont(font); }
+	inline void setFont(const QFont &font){ this->messageBox->setFont(font); this->input->setFont(font); }
 	void setFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
-	inline QFont getFont() const { return this->font; }
+	inline QFont getFont() const { return this->messageBox->font(); }
 
 	void setDialogSize(const QSize &size);
 	inline const QSize getDialogSize() const { return this->dialogSize; }
@@ -155,28 +111,23 @@ public:
 	void setSoundEffect(SoundEffect soundEffect, const QString &name){ this->soundEffects.insert(soundEffect, name); }
 	const QString getSoundEffect(SoundEffect soundEffect) const { return this->soundEffects.value(soundEffect); }
 
-	RpgSpinItem(RpgDialogBase *skin, QGraphicsObject *parent = nullptr);
-	~RpgSpinItem();
+	RpgInputItem(RpgDialogBase *skin, RpgObject *parent = nullptr);
+	~RpgInputItem();
 
 	void run() override;
-	int waitForComplete();
+	int waitingForComplete();
 	void end() override;
 
-	const QStringList getValue();
+	const QString getValue();
 private:
 	void showDialog();
 	void hideDialog();
 
 	void showMessage();
 
-	void setSpinsText(int from);
-	void setSelectBarIndex(int index);
 signals:
 	void enterDialogMode();
 	void exitDialogMode();
-
-private slots:
-	void arrowSymbolsTimeLineFrameChangedSlot(int frameIndex);
 };
 
-#endif // RPGSPINITEM_H
+#endif // RPGINPUTITEM_H
