@@ -50,6 +50,8 @@ class RpgInputItem : public RpgObject
 	int inputItemTop = 0;
 
 	int speed = Rpg::SingleWordSpeedFast;
+
+	int lineHeight = 35;
 public:
 	// 消息内部间距
 	const int MessageMarginH = 10;
@@ -87,7 +89,7 @@ public:
 
 	// 输入框文本
 	inline void setInputText(const QString &text){ this->input->setText(text); }
-	inline QString getInputText() const { return this->input->text(); }
+	inline const QString getInputText() const { return this->input->text(); }
 
 	// 超时时间
 	inline void setTimeout(int timeout){ this->timeout = timeout; }
@@ -101,6 +103,8 @@ public:
 	inline void setFont(const QFont &font){ this->messageBox->setFont(font); this->input->setFont(font); }
 	void setFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
 	inline QFont getFont() const { return this->messageBox->font(); }
+
+	void setLineHeight(qreal pixel, int lineHeightType = QTextBlockFormat::FixedHeight);
 
 	void setDialogSize(const QSize &size);
 	inline const QSize getDialogSize() const { return this->dialogSize; }

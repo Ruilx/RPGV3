@@ -13,6 +13,7 @@
 #include <Rpg/core/RpgDialogMessage.h>
 #include <Rpg/com/RpgBanner.h>
 #include <Rpg/com/RpgItem/RpgSpinItem.h>
+#include <Rpg/com/RpgItem/RpgInputItem.h>
 
 #include <Rpg/com/RpgSound.h>
 
@@ -44,6 +45,22 @@ void MainWindow::testModel()
 
 	RpgSpecLocationChopingDialog base("skin");
 	RpgSpecLocationChopingDialog clear("clearSkin");
+
+
+	RpgDialogItem d(&clear);
+	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
+	msg1.setSpeed(Rpg::SingleWordSpeedFast);
+	d.appendMessage(msg1);
+	d.run();
+	d.waitForComplete();
+
+	RpgInputItem inputItem(&base);
+	inputItem.setMessage("请输入一个长长的名字, 看下面能否显示:");
+	inputItem.run();
+	inputItem.waitingForComplete();
+	const QString text = inputItem.getValue();
+
+	rDebug() << "Input text:" << text;
 
 	//	RpgDialogItem dialog(&base);
 
@@ -103,14 +120,6 @@ void MainWindow::testModel()
 
 //	banner.run();
 //	banner.waitForComplete();
-
-//	RpgDialogItem d(&clear);
-//	d.setDialogAlign(Rpg::AlignCenter);
-//	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
-//	msg1.setSpeed(Rpg::SingleWordSpeedFast);
-//	d.appendMessage(msg1);
-//	d.run();
-//	d.waitForComplete();
 
 //	RpgChoiceItem dialog(&base);
 //	dialog.setDialogAlign(Rpg::AlignBottom);
@@ -177,6 +186,21 @@ void MainWindow::testModel()
 }
 
 void MainWindow::setupMenus(){
+	QMenu *fileMenu = new QMenu(this->tr("&File"), this);{
+		this->menuBar()->addMenu(fileMenu);
+	}
+
+	QMenu *editMenu = new QMenu(this->tr("&Edit"), this);{
+		this->menuBar()->addMenu(editMenu);
+	}
+
+	QMenu *toolMenu = new QMenu(this->tr("&Tool"), this);{
+		this->menuBar()->addMenu(toolMenu);
+	}
+
+	QMenu *helpMenu = new QMenu(this->tr("&Help"), this);{
+		this->menuBar()->addMenu(helpMenu);
+	}
 
 }
 
@@ -186,8 +210,14 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
 	RpgView *view = RpgView::instance(this);
 	this->setCentralWidget(view);
 
+	this->setupMenus();
+
 	//			this->setWindowFlag(Qt::MSWindowsFixedSizeDialogHint, true);
-	this->setMinimumSize(ScreenWidth + 2, ScreenHeight + 2);
+	//this->setMinimumSize(ScreenWidth + 2, ScreenHeight + 2);
+
+
+
+	//this->adjustSize();
 
 	//this->setWindowOpacity(0.5);
 	setMouseTracking(false); // 设置是否响应鼠标移动时未按下按钮的事件发生
@@ -204,8 +234,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
 	QString initJsonFile = "initialize.json";
 	RpgPreload preload(initJsonFile);
 	RpgFileManager::instance()->dumpFiles();
-
-	//this->setupMenus();
 
 
 	QTimer::singleShot(1000, this, &MainWindow::testModel);

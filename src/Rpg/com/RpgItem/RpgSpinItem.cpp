@@ -1,8 +1,5 @@
 #include "RpgSpinItem.h"
 
-#include <QFontMetrics>
-#include <QTextDocument>
-
 #include <Rpg/com/RpgSound.h>
 #include <Rpg/com/RpgView.h>
 
@@ -11,6 +8,10 @@
 #include <Rpg/core/RpgHtmlSplit.h>
 
 #include <Rpg/exception/RpgNullPointerException.h>
+
+#include <QFontMetrics>
+#include <QTextDocument>
+#include <QTextBlock>
 
 void RpgSpinItem::timerEvent(QTimerEvent *event){
 	this->timerProcessing = true;
@@ -252,7 +253,7 @@ void RpgSpinItem::adjustSpinItems(int from){
 		for(int i = 0; i < difference; i++){
 			QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
 			item->setFont(this->font);
-			//item->setPos(i.first, this->spinItemHeight); //下面循环时再设置位置
+			//item->setPos(i.first, this->spinItemTop); //下面循环时再设置位置
 			item->setZValue(0.2);
 			//item->setTextWidth(i.second); //下面循环时再设置位置
 			item->setDefaultTextColor(this->textColor);
@@ -290,7 +291,7 @@ void RpgSpinItem::adjustSpinItems(int from){
 			break;
 		}
 		QGraphicsTextItem *item = this->spinItems.at(i);
-		item->setPos(pos.first + RpgDialogBase::PaddingH, this->spinItemHeight);
+		item->setPos(pos.first + RpgDialogBase::PaddingH, this->spinItemTop);
 		//rDebug() << "Item pos:" << item->pos();
 		item->setTextWidth(pos.second);
 		//rDebug() << "Item width:" << item->textWidth();
@@ -299,6 +300,14 @@ void RpgSpinItem::adjustSpinItems(int from){
 
 void RpgSpinItem::setFont(const QString &name, int pointSize, int weight, bool italic){
 	this->font = rpgFont->getFont(name, pointSize, weight, italic);
+}
+
+void RpgSpinItem::setLineHeight(qreal pixel, int lineHeightType){
+	QTextCursor textCursor = this->messageBox->textCursor();
+	QTextBlockFormat textBlockFormat = textCursor.blockFormat();
+	textBlockFormat.setLineHeight(pixel, lineHeightType);
+	textCursor.setBlockFormat(textBlockFormat);
+	this->messageBox->setTextCursor(textCursor);
 }
 
 void RpgSpinItem::setDialogSize(const QSize &size){
@@ -401,26 +410,26 @@ void RpgSpinItem::run(){
 		return;
 	}
 
-	this->spinItemHeight = (this->dialogSize.height() - this->selectBarHeight) / 2;
+	this->spinItemTop = (this->dialogSize.height() - this->selectBarHeight) / 2;
 	if(!this->message.isEmpty()){
 		QFontMetrics fm(this->font);
 		int messageHeight = fm.boundingRect(this->message).height();
 		if(this->dialogSize.height() - messageHeight - this->messageBox->pos().y() < this->selectBarHeight){
 			// 如果message把上面的空间都占满了, spin没地方显示就直接盖在上面
-			this->spinItemHeight = this->dialogSize.height() - RpgDialogBase::PaddingV - this->selectBarHeight;
+			this->spinItemTop = this->dialogSize.height() - RpgDialogBase::PaddingV - this->selectBarHeight;
 			//rDebug() << "1!";
 		}else{
 			// 剩余空间的纵向中间
-			this->spinItemHeight = ((this->dialogSize.height() - messageHeight - this->messageBox->pos().y()) - this->selectBarHeight) / 2 + messageHeight + this->messageBox->pos().y();
+			this->spinItemTop = ((this->dialogSize.height() - messageHeight - this->messageBox->pos().y()) - this->selectBarHeight) / 2 + messageHeight + this->messageBox->pos().y();
 			//rDebug() << "2!";
 		}
-		//rDebug() << "SpinHeight:" << this->spinItemHeight;
+		//rDebug() << "SpinHeight:" << this->spinItemTop;
 	}
 
 //	for(const QPair<int, int> &i: positions){
 //		QGraphicsTextItem *item = new QGraphicsTextItem(this->box);
 //		item->setFont(this->font);
-//		item->setPos(i.first, spinItemHeight);
+//		item->setPos(i.first, spinItemTop);
 //		rDebug() << "Item pos:" << item->pos();
 //		item->setZValue(0.2);
 //		item->setTextWidth(i.second);
@@ -501,7 +510,7 @@ void RpgSpinItem::showDialog(){
 
 	if(this->timeout > 0){
 		if(this->timerId >= 0){
-			qWarning() << "Handle timerId not reset to -1:" << this->timerId;
+			rWarning() << "Handle timerId not reset to -1:" << this->timerId;
 		}
 		this->timerId = this->startTimer(timeout);
 		rDebug() << "Timer started:" << this->timerId;
@@ -546,11 +555,11 @@ void RpgSpinItem::showMessage(){
 		while(htmlSplit.hasNext()){
 			QString wordLeft = htmlSplit.chopLeft();
 			this->messageBox->setHtml(wordLeft);
-			//this->setLineHeight();
+			this->setLineHeight(this->lineHeight);
 			RpgUtils::msleep(this->speed);
 			if(this->quickShowFlag == true){
 				this->messageBox->setHtml(this->message);
-				//this->setLineHeight();
+				this->setLineHeight(this->lineHeight);
 				this->quickShowFlag = false;
 				break;
 			}

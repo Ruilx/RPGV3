@@ -27,14 +27,15 @@ class RpgView : public QGraphicsView
 	 */
 	bool ignoreKeyAutoRepeat = true;
 
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
 
-	void wheelEvent(QWheelEvent *event);
+	void wheelEvent(QWheelEvent *event) override;
 
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent *event);
+	void keyPressEvent(QKeyEvent *event) override;
+	void keyReleaseEvent(QKeyEvent *event) override;
+
 public:
 	static RpgView *instance(QWidget *parent = nullptr);
 

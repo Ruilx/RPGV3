@@ -90,6 +90,7 @@ RpgView::RpgView(QWidget *parent): QGraphicsView(parent){
 	//		this->setFixedSize(ScreenWidth + 2, ScreenHeight + 2);
 	//		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	//		this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	this->setMinimumSize(ScreenWidth + 2, ScreenHeight + 2);
 
 	this->setRenderHint(QPainter::TextAntialiasing);
 
@@ -97,5 +98,5 @@ RpgView::RpgView(QWidget *parent): QGraphicsView(parent){
 	this->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 	this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 
-	//this->setInteractive(false);
+	this->setInteractive(false);
 }

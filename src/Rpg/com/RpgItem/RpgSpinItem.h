@@ -1,9 +1,6 @@
 #ifndef RPGSPINITEM_H
 #define RPGSPINITEM_H
 
-#include <QGraphicsDropShadowEffect>
-#include <QGraphicsPixmapItem>
-
 #include <Rpg/Rpg.h>
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgUtils.h>
@@ -11,6 +8,10 @@
 #include <Rpg/core/RpgDialogAnimation.h>
 #include <Rpg/core/RpgSpinValue.h>
 #include <Rpg/core/RpgItemProperties.h>
+
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsPixmapItem>
+#include <QTextBlockFormat>
 
 class RpgSpinItem : public RpgObject
 {
@@ -69,6 +70,8 @@ class RpgSpinItem : public RpgObject
 	int spinItemTop = 0;
 
 	int speed = Rpg::SingleWordSpeedFast;
+
+	int lineHeight = 35;
 
 	// 选择框在屏幕上的位置
 	int selectingIndex = 0;
@@ -145,6 +148,8 @@ public:
 	inline void setFont(const QFont &font){ this->font = QFont(font); }
 	void setFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
 	inline QFont getFont() const { return this->font; }
+
+	void setLineHeight(qreal pixel, int lineHeightType = QTextBlockFormat::FixedHeight);
 
 	void setDialogSize(const QSize &size);
 	inline const QSize getDialogSize() const { return this->dialogSize; }
