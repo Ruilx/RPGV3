@@ -12,6 +12,11 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsDropShadowEffect>
 
+/**
+ * @brief The RpgInputItem class
+ * Rpg输入框组件, 可以接受用户输入(包括输入法输入),支持unicode字符, 输出框对话框出现时会自动定位到lineEdit,
+ * 输入的文本可直接进入输入框, 可支持禁止不可见字符输入
+ */
 class RpgInputItem : public RpgObject
 {
 	Q_OBJECT
@@ -26,6 +31,9 @@ class RpgInputItem : public RpgObject
 
 	QLineEdit *input = new QLineEdit();
 	QGraphicsProxyWidget *inputItem = new QGraphicsProxyWidget(this->box);
+
+	// 设置最小的可接受输入长度
+	int minLength = 1;
 
 	RpgDialogAnimation *dialogAnimation = new RpgDialogAnimation(this->box, nullptr, nullptr, 300, QEasingCurve::OutQuad, this);
 
@@ -105,6 +113,21 @@ public:
 	inline QFont getFont() const { return this->messageBox->font(); }
 
 	void setLineHeight(qreal pixel, int lineHeightType = QTextBlockFormat::FixedHeight);
+
+	// 输入策略
+	// 设置输入时可见性
+	inline void setInputEchoMode(QLineEdit::EchoMode echoMode){ this->input->setEchoMode(echoMode); }
+	inline QLineEdit::EchoMode getInputEchoMode() const { return this->input->echoMode(); }
+
+	// 设置输入规则
+	inline void setInputMask(const QString &mask){ this->input->setInputMask(mask); }
+	inline QString getInputMask() const { this->input->inputMask(); }
+
+	// 设置输入长度限制 (1个unicode算1个长度)
+	inline void setMaxLength(int len){ this->input->setMaxLength(len); }
+	inline int getMaxLength() const { this->input->maxLength(); }
+	inline void setMinLength(int len){ this->minLength = len; }
+	inline int getMinLength() const { return this->minLength; }
 
 	void setDialogSize(const QSize &size);
 	inline const QSize getDialogSize() const { return this->dialogSize; }
