@@ -121,11 +121,11 @@ public:
 
 	// 设置输入规则
 	inline void setInputMask(const QString &mask){ this->input->setInputMask(mask); }
-	inline QString getInputMask() const { this->input->inputMask(); }
+	inline QString getInputMask() const { return this->input->inputMask(); }
 
 	// 设置输入长度限制 (1个unicode算1个长度)
 	inline void setMaxLength(int len){ this->input->setMaxLength(len); }
-	inline int getMaxLength() const { this->input->maxLength(); }
+	inline int getMaxLength() const { return this->input->maxLength(); }
 	inline void setMinLength(int len){ this->minLength = len; }
 	inline int getMinLength() const { return this->minLength; }
 

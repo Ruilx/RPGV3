@@ -60,6 +60,11 @@ void RpgInputItem::keyReleaseEvent(QKeyEvent *event){
 			this->quickShowFlag = true;
 			return;
 		}else{
+			if(this->input->text().length() < this->minLength){
+				this->playSound(SoundEffect_Banned);
+				this->input->selectAll();
+				return;
+			}
 			if(this->timerId > 0){
 				rDebug() << "Killing timer:" << this->timerId;
 				this->killTimer(this->timerId);

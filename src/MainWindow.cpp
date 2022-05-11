@@ -55,6 +55,7 @@ void MainWindow::testModel()
 	d.waitForComplete();
 
 	RpgInputItem inputItem(&base);
+	inputItem.setMinLength(5);
 	inputItem.setMessage("请输入一个长长的名字, 看下面能否显示:");
 	inputItem.run();
 	inputItem.waitingForComplete();
