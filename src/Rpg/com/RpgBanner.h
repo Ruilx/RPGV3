@@ -10,7 +10,17 @@
 #include <Rpg/core/RpgObject.h>
 #include <Rpg/core/RpgItemProperties.h>
 
-
+/**
+ * @brief The RpgBanner class
+ * RpgBanner类, 可以在窗口中展示一段实时播放的演示, 信息或图片等
+ * 将item设置好后可加入组件中, 并设置好时间轴关键帧回调, 可以用于JS函数回调(需要配合JsBanner回调)
+ * 创建: 给定参数duration:时长ms, fps:帧率(关键帧/秒), parent
+ * 增加Item: addItem(名称, *item), item的parent将会设置为banner
+ * 增加CB: setTimeLineFrameCb(frame, CB) 或 setTimeLineTimestampCb(ms, CB)
+ * 如果增加的CB超出了Timeline的长度, 则这个CB不会被执行
+ *
+ * 注意: 设置到timestamp的CB会被换算成frame, 所以其执行可能滞后于当前帧对应的timestamp.
+ */
 class RpgBanner : public RpgObject
 {
 	Q_OBJECT

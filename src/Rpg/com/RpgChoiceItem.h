@@ -30,6 +30,12 @@
  * ┃                                                                ┃
  * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ▼ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
  *
+ * 背景图片box由skin提供, 使用skin的dialog, selectbar, up/down arrow
+ *
+ * 可设置默认选中的选项, 执行时会将默认选中的选项放在屏幕第一个位置, 如果不是第一个选项, 显示上箭头
+ * 如果下面没有选项, 则会留空并无法向下移动选中框.
+ *
+ * 按下Enter/Space选中选项, 如果选项可用, 则关闭choiceItem
  */
 class RpgChoiceItem : public RpgObject
 {
