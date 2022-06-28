@@ -192,6 +192,22 @@ public:
 		return this->music->notifyInterval();
 	}
 
+	inline void setRenderer(QtAV::VideoRenderer* renderer){
+		if(renderer == nullptr){
+			this->music->tryClearVideoRenderers();
+		}else{
+			this->music->setRenderer(renderer);
+		}
+	}
+
+	inline const QtAV::VideoRenderer *getRenderer() const{
+		QList<QtAV::VideoRenderer *> rendererList = this->music->videoOutputs();
+		if(rendererList.length() > 0){
+			return rendererList.at(1);
+		}
+		return nullptr;
+	}
+
 signals:
 	void started();
 	void stopped();

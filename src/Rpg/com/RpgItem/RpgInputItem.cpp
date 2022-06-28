@@ -53,7 +53,7 @@ void RpgInputItem::keyReleaseEvent(QKeyEvent *event){
 	}
 	Qt::Key key = (Qt::Key)event->key();
 	Qt::KeyboardModifiers mod = event->modifiers();
-	const QList<Qt::Key> okKeys = QList<Qt::Key>({Qt::Key_Return, Qt::Key_Space});
+	const QList<Qt::Key> okKeys = QList<Qt::Key>({Qt::Key_Return});
 	if(mod == Qt::NoModifier && okKeys.contains(key)){
 		// 按下了Enter
 		if(this->showTextInProgressFlag == true){
@@ -115,7 +115,7 @@ RpgInputItem::RpgInputItem(RpgDialogBase *skin, RpgObject *parent): RpgObject(pa
 
 	//this->input->setStyleSheet(Rpg::getDefaultCss());
 	this->input->setAutoFillBackground(false);
-	this->input->setStyleSheet("QLineEdit{color: white; background-color: transparent; border: 0 none;}");
+	this->input->setStyleSheet("QLineEdit{color: white; background-color: transparent; border: 0 none; border-bottom: 2px solid white;}");
 	this->input->setContextMenuPolicy(Qt::NoContextMenu);
 	//QPalette pal = this->input->palette();{
 	//	pal.setColor(QPalette::Background, Qt::transparent);

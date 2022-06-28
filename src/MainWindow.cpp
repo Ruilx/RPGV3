@@ -57,6 +57,7 @@ void MainWindow::testModel()
 	RpgInputItem inputItem(&base);
 	inputItem.setMinLength(5);
 	inputItem.setMessage("请输入一个长长的名字, 看下面能否显示:");
+	//inputItem.setInputMask("1");
 	inputItem.run();
 	inputItem.waitingForComplete();
 	const QString text = inputItem.getValue();
@@ -201,6 +202,12 @@ void MainWindow::setupMenus(){
 
 	QMenu *helpMenu = new QMenu(this->tr("&Help"), this);{
 		this->menuBar()->addMenu(helpMenu);
+
+		QAction *aboutQtAct = new QAction("About &Qt", this);
+		connect(aboutQtAct, &QAction::triggered, [this](){
+			qApp->aboutQt();
+		});
+		helpMenu->addAction(aboutQtAct);
 	}
 
 }

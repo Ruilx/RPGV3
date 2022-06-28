@@ -56,6 +56,7 @@ void RpgLyric::setRpgMusic(RpgMusic *music){
 	}
 	if(music != nullptr){
 		this->musicObj = music;
+		// TODO: 这里应该connect吧 (showLyric搬过来?)
 	}else{
 		rDebug() << "Given RpgMusic point is not a pointer. using default RpgMusic instead.";
 		this->musicObj = RpgMusic::instance();
