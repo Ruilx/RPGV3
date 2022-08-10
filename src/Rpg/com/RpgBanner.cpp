@@ -215,7 +215,6 @@ int RpgBanner::waitForComplete(){
 
 void RpgBanner::end(){
 	emit this->exitAutoMode();
-
 	RpgObject::end();
 }
 

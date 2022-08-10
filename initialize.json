@@ -23,7 +23,7 @@
 		"king": "data/music/King.wav",
 		"banned": "data/se/banned.wav",
 		"select": "data/se/select.wav",
-		"accepted": "data/se/accepted.wav"
+		"accept": "data/se/accepted.wav"
 	},
 	"avatar": {
 		"002": "data/images/avatar/002.png",

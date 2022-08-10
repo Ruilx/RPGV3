@@ -23,6 +23,8 @@ class RpgMovie : public RpgObject
     QPropertyAnimation *enterAnimation = new QPropertyAnimation(this);
     QPropertyAnimation *exitAnimation = new QPropertyAnimation(this);
 
+	QString movieName;
+
 	bool canSkip = false;
 	bool willWaitKeyPress = false;
 
@@ -30,8 +32,9 @@ class RpgMovie : public RpgObject
 
 	void setup();
 public:
-	RpgMovie(RpgMusic *music = nullptr, QGraphicsObject *parentObject = nullptr): RpgObject(parentObject){
+	RpgMovie(const QString &movieName, RpgMusic *music = nullptr, QGraphicsObject *parentObject = nullptr): RpgObject(parentObject){
 		setRpgMusic(music);
+		this->movieName = movieName;
 		this->setup();
 	}
 	~RpgMovie();
@@ -50,6 +53,7 @@ public:
 					return;
 				}
 				// TODO: music stopped
+				this->hideMovie();
 			});
 
 		}else{
@@ -58,6 +62,18 @@ public:
 				this->setRpgMusic(rpgMusic);
 			}
 		}
+	}
+
+	const RpgMusic* getRpgMusic() const{
+		return this->musicInstance;
+	}
+
+	void setMovieName(const QString &movieName){
+		this->movieName = movieName;
+	}
+
+	const QString getMoveName() const{
+		return this->movieName;
 	}
 
 	inline void setCanSkip(bool canSkip){ this->canSkip = canSkip; }
@@ -69,8 +85,8 @@ public:
 	void run() override;
 	int waitForComplete();
 	void end() override;
-	void showBanner();
-	void hideBanner();
+	void showMovie();
+	void hideMovie();
 
 signals:
 	void enterAutoMode();

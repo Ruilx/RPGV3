@@ -308,3 +308,27 @@ QString RpgUtils::toString(const QPointF &pointf, int prec){
 	return "(" % QString::number(pointf.x(), 'g', prec) % ", " % QString::number(pointf.y(), 'g', prec) % ")";
 }
 
+template <typename Func>
+static void waitFor(QObject *object, Func signal, RpgUtils::waitStartCb cb, int timeoutMs){
+	QEventLoop eventLoop;
+	if(object == nullptr){
+		qWarning() << "Waiting for a nullptr signal.";
+		return;
+	}
+	QTimer timer;
+	timer.setSingleShot(true);
+	QMetaObject::Connection connectionHandle = QObject::connect(object, signal, &eventLoop, &QEventLoop::quit);
+	QMetaObject::Connection timeoutConnectionHandle = QObject::connect(&timer, &QTimer::timeout, &eventLoop, &QEventLoop::quit);
+	if(cb != nullptr){
+		cb(); // Callback
+	}
+	if(timeoutMs > 0){
+		timer.start(timeoutMs);
+	}
+	eventLoop.exec();
+	object->disconnect(connectionHandle);
+	if(timer.isActive()){
+		timer.stop();
+	}
+	timer.disconnect(timeoutConnectionHandle);
+}

@@ -3,9 +3,25 @@
 #include <Rpg/core/RpgState.h>
 #include <Rpg/com/RpgView.h>
 
-void RpgMovie::keyReleaseEvent(QKeyEvent *event)
-{
-    Q_UNUSED(event);
+void RpgMovie::keyReleaseEvent(QKeyEvent *event){
+	if(event->isAutoRepeat()){
+		return;
+	}
+	if(!this->isRunning()){
+		rWarning() << "RpgMovie not running.";
+		return;
+	}
+	if(!this->musicInstance->isRunning()){
+		rDebug() << "music is stopped, this key ignored.";
+		return;
+	}
+	if(event->modifiers() != Qt::NoModifier){
+		return;
+	}
+	int key = event->key();
+	if(key == Qt::Key_Return || key == Qt::Key_Space){
+		this->hideMovie();
+	}
 }
 
 void RpgMovie::setup(){
@@ -23,6 +39,9 @@ void RpgMovie::setup(){
 	this->exitAnimation->setStartValue(1);
 	this->exitAnimation->setEndValue(0);
 
+	this->movie->setPos(rpgView->mapToScene(0, 0));
+	this->movie->resizeRenderer(Rpg::ScreenSize.toSize());
+
 	this->setZValue(Rpg::ZValueFront);
 
 	this->hide();
@@ -35,47 +54,70 @@ RpgMovie::~RpgMovie(){
 }
 
 void RpgMovie::run(){
-    RpgObject::run();
-    rpgState->pushState(RpgState::AutoMode);
-    emit this->enterAutoMode();
+	RpgObject::run();
 
-    // reset the scene for item
-    if(rpgView->scene() == nullptr){
-        rError() << "RpgView not loaded scene yet";
-        this->end();
-        throw RpgNullPointerException("RpgView::instance()->scene()");
-    }else{
-        rpgView->scene()->addItem(this);
-    }
+	// reset the scene for item
+	if(rpgView->scene() == nullptr){
+		rError() << "RpgView not loaded scene yet";
+		this->end();
+		throw RpgNullPointerException("RpgView::instance()->scene()");
+	}else{
+		rpgView->scene()->addItem(this);
+	}
 
-    if(this->musicInstance == nullptr){
-        throw RpgNullPointerException("RpgMusic::instance()");
-    }
+	if(this->musicInstance == nullptr){
+		throw RpgNullPointerException("RpgMusic::instance()");
+	}
 
-    // stop music
-    this->musicInstance->stopMusic();
+	// stop music
+	this->musicInstance->stopMusic();
 
-    // set renderer
-    this->musicInstance->setRenderer(this->movie);
+	// set renderer
+	this->musicInstance->setRenderer(this->movie);
 
-    // show widget
-    this->showMovie();
-
-    // play movie
-    this->musicInstance->playMusic();
-
+	// show widget and play
+	this->showMovie();
 }
 
 void RpgMovie::end(){
-
-
-    emit this->exitAutoMode();
-    RpgObject::end();
+	this->hide();
+	emit this->exitAutoMode();
+	RpgObject::end();
 }
 
 void RpgMovie::showMovie(){
-    this->show();
-    this->enterAnimation->start();
+	rpgState->pushState(RpgState::AutoMode);
+	emit this->enterAutoMode();
+	this->show();
+	QEventLoop eventLoop;
+	if(this->enterAnimation->state() == QPropertyAnimation::Stopped){
+		this->enterAnimation->start();
+	}
+	if(this->enterAnimation->state() == QPropertyAnimation::Running){
+		eventLoop.exec();
+	}
+	this->musicInstance->playMusic(this->movieName);
+}
+
+void RpgMovie::hideMovie(){
+	if(this->musicInstance->isRunning()){
+		this->musicInstance->stopMusic();
+	}
+	QEventLoop eventLoop;
+	QObject::connect(this->exitAnimation, &QPropertyAnimation::finished, &eventLoop, &QEventLoop::quit);
+	if(this->exitAnimation->state() == QPropertyAnimation::Stopped){
+		this->exitAnimation->start();
+	}
+	if(this->exitAnimation->state() == QPropertyAnimation::Running){
+		eventLoop.exec();
+	}
+
+	if(rpgState->getTop() == RpgState::AutoMode){
+		rpgState->popState();
+	}else{
+		rDebug() << "RpgState stack top is not AutoMode.";
+	}
+	this->end();
 }
 
 

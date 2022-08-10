@@ -8,8 +8,11 @@
 #define EnumKeyToString(key) #key
 
 class QGraphicsItem;
+
 class RpgUtils {
 public:
+	typedef std::function<void()> waitStartCb;
+
 	static void msleep(int msec);
 	static const QByteArray readFile(const QString &filename, int length = 1048576);
 	static const QString detectJsonValue(const QJsonValue &value);
@@ -28,6 +31,9 @@ public:
 	static QString toString(const QSizeF &sizef, int prec = 6);
 	static QString toString(const QPoint &point);
 	static QString toString(const QPointF &pointf, int prec = 6);
+
+	template <typename Func>
+	static void waitFor(QObject *object, Func signal, waitStartCb cb, int timeoutMs = -1);
 };
 
 #endif // RPGUTILS_H
