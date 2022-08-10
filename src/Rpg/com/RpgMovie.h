@@ -20,13 +20,13 @@ class RpgMovie : public RpgObject
 
 	QtAV::GraphicsItemRenderer *movie = new QtAV::GraphicsItemRenderer(this);
 
-	QPropertyAnimation *enterAnimation = new RpgItemProperties(this);
-	QPropertyAnimation *exitAnimation = new RpgItemProperties(this);
+    QPropertyAnimation *enterAnimation = new QPropertyAnimation(this);
+    QPropertyAnimation *exitAnimation = new QPropertyAnimation(this);
 
 	bool canSkip = false;
 	bool willWaitKeyPress = false;
 
-	void keyReleaseEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event) override;
 
 	void setup();
 public:
@@ -61,10 +61,10 @@ public:
 	}
 
 	inline void setCanSkip(bool canSkip){ this->canSkip = canSkip; }
-	inline void getCanSkip() const { return this->canSkip; }
+    inline bool getCanSkip() const { return this->canSkip; }
 
 	inline void setWillWaitKeyPress(bool willWaitKey);
-	inline void getWillWaitKeyPress() const { return this->willWaitKeyPress; }
+    inline bool getWillWaitKeyPress() const { return this->willWaitKeyPress; }
 
 	void run() override;
 	int waitForComplete();
@@ -74,7 +74,7 @@ public:
 
 signals:
 	void enterAutoMode();
-	void exitAutoMode();
+    void exitAutoMode();
 };
 
 #endif // RPGMOVIE_H

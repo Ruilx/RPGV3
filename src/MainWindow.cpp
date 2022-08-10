@@ -161,16 +161,16 @@ void MainWindow::testModel()
 //		this->close();
 //	}
 
-//	RpgSpinItem spinItem(&base);
-//	spinItem.setMessage("请输入密码:");
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-//	spinItem.run();
-//	spinItem.waitForComplete();
-//	QStringList result = spinItem.getValue();
-//	rDebug() << "Result:" << result;
+    RpgSpinItem spinItem(&base);
+    spinItem.setMessage("请输入密码:");
+    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
+    spinItem.run();
+    spinItem.waitForComplete();
+    QStringList result = spinItem.getValue();
+    rDebug() << "Result:" << result;
 
 //	RpgDialogItem dialogItem(&base);
 //	dialogItem.appendMessage("您输入了: " % result.join(""));

@@ -194,7 +194,7 @@ public:
 
 	inline void setRenderer(QtAV::VideoRenderer* renderer){
 		if(renderer == nullptr){
-			this->music->tryClearVideoRenderers();
+            this->music->clearVideoRenderers();
 		}else{
 			this->music->setRenderer(renderer);
 		}

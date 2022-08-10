@@ -1,10 +1,11 @@
 #include "RpgMovie.h"
 
 #include <Rpg/core/RpgState.h>
+#include <Rpg/com/RpgView.h>
 
 void RpgMovie::keyReleaseEvent(QKeyEvent *event)
 {
-
+    Q_UNUSED(event);
 }
 
 void RpgMovie::setup(){
@@ -29,9 +30,52 @@ void RpgMovie::setup(){
 	rpgState->registerRpgObject(this, RpgState::AutoMode);
 }
 
-RpgMovie::~RpgMovie()
-{
+RpgMovie::~RpgMovie(){
 
+}
+
+void RpgMovie::run(){
+    RpgObject::run();
+    rpgState->pushState(RpgState::AutoMode);
+    emit this->enterAutoMode();
+
+    // reset the scene for item
+    if(rpgView->scene() == nullptr){
+        rError() << "RpgView not loaded scene yet";
+        this->end();
+        throw RpgNullPointerException("RpgView::instance()->scene()");
+    }else{
+        rpgView->scene()->addItem(this);
+    }
+
+    if(this->musicInstance == nullptr){
+        throw RpgNullPointerException("RpgMusic::instance()");
+    }
+
+    // stop music
+    this->musicInstance->stopMusic();
+
+    // set renderer
+    this->musicInstance->setRenderer(this->movie);
+
+    // show widget
+    this->showMovie();
+
+    // play movie
+    this->musicInstance->playMusic();
+
+}
+
+void RpgMovie::end(){
+
+
+    emit this->exitAutoMode();
+    RpgObject::end();
+}
+
+void RpgMovie::showMovie(){
+    this->show();
+    this->enterAnimation->start();
 }
 
 
