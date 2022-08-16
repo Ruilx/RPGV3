@@ -20,7 +20,7 @@ void RpgMovie::keyReleaseEvent(QKeyEvent *event){
 	}
 	int key = event->key();
 	if(key == Qt::Key_Return || key == Qt::Key_Space){
-		this->hideMovie();
+		this->musicInstance->stopMusic();
 	}
 }
 
@@ -66,21 +66,40 @@ void RpgMovie::run(){
 	}
 
 	if(this->musicInstance == nullptr){
+		this->end();
 		throw RpgNullPointerException("RpgMusic::instance()");
 	}
 
+	rDebug() << "STOP MUSIC";
 	// stop music
 	this->musicInstance->stopMusic();
 
+	rDebug() << "SET RENDERER";
 	// set renderer
 	this->musicInstance->setRenderer(this->movie);
 
+	rDebug() << "SHOW MOVIE";
 	// show widget and play
 	this->showMovie();
 }
 
+int RpgMovie::waitForComplete(){
+	if(!this->isRunning()){
+		rError() << "RpgMovie not running.";
+		return -1;
+	}
+	QEventLoop eventLoop;
+	QObject::connect(this, &RpgMovie::exitAutoMode, &eventLoop, &QEventLoop::quit);
+	eventLoop.exec();
+
+	rDebug() << "Wait FINISHED.";
+
+	return 0;
+}
+
 void RpgMovie::end(){
 	this->hide();
+	this->musicInstance->setRenderer(nullptr);
 	emit this->exitAutoMode();
 	RpgObject::end();
 }
@@ -88,15 +107,19 @@ void RpgMovie::end(){
 void RpgMovie::showMovie(){
 	rpgState->pushState(RpgState::AutoMode);
 	emit this->enterAutoMode();
+	rDebug() << "THIS SHOW";
 	this->show();
 	QEventLoop eventLoop;
+	QObject::connect(this->enterAnimation, &QPropertyAnimation::finished, &eventLoop, &QEventLoop::quit);
 	if(this->enterAnimation->state() == QPropertyAnimation::Stopped){
 		this->enterAnimation->start();
 	}
 	if(this->enterAnimation->state() == QPropertyAnimation::Running){
 		eventLoop.exec();
 	}
-	this->musicInstance->playMusic(this->movieName);
+	rDebug() << "Will play music:" << this->movieName;
+	this->musicInstance->playMusic(this->movieName, this->loop);
+	rDebug() << "Play Music:" << this->movieName;
 }
 
 void RpgMovie::hideMovie(){

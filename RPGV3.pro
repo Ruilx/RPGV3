@@ -88,7 +88,11 @@ SOURCES += \
     src/Rpg/core/RpgDialogAnimation.cpp \
     src/Rpg/core/RpgItemProperties.cpp \
     src/Rpg/com/RpgChoice.cpp \
-    src/Rpg/core/RpgChoiceMessage.cpp
+    src/Rpg/core/RpgChoiceMessage.cpp \
+    src/Rmod/QtAVWidgets/RGraphicsItemRenderer.cpp \
+    src/Rmod/QtAVWidgets/RGraphicsItemRendererPrivate.cpp \
+    src/Rmod/QtAVWidgets/RPainterRenderer.cpp \
+    src/Rmod/QtAVWidgets/RPainterRendererPrivate.cpp
 
 
 HEADERS += \
@@ -141,7 +145,11 @@ HEADERS += \
     src/Rpg/core/RpgDialogAnimation.h \
     src/Rpg/core/RpgItemProperties.h \
     src/Rpg/com/RpgChoice.h \
-    src/Rpg/core/RpgChoiceMessage.h
+    src/Rpg/core/RpgChoiceMessage.h \
+    src/Rmod/QtAVWidgets/RGraphicsItemRenderer.h \
+    src/Rmod/QtAVWidgets/RGraphicsItemRendererPrivate.h \
+    src/Rmod/QtAVWidgets/RPainterRenderer.h \
+    src/Rmod/QtAVWidgets/RPainterRendererPrivate.h
 
 
 DISTFILES += \

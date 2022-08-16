@@ -166,6 +166,9 @@ public:
 		//        1 |          0 | 不重复
 		//        2 |          1 | 重复一次
 		// 等等
+		if(loop < -1){
+			loop = -1;
+		}
 		switch(loop){
 			case -1: case 0: this->music->setRepeat(-1); break;
 			default: this->music->setRepeat(loop -1); break;
@@ -208,23 +211,34 @@ public:
 		return nullptr;
 	}
 
+	void setMusic(const QString &musicName){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::MusicFile, musicName);
+		if(filename.isEmpty()){
+			throw RpgResourceNotFoundException(musicName);
+		}
+		this->music->setFile(filename);
+	}
+
+	const QString getMusic() const{
+		return this->music->file();
+	}
+
 signals:
 	void started();
 	void stopped();
 	void seeked(qint64 position);
 
 	void invaildMediaSignal();
-public slots:
 
-	void playMusic(const QString &musicName){
-		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::MusicFile, musicName);
-		if(filename.isEmpty()){
-			throw RpgResourceNotFoundException(musicName);
-		}
+public slots:
+	void playMusic(const QString &musicName, int loop = -1){
+		this->setMusic(musicName);
 		if(this->music->state() != QtAV::AVPlayer::PlayingState){
 			this->stopMusic();
 		}
-		this->music->setFile(filename);
+		if(this->getLoop() != loop){
+			this->setLoop(loop);
+		}
 		this->music->play();
 		this->volumeTransition(true);
 		//this->currentLoop++;

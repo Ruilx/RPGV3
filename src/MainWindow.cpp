@@ -10,6 +10,7 @@
 #include <Rpg/com/RpgDialogItem.h>
 #include <Rpg/com/RpgChoiceItem.h>
 #include <Rpg/com/RpgMusic.h>
+#include <Rpg/com/RpgMovie.h>
 #include <Rpg/core/RpgDialogMessage.h>
 #include <Rpg/com/RpgBanner.h>
 #include <Rpg/com/RpgItem/RpgSpinItem.h>
@@ -17,7 +18,7 @@
 
 #include <Rpg/com/RpgSound.h>
 
-#include <QPlainTextEdit>
+#include <QtAVWidgets/global.h>
 
 void MainWindow::closeEvent(QCloseEvent *event){
 	if(!this->canClose){
@@ -46,23 +47,26 @@ void MainWindow::testModel()
 	RpgSpecLocationChopingDialog base("skin");
 	RpgSpecLocationChopingDialog clear("clearSkin");
 
+	RpgMovie movie("test");
+	movie.setZValue(Rpg::ZValueMapFront);
+	movie.run();
 
-	RpgDialogItem d(&clear);
-	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
-	msg1.setSpeed(Rpg::SingleWordSpeedFast);
-	d.appendMessage(msg1);
-	d.run();
-	d.waitForComplete();
+//	RpgDialogItem d(&clear);
+//	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
+//	msg1.setSpeed(Rpg::SingleWordSpeedFast);
+//	d.appendMessage(msg1);
+//	d.run();
+//	d.waitForComplete();
 
-	RpgInputItem inputItem(&base);
-	inputItem.setMinLength(5);
-	inputItem.setMessage("请输入一个长长的名字, 看下面能否显示:");
-	//inputItem.setInputMask("1");
-	inputItem.run();
-	inputItem.waitingForComplete();
-	const QString text = inputItem.getValue();
+//	RpgInputItem inputItem(&base);
+//	inputItem.setMinLength(3);
+//	inputItem.setMessage("请输入一个长长的名字, 看下面能否显示:");
+//	//inputItem.setInputMask("1");
+//	inputItem.run();
+//	inputItem.waitingForComplete();
+//	const QString text = inputItem.getValue();
 
-	rDebug() << "Input text:" << text;
+//	rDebug() << "Input text:" << text;
 
 	//	RpgDialogItem dialog(&base);
 
@@ -161,16 +165,19 @@ void MainWindow::testModel()
 //		this->close();
 //	}
 
-    RpgSpinItem spinItem(&base);
-    spinItem.setMessage("请输入密码:");
-    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-    spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9"));
-    spinItem.run();
-    spinItem.waitForComplete();
-    QStringList result = spinItem.getValue();
-    rDebug() << "Result:" << result;
+//	RpgSpinItem spinItem(&base);
+//	spinItem.setMessage("请输入密码:");
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+//	spinItem.appendSpinValue(RpgSpinValue("洛天依;乐正绫;言和;初音ミク！"));
+//	spinItem.run();
+//	spinItem.waitForComplete();
+//	QStringList result = spinItem.getValue();
+//	rDebug() << "Result:" << result;
 
 //	RpgDialogItem dialogItem(&base);
 //	dialogItem.appendMessage("您输入了: " % result.join(""));
@@ -185,6 +192,8 @@ void MainWindow::testModel()
 
 
 	this->canClose = true;
+
+	movie.waitForComplete();
 }
 
 void MainWindow::setupMenus(){
@@ -203,11 +212,30 @@ void MainWindow::setupMenus(){
 	QMenu *helpMenu = new QMenu(this->tr("&Help"), this);{
 		this->menuBar()->addMenu(helpMenu);
 
+		QAction *aboutAct = new QAction("&About", this);
+		connect(aboutAct, &QAction::triggered, [this](){
+			QtAV::about();
+		});
+		helpMenu->addAction(aboutAct);
+
 		QAction *aboutQtAct = new QAction("About &Qt", this);
 		connect(aboutQtAct, &QAction::triggered, [this](){
 			qApp->aboutQt();
 		});
 		helpMenu->addAction(aboutQtAct);
+
+		QAction *aboutQtAVAct = new QAction("About QtA&V", this);
+		connect(aboutQtAVAct, &QAction::triggered, [this](){
+			QtAV::aboutQtAV();
+		});
+		helpMenu->addAction(aboutQtAVAct);
+
+		QAction *aboutFFmpegAct = new QAction("About &FFmpeg", this);
+		connect(aboutFFmpegAct, &QAction::triggered, [this](){
+			QtAV::aboutFFmpeg();
+		});
+		helpMenu->addAction(aboutFFmpegAct);
+
 	}
 
 }

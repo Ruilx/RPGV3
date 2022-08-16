@@ -7,7 +7,7 @@
 
 #include <Rpg/com/RpgMusic.h>
 
-#include <QtAVWidgets/GraphicsItemRenderer.h>
+#include <Rmod/QtAVWidgets/RGraphicsItemRenderer.h>
 
 /**
  * @brief The RpgMovie class
@@ -18,17 +18,19 @@ class RpgMovie : public RpgObject
 
 	RpgMusic *musicInstance = rpgMusic;
 
-	QtAV::GraphicsItemRenderer *movie = new QtAV::GraphicsItemRenderer(this);
+	RGraphicsItemRenderer *movie = new RGraphicsItemRenderer(this);
 
-    QPropertyAnimation *enterAnimation = new QPropertyAnimation(this);
-    QPropertyAnimation *exitAnimation = new QPropertyAnimation(this);
+	QPropertyAnimation *enterAnimation = new QPropertyAnimation(this);
+	QPropertyAnimation *exitAnimation = new QPropertyAnimation(this);
 
 	QString movieName;
 
 	bool canSkip = false;
 	bool willWaitKeyPress = false;
 
-    void keyReleaseEvent(QKeyEvent *event) override;
+	int loop = 1;
+
+	void keyReleaseEvent(QKeyEvent *event) override;
 
 	void setup();
 public:
@@ -40,28 +42,26 @@ public:
 	~RpgMovie();
 
 	void setRpgMusic(RpgMusic *music){
+		rDebug() << "SET MUSIC CHECK MUSICINSTANCE";
 		if(this->musicInstance != nullptr){
 			this->musicInstance->setRenderer(nullptr);
 			this->musicInstance->disconnect();
 		}
+		rDebug() << "SET NEW MUSIC";
 		if(music != nullptr){
 			this->musicInstance = music;
-			this->musicInstance->setRenderer(this->movie);
-			this->connect(this->musicInstance, &RpgMusic::stopped, [this](){
-				if(!this->isRunning()){
-					rDebug() << "RpgMovie not running!";
-					return;
-				}
-				// TODO: music stopped
-				this->hideMovie();
-			});
-
 		}else{
-			if(rpgMusic != nullptr){
-				rDebug() << "Given RpgMusic point is not a pointer. using default RpgMusic instead.";
-				this->setRpgMusic(rpgMusic);
-			}
+			this->musicInstance = rpgMusic;
 		}
+		rDebug() << "CONNECT";
+		this->connect(this->musicInstance, &RpgMusic::stopped, [this](){
+			if(!this->isRunning()){
+				rDebug() << "RpgMovie not running!";
+				return;
+			}
+			// TODO: music stopped
+			this->hideMovie();
+		});
 	}
 
 	const RpgMusic* getRpgMusic() const{
@@ -77,10 +77,13 @@ public:
 	}
 
 	inline void setCanSkip(bool canSkip){ this->canSkip = canSkip; }
-    inline bool getCanSkip() const { return this->canSkip; }
+	inline bool getCanSkip() const { return this->canSkip; }
 
 	inline void setWillWaitKeyPress(bool willWaitKey);
-    inline bool getWillWaitKeyPress() const { return this->willWaitKeyPress; }
+	inline bool getWillWaitKeyPress() const { return this->willWaitKeyPress; }
+
+	inline void setLoop(int loop){ this->loop = loop; }
+	inline int getLoop() const { return this->loop; }
 
 	void run() override;
 	int waitForComplete();
