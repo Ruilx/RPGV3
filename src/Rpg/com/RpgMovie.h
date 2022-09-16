@@ -42,18 +42,17 @@ public:
 	~RpgMovie();
 
 	void setRpgMusic(RpgMusic *music){
-		rDebug() << "SET MUSIC CHECK MUSICINSTANCE";
 		if(this->musicInstance != nullptr){
 			this->musicInstance->setRenderer(nullptr);
 			this->musicInstance->disconnect();
 		}
-		rDebug() << "SET NEW MUSIC";
+
 		if(music != nullptr){
 			this->musicInstance = music;
 		}else{
 			this->musicInstance = rpgMusic;
 		}
-		rDebug() << "CONNECT";
+
 		this->connect(this->musicInstance, &RpgMusic::stopped, [this](){
 			if(!this->isRunning()){
 				rDebug() << "RpgMovie not running!";

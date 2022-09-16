@@ -50,7 +50,7 @@ void RpgMovie::setup(){
 }
 
 RpgMovie::~RpgMovie(){
-
+	rpgState->unregisterRpgObject(this, RpgState::AutoMode);
 }
 
 void RpgMovie::run(){
@@ -107,7 +107,7 @@ void RpgMovie::end(){
 void RpgMovie::showMovie(){
 	rpgState->pushState(RpgState::AutoMode);
 	emit this->enterAutoMode();
-	rDebug() << "THIS SHOW";
+
 	this->show();
 	QEventLoop eventLoop;
 	QObject::connect(this->enterAnimation, &QPropertyAnimation::finished, &eventLoop, &QEventLoop::quit);

@@ -78,7 +78,7 @@ void RpgState::keyPressEvent(QKeyEvent *event, const QGraphicsScene *scene){
 		rDebug() << "Mode stack is empty, cannot getting Mode.";
 		throw RpgNullPointerException("RpgState::keyPressEvent => event", event);
 	}
-	rDebug() << "[" << RpgState::stateModeString.value(this->modeStack.top()) << "] Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+	rDebug() << "[" << RpgState::stateModeString.value(this->modeStack.top()) << "(" << this->modeStack.length() << ")" << "] Received key PRESS [▼]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(scene == nullptr){
 		rDebug() << "Must specified a valid scene to pass the key.";
 		throw RpgNullPointerException("RpgState::keyPressEvent => scene", scene);
@@ -97,12 +97,14 @@ void RpgState::keyPressEvent(QKeyEvent *event, const QGraphicsScene *scene){
 				 */
 				//QKeyEvent *keyPressEvent = new QKeyEvent(QEvent::KeyPress, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
 				// @date 2022/05/04: 自己搭的QKeyEvent在系统的控件(如QLineEdit)的输入的位置可能会发生转义(比如按Ctrl, 会插入"Ctrl"四个字母), 更改为直接复制QKeyEvent构造
+				rDebug() << "before send to obj:" << obj;
 				QKeyEvent *keyPressEvent = new QKeyEvent(*event);
 				rDebug() << "Send Event to obj:" << obj;
 				qApp->postEvent(obj, keyPressEvent);
 			}
 		}
 	}
+	//rDebug() << "KeyPress Finished";
 }
 
 void RpgState::keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
@@ -116,7 +118,7 @@ void RpgState::keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
 		rDebug() << "Mode stack is empty, cannot getting Mode.";
 		return;
 	}
-	rDebug() << "[" << RpgState::stateModeString.value(this->modeStack.top()) << "] Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
+	rDebug() << "[" << RpgState::stateModeString.value(this->modeStack.top()) << "(" << this->modeStack.length() << ")" << "] Received key RELEASE [▲]:" << RpgUtils::keysToString((Qt::Key)key, mod);
 	if(scene == nullptr){
 		rDebug() << "Must specified a valid scene to pass the key.";
 		throw RpgNullPointerException("RpgState::keyReleaseEvent => scene", scene);
@@ -128,17 +130,21 @@ void RpgState::keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
 			rDebug() << "RpgObject is null, cannot pass key to the object";
 			continue;
 		}
+		rDebug() << "D";
 		if(obj->scene() == scene){
+			rDebug() << "E";
 			if(obj->getRunning()){
 				/* The event must be allocated on the heap since the post event queue will take ownership of the event
 				 * and delete it once it has been posted.
 				 */
 				//QKeyEvent *keyReleaseEvent = new QKeyEvent(QEvent::KeyRelease, key, mod, RpgUtils::keysToString((Qt::Key)key, mod), false, 1);
 				// @date 2022/05/04: 自己搭的QKeyEvent在系统的控件(如QLineEdit)的输入的位置可能会发生转义(比如按Ctrl, 会插入"Ctrl"四个字母), 更改为直接复制QKeyEvent构造
+				rDebug() << "before send to obj:" << obj;
 				QKeyEvent *keyReleaseEvent = new QKeyEvent(*event);
 				rDebug() << "Send Event to obj:" << obj;
 				qApp->postEvent(obj, keyReleaseEvent);
 			}
 		}
 	}
+	//rDebug() << "KeyRelease Finished";
 }
