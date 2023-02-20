@@ -47,54 +47,52 @@ void MainWindow::testModel()
 	RpgSpecLocationChopingDialog base("skin");
 	RpgSpecLocationChopingDialog clear("clearSkin");
 
-	RpgMovie movie("test");
-	movie.setZValue(Rpg::ZValueMapFront);
-	movie.run();
+//	RpgMovie movie("test");
+//	movie.setZValue(Rpg::ZValueMapFront);
+//	movie.run();
 
-//	RpgDialogItem d(&clear);
-//	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
-//	msg1.setSpeed(Rpg::SingleWordSpeedFast);
-//	d.appendMessage(msg1);
-//	d.run();
-//	d.waitForComplete();
+	RpgDialogItem d(&clear);
+	RpgDialogMessage msg1("测试文本:RPGV3是一个使用<r>Qt图像处理</r>, <g>QtAV组件多媒体</g>, <b>JavaScript作为脚本执行</b>的2D RPGMaker样式的C++ RPG<sup>故事执行器</sup>");
+	msg1.setSpeed(Rpg::SingleWordSpeedFast);
+	d.appendMessage(msg1);
+	d.run();
+	d.waitForComplete();
 
-//	RpgInputItem inputItem(&base);
-//	inputItem.setMinLength(3);
-//	inputItem.setMessage("请输入一个长长的名字, 看下面能否显示:");
-//	//inputItem.setInputMask("1");
-//	inputItem.run();
-//	inputItem.waitingForComplete();
-//	const QString text = inputItem.getValue();
+	RpgInputItem inputItem(&base);
+	inputItem.setMinLength(3);
+	inputItem.setMessage("请输入一个长长的名字, 看下面能否显示:");
+	//inputItem.setInputMask("1");
+	inputItem.run();
+	inputItem.waitingForComplete();
 
-//	rDebug() << "Input text:" << text;
+	const QString text = inputItem.getValue();
+	rDebug() << "Input text:" << text;
 
-	//	RpgDialogItem dialog(&base);
+	RpgDialogItem dialog(&base);
+	dialog.setDialogAlign(Rpg::AlignBottom);
+	dialog.appendMessage("This is a text");
+	dialog.appendMessage("This is another text");
+	RpgDialogMessage msg2 = RpgDialogMessage("测试5秒消息");
+	msg2.setWaitTime(5000);
+	dialog.appendMessage(msg2);
+	dialog.appendMessage("中文显示");
+	dialog.appendMessage(RpgDialogMessage("RPGDialogMessage", "NAME"));
+	dialog.appendMessage(RpgDialogMessage({
+											  {"name", "MY"},
+											  {"text", "MY test text 2333333333333333333333333333333333333333333333"},
+											  {"characterName", "002"},
+											  {"avatarMode", Rpg::AvatarHalfBodyBehind},
+											  {"avatarAround", Rpg::AvatarAroundRight},
+											  {"pointSize", 20},
+											  {"speed", 100},
+											  {"waitTime", 5000}
+										  }));
+	RpgDialogMessage msg3 = RpgDialogMessage("测试最后5秒消息");
+	msg3.setWaitTime(5000);
+	dialog.appendMessage(msg3);
 
-	//	dialog.setDialogAlign(Rpg::AlignBottom);
-
-//	dialog.appendMessage("This is a text");
-//	dialog.appendMessage("This is another text");
-//	RpgDialogMessage msg1 = RpgDialogMessage("测试5秒消息");
-//	msg1.setWaitTime(5000);
-//	dialog.appendMessage(msg1);
-//	dialog.appendMessage("中文显示");
-//	dialog.appendMessage(RpgDialogMessage("RPGDialogMessage", "NAME"));
-//	dialog.appendMessage(RpgDialogMessage({
-//											  {"name", "MY"},
-//											  {"text", "MY test text 2333333333333333333333333333333333333333333333"},
-//											  {"characterName", "002"},
-//											  {"avatarMode", Rpg::AvatarHalfBodyBehind},
-//											  {"avatarAround", Rpg::AvatarAroundRight},
-//											  {"pointSize", 20},
-//											  {"speed", 100},
-//											  {"waitTime", 5000}
-//										  }));
-//	RpgDialogMessage msg2 = RpgDialogMessage("测试最后5秒消息");
-//	msg2.setWaitTime(5000);
-//	dialog.appendMessage(msg2);
-
-//	dialog.run();
-//	dialog.waitForComplete();
+	dialog.run();
+	dialog.waitForComplete();
 
 //	for(int i = 0; i < 11; i++){
 //		rpgSound->play("banned");
@@ -165,19 +163,19 @@ void MainWindow::testModel()
 //		this->close();
 //	}
 
-//	RpgSpinItem spinItem(&base);
-//	spinItem.setMessage("请输入密码:");
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
-//	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
-//	spinItem.appendSpinValue(RpgSpinValue("洛天依;乐正绫;言和;初音ミク！"));
-//	spinItem.run();
-//	spinItem.waitForComplete();
-//	QStringList result = spinItem.getValue();
-//	rDebug() << "Result:" << result;
+	RpgSpinItem spinItem(&base);
+	spinItem.setMessage("请输入密码:");
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F"));
+	spinItem.appendSpinValue(RpgSpinValue("洛天依;乐正绫;言和;初音ミク！"));
+	spinItem.run();
+	spinItem.waitForComplete();
+	QStringList result = spinItem.getValue();
+	rDebug() << "Result:" << result;
 
 //	RpgDialogItem dialogItem(&base);
 //	dialogItem.appendMessage("您输入了: " % result.join(""));
@@ -193,7 +191,7 @@ void MainWindow::testModel()
 
 	this->canClose = true;
 
-	movie.waitForComplete();
+//	movie.waitForComplete();
 }
 
 void MainWindow::setupMenus(){

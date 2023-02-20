@@ -130,9 +130,7 @@ void RpgState::keyReleaseEvent(QKeyEvent *event, const QGraphicsScene *scene){
 			rDebug() << "RpgObject is null, cannot pass key to the object";
 			continue;
 		}
-		rDebug() << "D";
 		if(obj->scene() == scene){
-			rDebug() << "E";
 			if(obj->getRunning()){
 				/* The event must be allocated on the heap since the post event queue will take ownership of the event
 				 * and delete it once it has been posted.
