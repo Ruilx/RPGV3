@@ -76,9 +76,6 @@ __pycache__/
 *.dll
 *.exe
 
-# Wechat snapshot file
-wechat.snapshot.ini
-
 # Backup folder
 backup/
 
@@ -92,3 +89,5 @@ libs/
 
 # data directory
 data/music
+data/font
+

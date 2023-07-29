@@ -22,30 +22,38 @@ void RpgAxisItem::draw(QPainter &p){
 	p.setPen(this->auxPen2);
 	for(qreal i = area.center().x() - this->step.width(); i >= area.left(); i -= this->step.width()){
 		this->drawPoint(p, QPointF(i, height / 2.0));
-		qreal quotient = (area.center().x() - i) / grid.width();
-		if(quotient - int(quotient) <= 1e-5){
-			p.drawLine(QLineF(i, 0, i, height));
+		if(grid.width() > 0){
+			qreal quotient = (area.center().x() - i) / grid.width();
+			if(qAbs(quotient - int(quotient)) <= 1e-5){
+				p.drawLine(QLineF(i, 0, i, height));
+			}
 		}
 	}
 	for(qreal i = area.center().x() + this->step.width(); i <= area.width(); i += step.width()){
 		this->drawPoint(p, QPointF(i, height / 2.0));
-		qreal quotient = (area.center().x() - i) / grid.width();
-		if(quotient - int(quotient) <= 1e-5){
-			p.drawLine(QLineF(i, 0, i, height));
+		if(grid.width() > 0){
+			qreal quotient = (area.center().x() - i) / grid.width();
+			if(qAbs(quotient - int(quotient)) <= 1e-5){
+				p.drawLine(QLineF(i, 0, i, height));
+			}
 		}
 	}
 	for(qreal i = area.center().y() - this->step.height(); i >= area.top(); i -= this->step.height()){
-		this->drawPoint(p, QPoint(width / 2.0, i));
-		qreal quotient = (i - area.center().y()) / grid.height();
-		if(quotient - int(quotient) <= 1e-5){
-			p.drawLine(QLineF(0, i, width, i));
+		this->drawPoint(p, QPointF(width / 2.0, i));
+		if(grid.height() > 0){
+			qreal quotient = (i - area.center().y()) / grid.height();
+			if(qAbs(quotient - int(quotient)) <= 1e-5){
+				p.drawLine(QLineF(0, i, width, i));
+			}
 		}
 	}
 	for(qreal i = area.center().y() + this->step.height(); i <= area.height(); i += step.height()){
 		this->drawPoint(p, QPointF(width / 2.0, i));
-		qreal quotient = (i - area.center().y()) / grid.height();
-		if(quotient - int(quotient) <= 1e-5){
-			p.drawLine(QLineF(0, i, width, i));
+		if(grid.height() > 0){
+			qreal quotient = (i - area.center().y()) / grid.height();
+			if(qAbs(quotient - int(quotient)) <= 1e-5){
+				p.drawLine(QLineF(0, i, width, i));
+			}
 		}
 	}
 }
