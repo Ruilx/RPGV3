@@ -80,7 +80,7 @@ class RpgDialogItem : public RpgObject
 //	void boundingRect() override;
 
 	// timer
-	void timerEvent(QTimerEvent *event);
+	void timerEvent(QTimerEvent *event) override;
 	int timerId = -1;
 	bool timerProcessing = false;
 
