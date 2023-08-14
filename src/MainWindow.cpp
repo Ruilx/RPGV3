@@ -105,58 +105,58 @@ void MainWindow::testModel()
 //		RpgUtils::msleep(1);
 //	}
 
-//	RpgBanner banner(5000);
-//	QGraphicsTextItem *text = new QGraphicsTextItem("Hello, world!");
-//	text->setFont(rpgFont->getFont("dialog", 36));
-//	text->setDefaultTextColor(Qt::white);
-//	text->setPos(RpgUtils::getDialogPos(Rpg::AlignCenter, text->boundingRect().size()));
+	RpgBanner banner(5000);
+	QGraphicsTextItem *bitem = new QGraphicsTextItem("Hello, world!");
+	bitem->setFont(rpgFont->getFont("dialog", 36));
+	bitem->setDefaultTextColor(Qt::white);
+	bitem->setPos(RpgUtils::getDialogPos(Rpg::AlignCenter, bitem->boundingRect().size()));
 
-//	banner.addItem("text", text);
-//	banner.setTimeLineTimestampCb(100, [this](){
-//		rDebug() << "100MS!";
-//	});
-//	banner.setTimeLineTimestampCb(500, [this](){
-//		rDebug() << "500MS!";
-//	});
-//	banner.setTimeLineFrameCb(150, [this](){
-//		rDebug() << "150 FRAMES!";
-//	});
+	banner.addItem("bitem", bitem);
+	banner.setTimeLineTimestampCb(100, [this](){
+		rDebug() << "100MS!";
+	});
+	banner.setTimeLineTimestampCb(500, [this](){
+		rDebug() << "500MS!";
+	});
+	banner.setTimeLineFrameCb(150, [this](){
+		rDebug() << "150 FRAMES!";
+	});
 
-//	banner.run();
-//	banner.waitForComplete();
+	banner.run();
+	banner.waitForComplete();
 
-//	RpgChoiceItem dialog(&base);
-//	dialog.setDialogAlign(Rpg::AlignBottom);
-//	dialog.setDialogSize(QSize(180, 160));
-//	dialog.appendChoice(RpgChoiceMessage({
-//		{"text", "はじめから"},
-//		{"align", Rpg::AlignCenter},
-//	}));
-//	dialog.appendChoice(RpgChoiceMessage({
-//		{"text", "つづきから"},
-//		{"enabled", false},
-//		{"align", Rpg::AlignCenter},
-//	}));
-//	dialog.appendChoice(RpgChoiceMessage({
-//		{"text", "オプション"},
-//		{"align", Rpg::AlignCenter},
-//	}));
-//	dialog.appendChoice(RpgChoiceMessage({
-//		{"text", "お わ り"},
-//		{"align", Rpg::AlignCenter},
-//	}));
-//	dialog.setDefaultChoice(0);
-//	//dialog.setTimeout(5000);
+	RpgChoiceItem cdialog(&base);
+	cdialog.setDialogAlign(Rpg::AlignBottom);
+	cdialog.setDialogSize(QSize(180, 160));
+	cdialog.appendChoice(RpgChoiceMessage({
+		{"text", "はじめから"},
+		{"align", Rpg::AlignCenter},
+	}));
+	cdialog.appendChoice(RpgChoiceMessage({
+		{"text", "つづきから"},
+		{"enabled", false},
+		{"align", Rpg::AlignCenter},
+	}));
+	cdialog.appendChoice(RpgChoiceMessage({
+		{"text", "オプション"},
+		{"align", Rpg::AlignCenter},
+	}));
+	cdialog.appendChoice(RpgChoiceMessage({
+		{"text", "お わ り"},
+		{"align", Rpg::AlignCenter},
+	}));
+	cdialog.setDefaultChoice(0);
+	//dialog.setTimeout(5000);
 
-//	dialog.run();
-//	int res = dialog.waitForComplete();
-//	rDebug() << "RES:" << res;
+	cdialog.run();
+	int res = dialog.waitForComplete();
+	rDebug() << "RES:" << res;
 
-//	RpgDialogItem msg(&base);
-//	msg.setDialogAlign(Rpg::AlignBottom);
-//	msg.appendMessage(QString("你选择了第%1项, 值为:%2").arg(res).arg(dialog.getValue()));
-//	msg.run();
-//	msg.waitForComplete();
+	RpgDialogItem msg(&base);
+	msg.setDialogAlign(Rpg::AlignBottom);
+	msg.appendMessage(QString("你选择了第%1项, 值为:%2").arg(res).arg(cdialog.getValue()));
+	msg.run();
+	msg.waitForComplete();
 
 //	if(res == 3){
 //		this->canClose = true;

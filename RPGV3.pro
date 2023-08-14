@@ -42,6 +42,7 @@ SOURCES += \
     src/Rpg/com/RpgBanner.cpp \
     src/Rpg/com/RpgChoiceItem.cpp \
 	src/Rpg/com/RpgDialogItem.cpp \
+    src/Rpg/com/RpgGridInputPanel.cpp \
 	src/Rpg/com/RpgItem/RpgInputItem.cpp \
 	src/Rpg/com/RpgItem/RpgSpinItem.cpp \
 	src/Rpg/com/RpgMovie.cpp \
@@ -100,6 +101,7 @@ HEADERS += \
     src/Rpg/com/RpgBanner.h \
     src/Rpg/com/RpgChoiceItem.h \
 	src/Rpg/com/RpgDialogItem.h \
+    src/Rpg/com/RpgGridInputPanel.h \
 	src/Rpg/com/RpgItem/RpgInputItem.h \
 	src/Rpg/com/RpgItem/RpgSpinItem.h \
 	src/Rpg/com/RpgMovie.h \
