@@ -101,7 +101,32 @@ public:
 
 private:
 	// 选择列表
-	QList<QList</* value? */>> gridItems;
+	QList<QList<QString>> gridItems;
+
+	int defaultGridIndex = 0;
+
+	QTimeLine *arrowSymbolsTimeLine = new QTimeLine(1000, this);
+
+	QHash<SoundEffect, QString> soundEffects = QHash<SoundEffect, QString>({
+		{SoundEffect_Select, "select"},
+		{SoundEffect_Accept, "accept"},
+		{SoundEffect_Banned, "banned"},
+	});
+
+	void clearGridItems();
+
+	void playSound(SoundEffect soundEffect, qreal volume = 1.0f, int times = 1);
+
+	// 计算GridValue最长的文本的宽度
+	int calGridValueMaxWidth(const QString &value);
+
+	// 调整GraphicsItem gridItems
+	void adjustGridItems(const QPoint &from);
+
+public:
+
+	// 提示文本
+	inline void setMessage(const QString &message){ this->message = message; }
 
 	RpgGridInputPanel(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr): RpgObject(parent){
 
