@@ -150,6 +150,14 @@ public:
 		Block_L  = Block_Left,
 	};
 
+	enum SoundEffect{
+		SoundEffect_Select = 1,
+		SoundEffect_Accept,
+		SoundEffect_Banned,
+		SoundEffect_Close,
+		SoundEffect_Continuous,
+	};
+
 };
 
 #endif // RPG_H

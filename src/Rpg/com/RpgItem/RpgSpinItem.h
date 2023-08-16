@@ -134,7 +134,15 @@ public:
 	void appendSpinValue(const QList<RpgSpinValue*> &values){ this->spinValues.append(values); }
 	int getRpgSpinValueCount() const { return this->spinValues.length(); }
 
-	void clearSpinValues() { this->spinValues.clear(); }
+	void clearSpinValues() {
+		for(RpgSpinValue *v: this->spinValues){
+			if(v != nullptr){
+				delete v;
+				v = nullptr;
+			}
+		}
+		this->spinValues.clear();
+	}
 
 	// 超时时间
 	inline void setTimeout(int timeout){ this->timeout = timeout; }
@@ -145,14 +153,14 @@ public:
 	inline int getSpeed() const { return this->speed; }
 
 	// 字体
-	inline void setFont(const QFont &font){ this->font = QFont(font); }
+	inline void setFont(const QFont &font){ this->font = font; }
 	void setFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
-	inline QFont getFont() const { return this->font; }
+	inline const QFont &getFont() const { return this->font; }
 
 	void setLineHeight(qreal pixel, int lineHeightType = QTextBlockFormat::FixedHeight);
 
 	void setDialogSize(const QSize &size);
-	inline const QSize getDialogSize() const { return this->dialogSize; }
+	inline const QSize &getDialogSize() const { return this->dialogSize; }
 
 	void setDialogAlign(Rpg::BlockAlign align){ this->dialogAlign = align; }
 	inline Rpg::BlockAlign getDialogAlign() const { return this->dialogAlign; }

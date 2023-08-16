@@ -386,6 +386,7 @@ RpgSpinItem::RpgSpinItem(RpgDialogBase *skin, QGraphicsObject *parent): RpgObjec
 
 RpgSpinItem::~RpgSpinItem(){
 	this->clearSpinItems();
+	this->clearSpinValues();
 	rpgState->unregisterRpgObject(this, RpgState::DialogMode);
 }
 

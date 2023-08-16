@@ -27,7 +27,7 @@ class RpgGridInputPanel : public RpgObject
 
 	// 构成
 	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);
-	QGraphicsTextItem *mesasgeBox = new QGraphicsTextItem(this->box);
+	QGraphicsTextItem *messageBox = new QGraphicsTextItem(this->box);
 	QString message;
 	QList<QList<QGraphicsTextItem *>> panelItems;
 
@@ -127,10 +127,63 @@ public:
 
 	// 提示文本
 	inline void setMessage(const QString &message){ this->message = message; }
+	inline const QString &getMessage() const { return this->message; }
+
+	// 文字颜色
+	inline void setTextColor(const QColor &color){ this->messageBox->setDefaultTextColor(color); this->textColor = color; }
+	inline void setTextColor(Qt::GlobalColor color){ this->setTextColor(QColor(color)); }
+
+	// 选项
+	void setItem(int row, int col, const QString &value);
+	void setRowItems(int row, const QStringList &values);
+	void appendRowItems(const QStringList &values);
+
+	void clearGridValues(){
+		this->gridItems.clear();
+	}
+
+	inline void setFont(const QFont &font){ this->font = font; }
+	void setFont(const QString &name, int pointSize = -1, int weight = -1, bool italic = false);
+	inline const QFont &getFont() const { return this->font; }
+
+	void setLineHeight(qreal pixel, int lineHeightType = QTextBlockFormat::FixedHeight);
+
+	void setDialogSize(const QSize &size);
+	inline const QSize &getDialogSize() const { return this->dialogSize; }
+
+	void setDialogAlign(Rpg::BlockAlign align) { this->dialogAlign = align; }
+	inline Rpg::BlockAlign getDialogAlign() const { return this->dialogAlign; }
+
+	void setSoundEffect(SoundEffect soundEffect, const QString &name){ this->soundEffects.insert(soundEffect, name); }
+	const QString getSoundEffect(SoundEffect soundEffect) const { return this->soundEffects.value(soundEffect); }
 
 	RpgGridInputPanel(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr): RpgObject(parent){
 
 	}
+	~RpgGridInputPanel();
+
+	void run() override;
+	int waitForComplete();
+	void end() override;
+
+	const QStringList getValue();
+
+private:
+	void showDialog();
+	void hideDialog();
+
+	void showMessage();
+
+	void setGridText(const QPoint &from);
+	void setSelectBarPos(const QPoint &index);
+
+signals:
+	void enterDialogMode();
+	void exitDialogMode();
+
+private slots:
+	void arrowSymbolsTimeLineFrameChangedSlot(int frameIndex);
+
 };
 
 #endif // RPGGRIDINPUTPANEL_H
