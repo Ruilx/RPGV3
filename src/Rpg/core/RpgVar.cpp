@@ -58,6 +58,8 @@ QVariant RpgVar::getValue(const QString &group, const QString &key) const{
 				qDebug() << CodePath << "No such key name:" << group << "." << key;
 				return QVariant();
 			}
+		}else{
+			return QVariant();
 		}
 	}else{
 		qDebug() << CodePath << "No such group name:" << group;
@@ -70,6 +72,7 @@ QVariant RpgVar::getValue(const QString &key) const{
 	if(res.isNull()){
 		return this->getValue("", key);
 	}
+	return res;
 }
 
 int RpgVar::getVarCount(const QString &group) const{

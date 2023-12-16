@@ -35,6 +35,7 @@ Thumbs.db
 *.rc
 /.qmake.cache
 /.qmake.stash
+.qtc_clangd/
 
 # qtcreator generated files
 *.pro.user*
@@ -67,6 +68,8 @@ Thumbs.db
 # MinGW generated files
 *.Debug
 *.Release
+debug/
+release/
 
 # Python byte code
 *.pyc

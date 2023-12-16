@@ -6,7 +6,7 @@
 
 class RpgRuntimeException : public RpgException
 {
-	QString message = nullptr;
+	QString message;
 public:
 	RpgRuntimeException(const QString &message): RpgException("Runtime error"){
 		this->message = message;

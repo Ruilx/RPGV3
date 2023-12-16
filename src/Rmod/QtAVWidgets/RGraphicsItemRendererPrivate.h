@@ -1,7 +1,6 @@
 #ifndef RGRAPHICSITEMRENDERERPRIVATE_H
 #define RGRAPHICSITEMRENDERERPRIVATE_H
 
-#include "RGraphicsItemRendererPrivate.h"
 #include "RPainterRendererPrivate.h"
 
 #include <QMatrix4x4>
