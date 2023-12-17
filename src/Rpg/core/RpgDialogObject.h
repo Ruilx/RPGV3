@@ -11,6 +11,7 @@
 
 class RpgDialogObject : public RpgObject
 {
+	Q_OBJECT
 
 protected:
 	RpgDialogBase *skin = nullptr;
@@ -42,8 +43,13 @@ public:
 	const char *fontName = "dialog";
 
 	// 构造
-	RpgDialogObject(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr);
-	~RpgDialogObject();
+	RpgDialogObject(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr): RpgObject(parent)
+	{
+		this->skin = dialogBase;
+	}
+	~RpgDialogObject(){
+
+	}
 
 	// 预置字体
 	inline void setFont(const QFont &font){ this->font = font; }

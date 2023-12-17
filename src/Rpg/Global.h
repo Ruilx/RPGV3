@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-#define ScreenWidth 640.0
+#define ScreenWidth 800.0
 #define ScreenHeight 480.0
 
 #define MapTileWidth 32.0

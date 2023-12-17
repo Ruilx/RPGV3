@@ -14,7 +14,7 @@
 	},
 	"music": {
 		"moonLight": "data/music/月光（オルゴール）.mp3",
-        "title": "data/music/title.ogg",
+		"title": "data/music/title.ogg",
 		"test": "data/music/強風オールバック.a.mp4"
 	},
 	"lyric": {
@@ -24,7 +24,7 @@
 		"king": "data/music/King.wav",
 		"banned": "data/se/banned.wav",
 		"select": "data/se/select.wav",
-		"accept": "data/se/accepted.wav"
+		"accept": "data/se/accept.wav"
 	},
 	"avatar": {
 		"002": "data/images/avatar/002.png",

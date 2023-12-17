@@ -149,7 +149,7 @@ void MainWindow::testModel()
 	//dialog.setTimeout(5000);
 
 	cdialog.run();
-	int res = dialog.waitForComplete();
+	int res = cdialog.waitForComplete();
 	rDebug() << "RES:" << res;
 
 	RpgDialogItem msg(&base);

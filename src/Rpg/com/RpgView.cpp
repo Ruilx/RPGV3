@@ -68,6 +68,13 @@ void RpgView::keyReleaseEvent(QKeyEvent *event){
 	}
 }
 
+void RpgView::resizeEvent(QResizeEvent *event){
+	Q_UNUSED(event);
+	if(this->scene() != nullptr){
+		this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+	}
+}
+
 RpgView *RpgView::instance(QWidget *parent){
 	if(_instance == nullptr){
 		if(parent != nullptr){

@@ -36,6 +36,8 @@ class RpgView : public QGraphicsView
 	void keyPressEvent(QKeyEvent *event) override;
 	void keyReleaseEvent(QKeyEvent *event) override;
 
+	void resizeEvent(QResizeEvent *event) override;
+
 public:
 	static RpgView *instance(QWidget *parent = nullptr);
 

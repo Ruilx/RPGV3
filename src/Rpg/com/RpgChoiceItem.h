@@ -132,7 +132,7 @@ private:
 	QHash<SoundEffect, QString> soundEffects = QHash<SoundEffect, QString>({
 		{SoundEffect_Select, "select"},
 		{SoundEffect_Banned, "banned"},
-		{SoundEffect_Accept, "accepted"},
+		{SoundEffect_Accept, "accept"},
 	});
 
 	//inline void setChoiceTextWidth(qreal width){ this->textWidth = width; }

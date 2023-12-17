@@ -55,14 +55,18 @@ class RpgGridInputPanel : public RpgObject
 	Rpg::TextAlign messageAlign = Rpg::AlignLeft;
 
 	// timer
-	void timerEvent(QTimerEvent *event) override;
+	void timerEvent(QTimerEvent *event) override{
+		Q_UNUSED(event);
+	}
 	int timerId = -1;
 	bool timerProcessing = false;
 
 	int timeout = 0;
 
 	// 按键
-	void keyReleaseEvent(QKeyEvent *event) override;
+	void keyReleaseEvent(QKeyEvent *event) override{
+		Q_UNUSED(event);
+	}
 
 	QColor textColor = QColor(Qt::white);
 	QColor bannedColor = QColor(Qt::darkGray);
@@ -160,11 +164,17 @@ public:
 	RpgGridInputPanel(RpgDialogBase *dialogBase, QGraphicsObject *parent = nullptr): RpgObject(parent){
 
 	}
-	~RpgGridInputPanel();
+	~RpgGridInputPanel(){
 
-	void run() override;
+	}
+
+	void run() override{
+
+	}
 	int waitForComplete();
-	void end() override;
+	void end() override{
+
+	}
 
 	const QStringList getValue();
 
