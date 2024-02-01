@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 	rDebug() << "Application font:" << a.font();
 
 	try{
-		MainWindow w;
-		w.show();
+        MainWindow w;
+        w.show();
 
 		return a.exec();
 	}catch(const RpgException &e){

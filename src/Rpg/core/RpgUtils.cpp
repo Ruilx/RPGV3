@@ -5,6 +5,9 @@
 #include <QFile>
 #include <QGraphicsItem>
 
+#include <QSet>
+#include <QMap>
+
 #include <Rpg/exception/RpgFileCannotOpenException.h>
 
 void RpgUtils::msleep(int msec){
@@ -306,6 +309,54 @@ QString RpgUtils::toString(const QPoint &point){
 
 QString RpgUtils::toString(const QPointF &pointf, int prec){
 	return "(" % QString::number(pointf.x(), 'g', prec) % ", " % QString::number(pointf.y(), 'g', prec) % ")";
+}
+
+QList<QPair<int, int>> RpgUtils::optmize2dCoordGaps(const QList<QPair<int, int>> &points){
+	QSet<int> xs;
+	QSet<int> ys;
+	QMap<int, QList<int>*> xtoy;
+
+	for(const QPair<int, int> &point: points){
+		int x = point.first;
+		int y = point.second;
+		xs.insert(x);
+		ys.insert(y);
+		if(!xtoy.contains(x)){
+			xtoy.insert(x, new QList<int>());
+		}
+		xtoy.value(x)->append(y);
+	}
+
+	QList<int> x = xs.toList();
+	std::sort(x.begin(), x.end());
+	QList<int> y = ys.toList();
+	std::sort(y.begin(), y.end());
+
+	QList<QPair<int, int>> res;
+	int i = 0;
+	for(int xx: x){
+		QList<int>* yy = xtoy.value(xx);
+		if(yy == nullptr){
+			continue;
+		}
+		for(int yi: *yy){
+			int ypos = y.indexOf(yi);
+			if(ypos < 0){
+				continue;
+			}
+			res.append(QPair<int, int>(i, ypos));
+		}
+		i++;
+	}
+
+	for(QList<int> *i: xtoy){
+		if(i != nullptr){
+			delete i;
+			i = nullptr;
+		}
+	}
+
+	return res;
 }
 
 template <typename Func>

@@ -37,6 +37,21 @@ void MainWindow::testModel()
 {
 	//rpgMusic->playMusic("title");
 
+	QList<QPair<int, int>> test;
+	test.append(QPair<int, int>(1, 1));
+	test.append(QPair<int, int>(5, 20));
+	test.append(QPair<int, int>(3, 15));
+	test.append(QPair<int, int>(4, 7));
+	test.append(QPair<int, int>(2, 5));
+	test.append(QPair<int, int>(6, 18));
+	test.append(QPair<int, int>(1, 15));
+	test.append(QPair<int, int>(3, 18));
+
+	QList<QPair<int, int>> rres = RpgUtils::optmize2dCoordGaps(test);
+	for(auto &i: rres){
+		qDebug() << "(" << i.first << ", " << i.second << ")";
+	}
+
 	RpgAxisItem *item = new RpgAxisItem(QRectF(0, 0, ScreenWidth, ScreenHeight), Rpg::MapTileSize, Rpg::MapTileSize);
 
 	RpgScene *scene = new RpgScene();
