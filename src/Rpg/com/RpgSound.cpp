@@ -95,12 +95,10 @@ RpgSound::~RpgSound(){
 	}
 }
 
+#if 0
 qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
 	static qint64 autoIncrementIndex = 0;
-	QUrl url = rpgFileManager->getFile(RpgFileManager::SoundEffectFile, soundName);
-	if(!url.isValid() || url.isEmpty()){
-		throw RpgRuntimeException("sound name: " % soundName % " cannot get a valid url.");
-	}
+
 	if(this->playingSounds.count() >= this->maxPlayingCount){
 		rError() << "Sound effect playing count too many: max slot:" << this->maxPlayingCount;
 		return -1;
@@ -118,6 +116,12 @@ qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
 	if(sound == nullptr){
 		sound = new QSoundEffect(this);
 		//rDebug() << "Sound:" << sound << "CREATED.";
+
+		QUrl url = rpgFileManager->getFile(RpgFileManager::SoundEffectFile, soundName);
+		if(!url.isValid() || url.isEmpty()){
+			throw RpgRuntimeException("sound name: " % soundName % " cannot get a valid url.");
+		}
+
 		sound->setSource(url);
 		sound->setProperty("name", soundName);
 		this->connect(sound, &QSoundEffect::playingChanged, [this, sound, soundName](){
@@ -173,7 +177,50 @@ qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
 
 	return autoIncrementIndex++;
 }
+#endif
 
+qint64 RpgSound::play(const QString &soundName, qreal volume, int times){
+	static qint64 autoIncrementIndex = 0;
+	QSoundEffect *sound = nullptr;
+	if(this->cachedSounds.contains(soundName)){
+		sound = this->cachedSounds.value(soundName);
+		if(sound == nullptr){
+			rWarning() << "Sound: '" << soundName << "' cached but have been deleted. Reload from file manager.";
+		}
+	}
+	if(sound == nullptr){
+		QUrl url = rpgFileManager->getFile(RpgFileManager::SoundEffectFile, soundName);
+		if(!url.isValid() || url.isEmpty()){
+			throw RpgRuntimeException("sound name: " % soundName % " cannot get a valid url.");
+		}
+		sound = new QSoundEffect(this);
+		sound->setSource(url);
+		sound->setProperty("name", soundName);
+	}
+
+	if(sound->isPlaying()){
+		sound->stop();
+	}
+	sound->setVolume(volume);
+	sound->setLoopCount(times);
+
+	switch(sound->status()){
+		case QSoundEffect::Null:
+			rError() << "Sound '" << soundName << "' has no source.";
+			break;
+		case QSoundEffect::Error:
+			rError() << "Sound '" << soundName << "' status Error.";
+			break;
+		case QSoundEffect::Loading:
+			rInfo() << "Sound '" << soundName << "' is loading...";
+		case QSoundEffect::Ready:
+			sound->play();
+			break;
+	}
+	return ++autoIncrementIndex;
+}
+
+#if 0
 void RpgSound::stop(qint64 index){
 	if(this->playingSounds.contains(index)){
 		QSoundEffect *sound = this->playingSounds.value(index);
@@ -189,6 +236,26 @@ void RpgSound::stop(qint64 index){
 	}else{
 		rError() << "Sound index: '" << index << "' not found in playing sounds.";
 		return;
+	}
+}
+#endif
+
+void RpgSound::stop(const QString &soundName){
+	if(!this->cachedSounds.contains(soundName)){
+		rError() << "Sound '" << soundName << "' not found in cached sounds";
+		return;
+	}
+	QSoundEffect *sound = this->cachedSounds.value(soundName);
+	if(sound == nullptr){
+		rError() << "Sound '" << soundName << "' is nullptr in cache sounds.";
+		this->cachedSounds.remove(soundName);
+		return;
+	}
+	if(sound->isPlaying()){
+		sound->stop();
+		rInfo() << "Sound '" << soundName << "' is manually stopped.";
+	}else{
+		rInfo() << "Sound '" << soundName << "' already stopped.";
 	}
 }
 

@@ -47,7 +47,8 @@ signals:
 	void stopped(const QString &soundName);
 public slots:
 	qint64 play(const QString &soundName, qreal volume = 1.0, int times = 1);
-	void stop(qint64 index);
+	//void stop(qint64 index);
+	void stop(const QString &soundName);
 };
 
 #ifndef rpgSound
